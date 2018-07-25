@@ -64,5 +64,9 @@
     "presets": [
       "@babel/preset-env"
     ]
+  },
+  "engines": {
+    "node": "v8.11.3",
+    "npm": "v6.1.0"
   }
 }
