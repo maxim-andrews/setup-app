@@ -5,6 +5,7 @@
 [![Semver][semver]][semver-url]
 [![Dependency Status][deps]][deps-url]
 [![devDependency Status][devDeps]][devDeps-url]
+[![peerDependencies Status][peerDeps]][peerDeps-url]
 
 # hot-client-plugin
 A webpack plugin (websocket server/client) for interacting with webpack Hot Module Replacement plugin
@@ -30,3 +31,6 @@ A webpack plugin (websocket server/client) for interacting with webpack Hot Modu
 
 [devDeps]: https://david-dm.org/maxim-andrews/hot-client-plugin/dev-status.svg
 [devDeps-url]: https://david-dm.org/maxim-andrews/hot-client-plugin#info=devDependencies
+
+[peerDeps]: https://david-dm.org/maxim-andrews/hot-client-plugin/peer-status.svg
+[peerDeps-url]: https://david-dm.org/maxim-andrews/hot-client-plugin?type=peer
