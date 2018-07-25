@@ -1,3 +1,5 @@
+[![NPM package][npm-badge]][npm-url]
+
 [![Npm Version][npm]][npm-url]
 [![Build Status][build]][build-url]
 [![Code Coverage][codecov]][codecov-url]
@@ -36,3 +38,5 @@ A webpack plugin (websocket server/client) for interacting with webpack Hot Modu
 
 [peerDeps]: https://david-dm.org/maxim-andrews/hot-client-plugin/peer-status.svg
 [peerDeps-url]: https://david-dm.org/maxim-andrews/hot-client-plugin?type=peer
+
+[npm-badge]: https://nodei.co/npm/hot-client-plugin.png
