@@ -5,4 +5,4 @@ install:
   - npm i -g codecov
   - npm i webpack-serve
 script:
-  - codecov
+  - npm test && codecov
