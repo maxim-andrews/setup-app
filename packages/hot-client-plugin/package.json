@@ -1,0 +1,68 @@
+{
+  "name": "hot-client-plugin",
+  "version": "1.0.0",
+  "description": "A webpack plugin (websocket server/client) for interacting with Hot Module Replacement plugin",
+  "main": "lib/HotClientPlugin.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxim-andrews/hot-client-plugin.git"
+  },
+  "keywords": [
+    "webpack",
+    "webpack4",
+    "webpack-plugin",
+    "webpack-serve",
+    "hmr",
+    "hot-module-replacement",
+    "client",
+    "websocket",
+    "plugin"
+  ],
+  "author": "Maxim Andrews <all.git@valutas.info> (http://maximandrews.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/maxim-andrews/hot-client-plugin/issues"
+  },
+  "homepage": "https://github.com/maxim-andrews/hot-client-plugin#readme",
+  "devDependencies": {
+    "@babel/core": "^7.0.0-beta.54",
+    "@babel/preset-env": "^7.0.0-beta.54",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^23.4.0",
+    "jest": "^23.4.1"
+  },
+  "dependencies": {
+    "chokidar": "^2.0.4",
+    "debug": "^3.1.0",
+    "ip6addr": "^0.2.2",
+    "react-dev-utils": "^5.0.1",
+    "react-error-overlay": "^4.0.0",
+    "webpack": "^4.16.1",
+    "ws": "^6.0.0"
+  },
+  "peerDependencies": {
+    "webpack-serve": "^2.0.2"
+  },
+  "jest": {
+    "clearMocks": true,
+    "testEnvironment": "node",
+    "coverageDirectory": "coverage",
+    "testMatch": [
+      "**/__tests__/**/?(*.)+(spec|test).js"
+    ],
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    }
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ]
+  }
+}
