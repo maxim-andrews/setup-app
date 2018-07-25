@@ -1,11 +1,13 @@
 [![Npm Version][npm]][npm-url]
 [![Build Status][build]][build-url]
 [![Code Coverage][codecov]][codecov-url]
-[![Hits Counter][hits]][hits-url]
-[![Semver][semver]][semver-url]
+
 [![Dependency Status][deps]][deps-url]
 [![devDependency Status][devDeps]][devDeps-url]
 [![peerDependencies Status][peerDeps]][peerDeps-url]
+
+[![Semver][semver]][semver-url]
+[![Hits Counter][hits]][hits-url]
 
 # hot-client-plugin
 A webpack plugin (websocket server/client) for interacting with webpack Hot Module Replacement plugin
