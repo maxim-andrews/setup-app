@@ -1,13 +1,27 @@
+import path from 'path';
 import WebSocket from 'ws';
 import ip6addr from 'ip6addr';
+
+import { HotModuleReplacementPlugin } from 'webpack';
+
 import HotClientPlugin from '../HotClientPlugin';
 
-// Disable Websocket server
-HotClientPlugin.prototype.runServer = jest.fn();
-
 describe('HotClientPlugin', () => {
-  test('Constructor default options test', () => {
-    const hotClientPlugin = new HotClientPlugin();
+  let hotClientPlugin;
+
+  beforeEach(() => {
+    hotClientPlugin = new HotClientPlugin();
+
+    hotClientPlugin.debug = jest.fn();
+  });
+
+  test('Constructor test', () => {
+
+    hotClientPlugin.validateEditorIPs = jest.fn();
+    hotClientPlugin.preapareEditorIPs = jest.fn();
+    hotClientPlugin.runServer = jest.fn();
+
+    hotClientPlugin.constructor();
 
     expect(hotClientPlugin.https).toBe(false);
     expect(hotClientPlugin.host).toBe('0.0.0.0');
@@ -18,14 +32,20 @@ describe('HotClientPlugin', () => {
     expect(hotClientPlugin.warnings).toBe(true);
     expect(hotClientPlugin.editor).toEqual({ allowedIPs: '127.0.0.1' });
     expect(hotClientPlugin.staticContent).toBe(false);
+
+    expect(hotClientPlugin.handlerServerConnection).toBeDefined();
+    expect(hotClientPlugin.handlerServerListening).toBeDefined();
+    expect(hotClientPlugin.handlerStaticContentChanged).toBeDefined();
+
+    expect(hotClientPlugin.launchEditor).toBeDefined();
+    expect(hotClientPlugin.debug).toBeDefined();
+    expect(hotClientPlugin.chokidar).toBeDefined();
+
+    expect(hotClientPlugin.validateEditorIPs).toHaveBeenCalled();
+    expect(hotClientPlugin.preapareEditorIPs).toHaveBeenCalled();
   });
 
   describe('newEntry method', () => {
-    let hotClientPlugin;
-
-    beforeEach(() => {
-      hotClientPlugin = new HotClientPlugin();
-    });
 
     test('with string argument', () => {
       hotClientPlugin.combineEntry = jest.fn();
@@ -49,11 +69,6 @@ describe('HotClientPlugin', () => {
   });
 
   describe('combineEntry method', () => {
-    let hotClientPlugin;
-
-    beforeEach(() => {
-      hotClientPlugin = new HotClientPlugin();
-    });
 
     test('with string argument', () => {
       const myEntry = 'this is my entry';
@@ -114,8 +129,10 @@ describe('HotClientPlugin', () => {
         hotClient5: 'exists',
         anotherKey: 'evenCoolerValue'
       };
-      const newEntry = hotClientPlugin.combineEntry(myEntry);
+      const newEntry = hotClientPlugin.combineEntry({ ...myEntry });
       myEntry.hotClient6 = hotClientPlugin.hotClient;
+
+      expect(newEntry.hotClient6).toBe(hotClientPlugin.hotClient);
       expect(newEntry).toEqual(myEntry);
     });
 
@@ -128,12 +145,11 @@ describe('HotClientPlugin', () => {
   });
 
   describe('sendStats to single client', () => {
-    let oldMethod, hotClientPlugin;
+    let oldMethod;
 
     beforeEach(() => {
       oldMethod = HotClientPlugin.propagate;
       HotClientPlugin.propagate = jest.fn();
-      hotClientPlugin = new HotClientPlugin();
     });
 
     afterEach(() => {
@@ -183,10 +199,7 @@ describe('HotClientPlugin', () => {
   });
 
   describe('sendStats to all clients', () => {
-    let hotClientPlugin;
-
     beforeEach(() => {
-      hotClientPlugin = new HotClientPlugin();
       hotClientPlugin.propagateAll = jest.fn();
     });
 
@@ -233,12 +246,12 @@ describe('HotClientPlugin', () => {
   });
 
   describe('propagateAll method', () => {
-    let oldMethod, hotClientPlugin;
+    let oldMethod;
 
     beforeEach(() => {
       oldMethod = HotClientPlugin.propagate;
       HotClientPlugin.propagate = jest.fn();
-      hotClientPlugin = new HotClientPlugin();
+
       hotClientPlugin.server = {
         clients: [
           { readyState: WebSocket.OPEN },
@@ -291,11 +304,6 @@ describe('HotClientPlugin', () => {
   });
 
   describe('validateEditorIPs method', () => {
-    let hotClientPlugin;
-
-    beforeEach(() => {
-      hotClientPlugin = new HotClientPlugin();
-    });
 
     test('with null param', () => {
       hotClientPlugin.editor.allowedIPs = null;
@@ -308,7 +316,7 @@ describe('HotClientPlugin', () => {
     });
 
     test('with any', () => {
-      hotClientPlugin.editor.allowedIPs = {};
+      hotClientPlugin.editor.allowedIPs = { };
       const validateEditorIPs = jest.fn(ips => hotClientPlugin.validateEditorIPs(ips));
 
       validateEditorIPs('any');
@@ -425,10 +433,8 @@ describe('HotClientPlugin', () => {
   });
 
   describe('preapareEditorIPs method', () => {
-    let hotClientPlugin;
 
     beforeEach(() => {
-      hotClientPlugin = new HotClientPlugin();
       hotClientPlugin.addEditorIPRange = jest.fn();
     });
 
@@ -512,10 +518,9 @@ describe('HotClientPlugin', () => {
   });
 
   describe('addEditorIPRange method', () => {
-    let hotClientPlugin;
 
     beforeEach(() => {
-      hotClientPlugin = new HotClientPlugin();
+      hotClientPlugin.editorIPRanges = [];
     });
 
     test('called once', () => {
@@ -530,7 +535,7 @@ describe('HotClientPlugin', () => {
       expect(hotClientPlugin.editorIPRanges.length).toBe(1);
     });
 
-    test('called twice with overlapping ranges', () => {
+    test('called twice with overlapping first', () => {
       const ipRange1 = { first: '127.0.0.1', last: '127.0.0.55' };
       const ipRange2 = { first: '127.0.0.31', last: '127.0.0.255' };
 
@@ -543,6 +548,21 @@ describe('HotClientPlugin', () => {
         range: ip6addr.createAddrRange( ipRange1.first, ipRange2.last )
       });
       expect(hotClientPlugin.editorIPRanges.length).toBe(1);
+    });
+
+    test('called twice with overlapping last', () => {
+      const ipRange1 = { first: '127.0.0.31', last: '127.0.0.255' };
+      const ipRange2 = { first: '127.0.0.1', last: '127.0.0.55' };
+
+      hotClientPlugin.addEditorIPRange(ipRange1);
+      hotClientPlugin.addEditorIPRange(ipRange2);
+
+      expect(hotClientPlugin.editorIPRanges.length).toBe(1);
+      expect(hotClientPlugin.editorIPRanges[0]).toEqual({
+        ...ipRange1,
+        first: ipRange2.first,
+        range: ip6addr.createAddrRange( ipRange2.first, ipRange1.last )
+      });
     });
 
     test('called tripple with overlapping ranges', () => {
@@ -611,10 +631,9 @@ describe('HotClientPlugin', () => {
   });
 
   describe('editorIPAllowed method', () => {
-    let hotClientPlugin, ipAllowed;
+    let ipAllowed;
 
     beforeEach(() => {
-      hotClientPlugin = new HotClientPlugin();
       hotClientPlugin.editorIPRanges = [];
       ipAllowed = jest.fn((ip) => hotClientPlugin.editorIPAllowed(ip));
     });
@@ -703,18 +722,15 @@ describe('HotClientPlugin', () => {
   });
 
   describe('apply method', () => {
-    let hotClientPlugin;
-
-    beforeEach(() => {
-      hotClientPlugin = new HotClientPlugin();
-    });
 
     test('without watch', () => {
       const compiler = { options: { } };
 
+      hotClientPlugin.runServer = jest.fn();
       const callApply = jest.fn(() => hotClientPlugin.apply(compiler));
 
       expect(callApply).toThrow(/HotClientPlugin should be configured in `watch` only mode\. Configuration option `watch` should be equal to `true`\./);
+      expect(hotClientPlugin.runServer).not.toHaveBeenCalled();
     });
 
     test('watching', () => {
@@ -729,13 +745,371 @@ describe('HotClientPlugin', () => {
       };
 
       hotClientPlugin.newEntry = jest.fn();
+      hotClientPlugin.runServer = jest.fn();
+
       hotClientPlugin.apply(compiler);
 
       expect(hotClientPlugin.newEntry).toHaveBeenCalledWith(undefined);
+      expect(hotClientPlugin.runServer).toHaveBeenCalled();
       expect(compiler.hooks.afterPlugins.tap).toHaveBeenCalled();
       expect(compiler.hooks.compile.tap).toHaveBeenCalled();
       expect(compiler.hooks.invalid.tap).toHaveBeenCalled();
       expect(compiler.hooks.done.tap).toHaveBeenCalled();
     });
+  });
+
+  describe('handlerCompile method', () => {
+
+    test('without compiler name', () => {
+      const compiler = { };
+
+      hotClientPlugin.propagateAll = jest.fn();
+
+      hotClientPlugin.handlerCompile(compiler);
+
+      expect(hotClientPlugin.propagateAll).toHaveBeenCalledWith('compile', '<noname compiller>');
+    });
+
+    test('with named compiler', () => {
+      const compiler = { name: 'front-end' };
+
+      hotClientPlugin.propagateAll = jest.fn();
+
+      hotClientPlugin.handlerCompile(compiler);
+
+      expect(hotClientPlugin.propagateAll).toHaveBeenCalledWith('compile', compiler.name);
+    });
+  });
+
+  describe('handlerInvalid method', () => {
+
+    test('without context', () => {
+      const cwd = process.cwd();
+      const compiler = { options: { } },
+            filePath = 'local/path/to/myFileGoes.here',
+            fullPath = path.join(cwd, filePath);
+
+      hotClientPlugin.propagateAll = jest.fn();
+
+      hotClientPlugin.handlerInvalid(compiler, fullPath);
+
+      expect(hotClientPlugin.debug).toHaveBeenCalledTimes(1);
+      expect(hotClientPlugin.debug).toHaveBeenCalledWith('Received webpack invalidation event for file %s', filePath);
+
+      expect(hotClientPlugin.propagateAll).toHaveBeenCalledTimes(1);
+      expect(hotClientPlugin.propagateAll).toHaveBeenCalledWith('invalid', filePath);
+    });
+
+    test('with context in options', () => {
+      const compiler = { options: { context: '/root/path/begining' } },
+            filePath = 'local/path/to/myFileGoes.here',
+            fullPath = path.join(compiler.options.context, filePath);
+
+      hotClientPlugin.propagateAll = jest.fn();
+
+      hotClientPlugin.handlerInvalid(compiler, fullPath);
+
+      expect(hotClientPlugin.debug).toHaveBeenCalledTimes(1);
+      expect(hotClientPlugin.debug).toHaveBeenCalledWith('Received webpack invalidation event for file %s', filePath);
+
+      expect(hotClientPlugin.propagateAll).toHaveBeenCalledTimes(1);
+      expect(hotClientPlugin.propagateAll).toHaveBeenCalledWith('invalid', filePath);
+    });
+
+    test('with context in compiler', () => {
+      const compiler = { context: '/root/path/begining', options: { } },
+            filePath = 'local/path/to/myFileGoes.here',
+            fullPath = path.join(compiler.context, filePath);
+
+      hotClientPlugin.propagateAll = jest.fn();
+
+      hotClientPlugin.handlerInvalid(compiler, fullPath);
+
+      expect(hotClientPlugin.debug).toHaveBeenCalledTimes(1);
+      expect(hotClientPlugin.debug).toHaveBeenCalledWith('Received webpack invalidation event for file %s', filePath);
+
+      expect(hotClientPlugin.propagateAll).toHaveBeenCalledTimes(1);
+      expect(hotClientPlugin.propagateAll).toHaveBeenCalledWith('invalid', filePath);
+    });
+  });
+
+  test('handlerDone method', () => {
+    const stats = {
+      myStats: JSON.stringify({ cwd: '/root/path/begining' }),
+      toJson: jest.fn((stats) => JSON.parse(stats.myStats))
+    };
+
+    hotClientPlugin.sendStats = jest.fn();
+
+    hotClientPlugin.handlerDone(stats);
+
+    expect(hotClientPlugin.sendStats).toHaveBeenCalled();
+    expect(hotClientPlugin.compilerStats).toEqual(JSON.parse(stats.myStats));
+  });
+
+  describe('handlerServerConnection method', () => {
+
+    test('without compilerStats', () => {
+      const handlers = [];
+      const ws = { on: jest.fn((type, hdl) => handlers.push(hdl)) };
+      const req = { connection: { remoteAddress: 'IP' } };
+
+      hotClientPlugin.compilerStats = false;
+
+      hotClientPlugin.sendStats = jest.fn();
+
+      hotClientPlugin.handlerServerConnection(ws, req);
+
+      expect(hotClientPlugin.debug).toHaveBeenCalledTimes(1);
+      expect(hotClientPlugin.debug).toHaveBeenCalledWith('WebSocket client (%s) is connected', req.connection.remoteAddress);
+
+      expect(ws.on).toHaveBeenNthCalledWith(1, 'message', handlers[0]);
+      expect(ws.on).toHaveBeenNthCalledWith(2, 'error', handlers[1]);
+      expect(hotClientPlugin.sendStats).not.toHaveBeenCalled();
+    });
+
+    test('without compilerStats', () => {
+      const handlers = [];
+      const ws = { on: jest.fn((type, hdl) => handlers.push(hdl)) };
+      const req = { connection: { remoteAddress: 'IP' } };
+
+      hotClientPlugin.compilerStats = true;
+
+      hotClientPlugin.sendStats = jest.fn();
+
+      hotClientPlugin.handlerServerConnection(ws, req);
+
+      expect(ws.on).toHaveBeenNthCalledWith(1, 'message', handlers[0]);
+      expect(ws.on).toHaveBeenNthCalledWith(2, 'error', handlers[1]);
+      expect(hotClientPlugin.sendStats).toHaveBeenCalledWith(ws);
+    });
+  });
+
+  describe('handlerAfterPlugins method', () => {
+
+    test('without hmr plugin', () => {
+      const compiler = {
+        hooks: {
+          compilation: { tap: jest.fn() },
+          additionalPass: { tapAsync: jest.fn() }
+        },
+        options: {
+          plugins: [],
+          output: {}
+        }
+      };
+
+      hotClientPlugin.handlerAfterPlugins(compiler);
+
+      expect(compiler.hooks.compilation.tap).toHaveBeenCalledTimes(2);
+      expect(compiler.hooks.additionalPass.tapAsync).toHaveBeenCalledTimes(1);
+    });
+
+    test('with hmr plugin', () => {
+      const compiler = {
+        hooks: {
+          compilation: { tap: jest.fn() },
+          additionalPass: { tapAsync: jest.fn() }
+        },
+        options: {
+          plugins: [ new HotModuleReplacementPlugin() ],
+          output: {}
+        }
+      };
+
+      hotClientPlugin.handlerAfterPlugins(compiler);
+
+      expect(compiler.hooks.compilation.tap).toHaveBeenCalledTimes(1);
+      expect(compiler.hooks.additionalPass.tapAsync).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('handlerServerSocketMessage method', () => {
+    let ws, req, allowed = true;
+
+    beforeEach(() => {
+      ws = { send: jest.fn() };
+      req = { connection: { remoteAddress: 'MyIP' } };
+
+      hotClientPlugin.editorIPAllowed = jest.fn(() => allowed);
+      hotClientPlugin.debug = jest.fn();
+      hotClientPlugin.launchEditor = jest.fn();
+    });
+
+    test('launching editor', () => {
+      const data = {
+        type: 'launch-editor',
+        data: {
+          fileName: 'aaa',
+          lineNumber: 10,
+          colNumber: '1'
+        }
+      };
+
+      hotClientPlugin.handlerServerSocketMessage(ws, req, JSON.stringify(data));
+
+      expect(hotClientPlugin.editorIPAllowed).toHaveBeenCalledTimes(1);
+      expect(hotClientPlugin.editorIPAllowed).toHaveBeenCalledWith(req.connection.remoteAddress);
+
+      expect(hotClientPlugin.debug).toHaveBeenCalledTimes(1);
+      expect(hotClientPlugin.debug).toHaveBeenCalledWith('Launching an editor from %s', req.connection.remoteAddress);
+
+      expect(hotClientPlugin.launchEditor).toHaveBeenCalledTimes(1);
+      expect(hotClientPlugin.launchEditor).toHaveBeenCalledWith(data.data.fileName, data.data.lineNumber, data.data.colNumber);
+
+      expect(ws.send).not.toHaveBeenCalled();
+    });
+
+    test('unauthorised editor launch', () => {
+      const data = {
+        type: 'launch-editor',
+        data: { }
+      };
+
+      allowed = false;
+
+      hotClientPlugin.handlerServerSocketMessage(ws, req, JSON.stringify(data));
+
+      expect(hotClientPlugin.editorIPAllowed).toHaveBeenCalledTimes(1);
+      expect(hotClientPlugin.editorIPAllowed).toHaveBeenCalledWith(req.connection.remoteAddress);
+
+      expect(hotClientPlugin.debug).toHaveBeenCalledTimes(1);
+      expect(hotClientPlugin.debug).toHaveBeenCalledWith('Unauthorised editor launch attemp from %s', req.connection.remoteAddress);
+
+      expect(ws.send).toHaveBeenCalledTimes(1);
+      expect(ws.send).toHaveBeenCalledWith(JSON.stringify({ type: 'unauthorised-editor-launch', data: req.connection.remoteAddress }));
+
+      expect(hotClientPlugin.launchEditor).not.toHaveBeenCalled();
+    });
+
+    test('unknown message type', () => {
+      const data = {
+        type: 'wrong-type',
+        data: { }
+      };
+
+      hotClientPlugin.handlerServerSocketMessage(ws, req, JSON.stringify(data));
+
+      expect(hotClientPlugin.debug).toHaveBeenCalledTimes(1);
+      expect(hotClientPlugin.debug).toHaveBeenCalledWith('Unknown message (%s): %O', req.connection.remoteAddress, data);
+
+      expect(hotClientPlugin.editorIPAllowed).not.toHaveBeenCalled();
+      expect(hotClientPlugin.launchEditor).not.toHaveBeenCalled();
+      expect(ws.send).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('handlerServerListening method', () => {
+    let serverData;
+
+    beforeEach(() => {
+      serverData = { address: '123', port: 321 };
+
+      hotClientPlugin.server = { address: jest.fn(() => serverData) };
+    });
+
+    test('without static content', () => {
+      hotClientPlugin.staticContent = false;
+
+      hotClientPlugin.handlerServerListening();
+
+      expect(hotClientPlugin.server.address).toHaveBeenCalledTimes(1);
+
+      expect(hotClientPlugin.host).toBe(serverData.address);
+      expect(hotClientPlugin.port).toBe(serverData.port);
+
+      expect(hotClientPlugin.debug).toHaveBeenCalledTimes(1);
+      expect(hotClientPlugin.debug).toHaveBeenCalledWith('WebSocket server listening at %s:%d', serverData.address, serverData.port);
+
+      expect(hotClientPlugin.contentWatcher).toBeUndefined();
+    });
+
+    test('with static content', () => {
+      let watcher;
+
+      watcher = { on: jest.fn(() => watcher) };
+      hotClientPlugin.staticContent = process.cwd();
+      hotClientPlugin.chokidar = {
+        watch: jest.fn(() => watcher)
+      };
+
+      hotClientPlugin.handlerServerListening();
+
+      expect(hotClientPlugin.server.address).toHaveBeenCalledTimes(1);
+
+      expect(hotClientPlugin.host).toBe(serverData.address);
+      expect(hotClientPlugin.port).toBe(serverData.port);
+
+      expect(hotClientPlugin.debug).toHaveBeenCalledTimes(2);
+      expect(hotClientPlugin.debug).toHaveBeenNthCalledWith(1, 'WebSocket server listening at %s:%d', serverData.address, serverData.port);
+      expect(hotClientPlugin.debug).toHaveBeenNthCalledWith(2, 'Start watching folder %s', hotClientPlugin.staticContent);
+
+      expect(hotClientPlugin.contentWatcher).toBe(watcher);
+
+      expect(hotClientPlugin.chokidar.watch).toHaveBeenCalledTimes(1);
+      expect(hotClientPlugin.chokidar.watch).toHaveBeenCalledWith(hotClientPlugin.staticContent);
+
+      expect(hotClientPlugin.contentWatcher.on).toHaveBeenCalledTimes(5);
+      expect(hotClientPlugin.contentWatcher.on).toHaveBeenNthCalledWith(1, 'add', hotClientPlugin.handlerStaticContentChanged);
+      expect(hotClientPlugin.contentWatcher.on).toHaveBeenNthCalledWith(2, 'addDir', hotClientPlugin.handlerStaticContentChanged);
+      expect(hotClientPlugin.contentWatcher.on).toHaveBeenNthCalledWith(3, 'change', hotClientPlugin.handlerStaticContentChanged);
+      expect(hotClientPlugin.contentWatcher.on).toHaveBeenNthCalledWith(4, 'unlink', hotClientPlugin.handlerStaticContentChanged);
+      expect(hotClientPlugin.contentWatcher.on).toHaveBeenNthCalledWith(5, 'unlinkDir', hotClientPlugin.handlerStaticContentChanged);
+    });
+  });
+
+  test('handlerStaticContentChanged method', () => {
+    hotClientPlugin.staticContent = process.cwd();
+    hotClientPlugin.propagateAll = jest.fn();
+
+    hotClientPlugin.handlerStaticContentChanged();
+
+    expect(hotClientPlugin.debug).toHaveBeenCalledTimes(1);
+    expect(hotClientPlugin.debug).toHaveBeenCalledWith('Static content changed: %s', hotClientPlugin.staticContent);
+
+    expect(hotClientPlugin.propagateAll).toHaveBeenCalledTimes(1);
+    expect(hotClientPlugin.propagateAll).toHaveBeenCalledWith('static-changed');
+  });
+
+  test('handlerServerSocketError method', () => {
+    const req = { connection: { remoteAddress: 'MyIP' } }, e = { };
+
+    hotClientPlugin.handlerServerSocketError(req, e);
+
+    expect(hotClientPlugin.debug).toHaveBeenCalledTimes(1);
+    expect(hotClientPlugin.debug).toHaveBeenCalledWith('WebSocket client (%s) error: %O', req.connection.remoteAddress, e);
+  });
+
+  test('handlerServerError method', () => {
+    const e = { };
+
+    hotClientPlugin.handlerServerError(e);
+
+    expect(hotClientPlugin.debug).toHaveBeenCalledTimes(1);
+    expect(hotClientPlugin.debug).toHaveBeenCalledWith('WebSocket server error: %O', e);
+  });
+
+  test('runServer method', () => {
+    hotClientPlugin.runServer();
+
+    const connectionListeners = hotClientPlugin.server.listeners('connection');
+    const errorListeners = hotClientPlugin.server.listeners('error');
+    const listeningListeners = hotClientPlugin.server.listeners('listening');
+
+    expect(hotClientPlugin.debug).toHaveBeenCalledTimes(1);
+    expect(hotClientPlugin.debug).toHaveBeenCalledWith('Starting server on port %s:%d ...', hotClientPlugin.host, hotClientPlugin.port);
+
+    expect(hotClientPlugin.server).toBeInstanceOf(WebSocket.Server);
+    expect(connectionListeners.length).toBe(1);
+    expect(connectionListeners[0]).toBe(hotClientPlugin.handlerServerConnection);
+    expect(errorListeners.length).toBe(1);
+    expect(errorListeners[0]).toBe(hotClientPlugin.handlerServerError);
+    expect(listeningListeners.length).toBe(1);
+    expect(listeningListeners[0]).toBe(hotClientPlugin.handlerServerListening);
+
+    hotClientPlugin.server._server.on('close', () => {
+      setTimeout(process.exit, 1);
+    });
+    hotClientPlugin.server.close();
   });
 });

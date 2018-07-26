@@ -14,9 +14,8 @@ const ip6addr = require('ip6addr');
 const chokidar = require('chokidar');
 const { DefinePlugin, HotModuleReplacementPlugin } = require('webpack');
 
-const debug = require('debug')('hot-client-plugin');
+const debug = require('debug');
 const launchEditor = require('react-dev-utils/launchEditor');
-const { choosePort } = require('react-dev-utils/WebpackDevServerUtils');
 
 class HotClientPlugin {
   constructor (options = {}) {
@@ -45,64 +44,78 @@ class HotClientPlugin {
     this.editorIPRanges = [];
     this.staticContent = staticContent ? path.resolve(staticContent) : false;
 
+    this.handlerServerConnection = this.handlerServerConnection.bind(this);
+    this.handlerServerListening = this.handlerServerListening.bind(this);
+    this.handlerStaticContentChanged = this.handlerStaticContentChanged.bind(this);
+
+    this.launchEditor = launchEditor;
+    this.debug = debug('hot-client-plugin');
+    this.chokidar = chokidar;
+
     this.validateEditorIPs();
     this.preapareEditorIPs();
-    this.runServer();
   }
 
   apply (compiler) {
-    const { watch, entry, plugins } = compiler.options;
+    const { watch, entry } = compiler.options;
     if (!watch) {
       throw Error('HotClientPlugin should be configured in `watch` only mode. Configuration option `watch` should be equal to `true`.');
     }
 
     compiler.options.entry = this.newEntry(entry);
 
+    this.runServer();
+
+    compiler.hooks.afterPlugins.tap('HotClientPlugin', this.handlerAfterPlugins.bind(this));
+    compiler.hooks.compile.tap('HotClientPlugin', this.handlerCompile.bind(this, compiler));
+    compiler.hooks.invalid.tap('HotClientPlugin', this.handlerInvalid.bind(this, compiler));
+    compiler.hooks.done.tap('HotClientPlugin', this.handlerDone.bind(this));
+  }
+
+  handlerAfterPlugins (compiler) {
     // Defining global browser variable to pass host and port for Websocket client
-    compiler.hooks.afterPlugins.tap('HotClientPlugin', compiler => {
-      const definePlugin = new DefinePlugin({
-        __webpackHotClientOptions__: JSON.stringify({
-            https: this.https,
-            host: this.host,
-            port: this.port
-        })
-      });
-      definePlugin.apply(compiler);
-
-      // Automatically adding Hot Module Replacement Plugin if not added
-      const hmrAdded = (plugins || []).some(
-        plugin => plugin instanceof HotModuleReplacementPlugin
-      );
-
-      if (!hmrAdded) {
-        (new HotModuleReplacementPlugin(this.hmr)).apply(compiler);
-      }
+    const definePlugin = new DefinePlugin({
+      __webpackHotClientOptions__: JSON.stringify({
+          https: this.https,
+          host: this.host,
+          port: this.port
+      })
     });
+    definePlugin.apply(compiler);
 
-    compiler.hooks.compile.tap('HotClientPlugin', () => {
-      this.propagateAll('compile', compiler.name || '<unknown compiller>');
-    });
+    // Automatically adding Hot Module Replacement Plugin if not added
+    const hmrAdded = (compiler.options.plugins || []).some(
+      plugin => plugin instanceof HotModuleReplacementPlugin
+    );
 
-    compiler.hooks.invalid.tap('HotClientPlugin', filePath => {
-      const contentBase = compiler.context || compiler.options.context || process.cwd();
-      const file = (filePath || '<unknown>')
-        // Stripping base folder
-        .replace(contentBase, '')
-        // Stripping forwardslash
-        .substring(1);
+    if (!hmrAdded) {
+      (new HotModuleReplacementPlugin(this.hmr)).apply(compiler);
+    }
+  }
 
-      debug('Received webpack invalidation event for file %s', file);
+  handlerCompile (compiler) {
+    this.propagateAll('compile', compiler.name || '<noname compiller>');
+  }
 
-      this.propagateAll('invalid', file);
-    });
+  handlerInvalid (compiler, filePath) {
+    const contentBase = compiler.context || compiler.options.context || process.cwd();
+    const file = (filePath || '<unknown>')
+      // Stripping base folder
+      .replace(contentBase, '')
+      // Stripping forwardslash
+      .substring(1);
 
-    compiler.hooks.done.tap('HotClientPlugin', stats => {
-      // Storing compiler stats for newely connected Websocket clients
-      this.compilerStats = stats.toJson(stats);
+    this.debug('Received webpack invalidation event for file %s', file);
 
-      // Propagating stats to all Websocket clients
-      this.sendStats();
-    });
+    this.propagateAll('invalid', file);
+  }
+
+  handlerDone (stats) {
+    // Storing compiler stats for newely connected Websocket clients
+    this.compilerStats = stats.toJson(stats);
+
+    // Propagating stats to all Websocket clients
+    this.sendStats();
   }
 
   newEntry (entry) {
@@ -140,10 +153,10 @@ class HotClientPlugin {
 
       combinedEntry.splice(insertIndex, 0, this.hotClient);
 
-    } else if (entryType === 'object' && !isArray && entry !== null && !entry.hotClient) {
+    } else if (entryType === 'object' && !isArray && entry !== null) {
       let i = 0, propertyName = 'hotClient';
       while (entry[propertyName]) {
-        propertyName = propertyName + (++i);
+        propertyName = 'hotClient' + (++i);
       }
 
       combinedEntry = Object.assign(entry, { [propertyName]: this.hotClient });
@@ -271,7 +284,7 @@ class HotClientPlugin {
 
     for(let i = 0, sRange,
             containsFirst, containsLast,
-            containsReverseFirst, containsReverseLast; i < this.editorIPRanges.length; i++) {
+            containsReverseFirst, containsReverseLast;i < this.editorIPRanges.length; i++) {
       sRange = this.editorIPRanges[i];
       containsFirst = sRange.range.contains(newRange.first);
       containsLast = sRange.range.contains(newRange.last);
@@ -285,12 +298,10 @@ class HotClientPlugin {
           this.editorIPRanges[i].last = newRange.last;
         }
 
-        if (!containsFirst || !containsLast) {
-          this.editorIPRanges[i].range = ip6addr.createAddrRange(
-            this.editorIPRanges[i].first,
-            this.editorIPRanges[i].last
-          );
-        }
+        this.editorIPRanges[i].range = ip6addr.createAddrRange(
+          this.editorIPRanges[i].first,
+          this.editorIPRanges[i].last
+        );
         return;
       }
 
@@ -319,76 +330,85 @@ class HotClientPlugin {
   }
 
   runServer () {
+    this.debug('Starting server on port %s:%d ...', this.host, this.port);
+
     this.server = new WebSocket.Server({
       host: this.host,
       port: this.port
     });
 
-    this.server.on('connection', (ws, req) => {
-      debug('WebSocket client (%s) is connected', req.connection.remoteAddress);
+    this.server.on('connection', this.handlerServerConnection);
+    this.server.on('error', this.handlerServerError);
+    this.server.on('listening', this.handlerServerListening);
+  }
 
-      ws.on('message', data => {
-        const action = JSON.parse(data);
+  handlerServerConnection (ws, req) {
+    this.debug('WebSocket client (%s) is connected', req.connection.remoteAddress);
 
-        switch (action.type) {
-          case 'launch-editor': {
-            const { fileName, lineNumber, colNumber } = action.data;
-            if (this.editorIPAllowed(req.connection.remoteAddress)) {
-              debug('Launching an editor from %s', req.connection.remoteAddress);
-              launchEditor(fileName, lineNumber, colNumber);
-            } else {
-              debug('Unauthorised editor launch attemp from %s', req.connection.remoteAddress);
-              ws.send(JSON.stringify({ type: 'unauthorised-editor-launch', data: req.connection.remoteAddress }))
-            }
-            break;
-          }
-          default: {
-            debug('unknown message (%s): %O', req.connection.remoteAddress, action);
-            break;
-          }
+    ws.on('message', this.handlerServerSocketMessage.bind(this, ws, req));
+    ws.on('error', this.handlerServerSocketError.bind(null, req));
+
+    if (this.compilerStats) {
+      this.sendStats(ws);
+    }
+  }
+
+  handlerServerSocketMessage (ws, req, data) {
+    const action = JSON.parse(data);
+
+    switch (action.type) {
+      case 'launch-editor': {
+        if (this.editorIPAllowed(req.connection.remoteAddress)) {
+          const { fileName, lineNumber, colNumber } = action.data;
+
+          this.debug('Launching an editor from %s', req.connection.remoteAddress);
+          this.launchEditor(fileName, lineNumber, colNumber);
+        } else {
+          this.debug('Unauthorised editor launch attemp from %s', req.connection.remoteAddress);
+          ws.send(JSON.stringify({ type: 'unauthorised-editor-launch', data: req.connection.remoteAddress }))
         }
-      });
-
-      ws.on('error', e => {
-        debug('WebSocket client (%s) error: %O', req.connection.remoteAddress, e);
-      });
-
-      if (this.compilerStats) {
-        this.sendStats(ws);
+        break;
       }
-    });
-
-    this.server.on('error', e => {
-      debug('WebSocket server error: %O', e);
-    });
-
-    this.server.on('listening', () => {
-      const { address, port } = this.server.address();
-
-      this.host = address;
-      this.port = port;
-
-      debug('WebSocket server listening at %s:%d', this.host, this.port);
-
-      if (this.staticContent) {
-        const watcher = chokidar.watch(this.staticContent);
-        const staticChanged = () => {
-          debug('Static content changed: ' + this.staticContent);
-          this.propagateAll('static-changed');
-        };
-
-        watcher
-          .on('add', staticChanged)
-          .on('addDir', staticChanged)
-          .on('change', staticChanged)
-          .on('unlink', staticChanged)
-          .on('unlinkDir', staticChanged);
+      default: {
+        this.debug('Unknown message (%s): %O', req.connection.remoteAddress, action);
+        break;
       }
+    }
+  }
 
-      process.on('exit', () => {
-        this.server.close()
-      });
-    });
+  handlerServerSocketError (req, e) {
+    this.debug('WebSocket client (%s) error: %O', req.connection.remoteAddress, e);
+  }
+
+  handlerServerError (e) {
+    this.debug('WebSocket server error: %O', e);
+  }
+
+  handlerServerListening () {
+    const { address, port } = this.server.address();
+
+    this.host = address;
+    this.port = port;
+
+    this.debug('WebSocket server listening at %s:%d', this.host, this.port);
+
+    if (this.staticContent) {
+      this.debug('Start watching folder %s', this.staticContent);
+
+      this.contentWatcher = this.chokidar.watch(this.staticContent);
+
+      this.contentWatcher
+        .on('add', this.handlerStaticContentChanged)
+        .on('addDir', this.handlerStaticContentChanged)
+        .on('change', this.handlerStaticContentChanged)
+        .on('unlink', this.handlerStaticContentChanged)
+        .on('unlinkDir', this.handlerStaticContentChanged);
+    }
+  }
+
+  handlerStaticContentChanged () {
+    this.debug('Static content changed: %s', this.staticContent);
+    this.propagateAll('static-changed');
   }
 }
 
