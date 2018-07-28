@@ -20,7 +20,6 @@ const launchEditor = require('react-dev-utils/launchEditor');
 class HotClientPlugin {
   constructor (options = {}) {
     const {
-      useHttps = false,
       host = '0.0.0.0',
       port = 8081,
       hotClient = require.resolve('./HotClient'),
@@ -33,7 +32,6 @@ class HotClientPlugin {
       staticContent = false
     } = options;
 
-    this.https = useHttps;
     this.host = host;
     this.port = port;
     this.hotClient = hotClient;
@@ -62,7 +60,9 @@ class HotClientPlugin {
       throw Error('HotClientPlugin should be configured in `watch` only mode. Configuration option `watch` should be equal to `true`.');
     }
 
-    compiler.options.entry = this.newEntry(entry);
+    if (this.hotClient !== false) {
+      compiler.options.entry = this.newEntry(entry);
+    }
 
     this.runServer();
 
@@ -76,9 +76,8 @@ class HotClientPlugin {
     // Defining global browser variable to pass host and port for Websocket client
     const definePlugin = new DefinePlugin({
       __webpackHotClientOptions__: JSON.stringify({
-          https: this.https,
-          host: this.host,
-          port: this.port
+        host: this.host,
+        port: this.port
       })
     });
     definePlugin.apply(compiler);
@@ -143,7 +142,7 @@ class HotClientPlugin {
       entry.forEach((entry, idx) => {
         // Looking for last polyfill index
         if (entry.indexOf('polyfill') > -1) {
-          insertIndex = idx
+          insertIndex = idx;
         }
       });
 
@@ -246,7 +245,8 @@ class HotClientPlugin {
         throw Error(`Please check option editor.allowedIPs value(s).\nThe IP adress you entered '${ips}' should be valid IPv4 or IPv6 address or CIDR or reserved word 'any'.`);
       }
 
-      if (bitMask && parseInt(bitMask, 10) != bitMask || bitMask < 1 || (ipVersion === 4 && bitMask > 32) || (ipVersion === 6 && bitMask > 128)) {
+      // eslint-disable-next-line
+      if ((bitMask && parseInt(bitMask, 10) != bitMask) || bitMask < 1 || (ipVersion === 4 && bitMask > 32) || (ipVersion === 6 && bitMask > 128)) {
         throw Error(`Please check option editor.allowedIPs value(s).\nBit mask of the network should be an integer between 1 and 32 for IPv4 address or between 1 and 128 for IPv6 address.\nFor instance: 127.0.0.1/32 or ::ffff:c0a8:0001/128\nYou entered ${ips} where bitmask is ${bitMask}.`);
       }
     } else {
@@ -282,9 +282,10 @@ class HotClientPlugin {
       range: ip6addr.createAddrRange( ipRange.first, ipRange.last )
     };
 
-    for(let i = 0, sRange,
-            containsFirst, containsLast,
-            containsReverseFirst, containsReverseLast;i < this.editorIPRanges.length; i++) {
+    for(
+      let i = 0, sRange,
+        containsFirst, containsLast,
+        containsReverseFirst, containsReverseLast; i < this.editorIPRanges.length; i++) {
       sRange = this.editorIPRanges[i];
       containsFirst = sRange.range.contains(newRange.first);
       containsLast = sRange.range.contains(newRange.last);
@@ -365,7 +366,7 @@ class HotClientPlugin {
           this.launchEditor(fileName, lineNumber, colNumber);
         } else {
           this.debug('Unauthorised editor launch attemp from %s', req.connection.remoteAddress);
-          ws.send(JSON.stringify({ type: 'unauthorised-editor-launch', data: req.connection.remoteAddress }))
+          ws.send(JSON.stringify({ type: 'unauthorised-editor-launch', data: req.connection.remoteAddress }));
         }
         break;
       }

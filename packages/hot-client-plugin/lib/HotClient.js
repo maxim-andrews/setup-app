@@ -1,6 +1,5 @@
 /**
- * Copyright (c) partly belongs to Maxim Andrews, maximandrews.com
- * The rest of the Copyright (c) belongs to authors according to notes below
+ * Copyright (c) 2018-present Maxim Andrews, maximandrews.com
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,8 +7,9 @@
 
 'use strict';
 
-// Copyright (c) on the four lines of code below belongs to Facebook, Inc., taken from react-dev-utils/webpackHotDevClient
-// This is alternative WebpackServe hot client
+// Inspired by https://github.com/facebook/create-react-app/blob/master/packages/react-dev-utils/webpackHotDevClient
+// Facebook hot client works with webpackDevServer
+// This client meant to work with WebpackServe and hot-client-plugin
 
 // It only supports their simplest configuration (hot updates on same server).
 // It makes some opinionated choices on top, like adding a syntax error overlay
@@ -21,7 +21,6 @@ var url = require('url');
 var formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
 var ErrorOverlay = require('react-error-overlay');
 
-// Copyright (c) on the code part below belongs to Facebook, Inc., taken from react-dev-utils/webpackHotDevClient
 // We need to keep track of if there has been a runtime error.
 // Essentially, we cannot guarantee application state was not corrupted by the
 // runtime error. To prevent confusing behavior, we forcibly reload the entire
@@ -36,7 +35,6 @@ ErrorOverlay.startReportingRuntimeErrors({
   filename: '/static/js/bundle.js',
 });
 
-// Copyright (c) on the block below belongs to Facebook, Inc., taken from react-dev-utils/webpackHotDevClient
 if (module.hot && typeof module.hot.dispose === 'function') {
   module.hot.dispose(function() {
     // TODO: why do we need this?
@@ -58,7 +56,7 @@ var host = options.host;
 // Connect to WebsocketServerPlugin via a socket.
 var connection = new WebSocket(
   url.format({
-    protocol: options.https ? 'wss' : 'ws',
+    protocol: 'ws',
     hostname: ['*','0.0.0.0'].includes(host) ? window.location.hostname : host,
     port: options.port,
     slashes: true,
@@ -94,13 +92,11 @@ ErrorOverlay.setEditorHandler(function editorHandler(errorLocation) {
   }), () => { alert('sent'); });
 });
 
-// Copyright (c) on the three lines of code below belongs to Facebook, Inc., taken from react-dev-utils/webpackHotDevClient
 // Remember some state related to hot module replacement.
 var isFirstCompilation = true;
 var mostRecentCompilationHash = null;
 var hasCompileErrors = false;
 
-// Copyright (c) on the function below belongs to Facebook, Inc., taken from react-dev-utils/webpackHotDevClient
 function clearOutdatedErrors() {
   // Clean up outdated compile errors, if any.
   if (typeof console !== 'undefined' && typeof console.clear === 'function') {
@@ -110,7 +106,6 @@ function clearOutdatedErrors() {
   }
 }
 
-// Copyright (c) on the function below belongs to Facebook, Inc., taken from react-dev-utils/webpackHotDevClient
 // Successful compilation.
 function handleSuccess() {
   clearOutdatedErrors();
@@ -129,7 +124,6 @@ function handleSuccess() {
   }
 }
 
-// Copyright (c) on the function below belongs to Facebook, Inc., taken from react-dev-utils/webpackHotDevClient
 // Compilation with warnings (e.g. ESLint).
 function handleWarnings(warnings) {
   clearOutdatedErrors();
@@ -175,7 +169,6 @@ function handleWarnings(warnings) {
   }
 }
 
-// Copyright (c) on the function below belongs to Facebook, Inc., taken from react-dev-utils/webpackHotDevClient
 // Compilation with errors (e.g. syntax error or missing modules).
 function handleErrors(errors) {
   clearOutdatedErrors();
@@ -203,7 +196,6 @@ function handleErrors(errors) {
   // We will reload on next success instead.
 }
 
-// Copyright (c) on the function below belongs to Facebook, Inc., taken from react-dev-utils/webpackHotDevClient
 // There is a newer version of the code available.
 function handleAvailableHash(hash) {
   // Update last known compilation hash.
@@ -273,7 +265,7 @@ function unauthorisedEditorLaunch(ipAddress) {
       setTimeout(function() {
         infoDiv.style.display = 'none';
       }, 200);
-    }
+    };
 
     bgDiv = document.createElement('div');
     bgDiv.style.position = 'relative';
@@ -330,7 +322,6 @@ function unauthorisedEditorLaunch(ipAddress) {
   }, 0);
 }
 
-// Copyright (c) on the code below belongs to Facebook, Inc., taken from react-dev-utils/webpackHotDevClient
 // Is there a newer version of this code available?
 function isUpdateAvailable() {
   /* globals __webpack_hash__ */

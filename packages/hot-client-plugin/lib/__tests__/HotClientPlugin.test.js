@@ -1,3 +1,5 @@
+'use strict';
+
 import path from 'path';
 import WebSocket from 'ws';
 import ip6addr from 'ip6addr';
@@ -16,6 +18,14 @@ describe('HotClientPlugin', () => {
   });
 
   test('Constructor test', () => {
+    delete hotClientPlugin.host;
+    delete hotClientPlugin.port;
+    delete hotClientPlugin.hotClient;
+    delete hotClientPlugin.hmr;
+    delete hotClientPlugin.errors;
+    delete hotClientPlugin.warnings;
+    delete hotClientPlugin.editor;
+    delete hotClientPlugin.staticContent;
 
     hotClientPlugin.validateEditorIPs = jest.fn();
     hotClientPlugin.preapareEditorIPs = jest.fn();
@@ -23,7 +33,6 @@ describe('HotClientPlugin', () => {
 
     hotClientPlugin.constructor();
 
-    expect(hotClientPlugin.https).toBe(false);
     expect(hotClientPlugin.host).toBe('0.0.0.0');
     expect(hotClientPlugin.port).toBe(8081);
     expect(hotClientPlugin.hotClient).toBe(require.resolve('../HotClient'));
@@ -273,23 +282,28 @@ describe('HotClientPlugin', () => {
 
     test('to all', () => {
       const clients = hotClientPlugin.server.clients;
+
       hotClientPlugin.propagateAll('none', 'some data');
+
+      expect(HotClientPlugin.propagate).toHaveBeenCalledTimes(5);
+
       expect(HotClientPlugin.propagate).toHaveBeenNthCalledWith(1, clients[0], 'none', 'some data');
       expect(HotClientPlugin.propagate).toHaveBeenNthCalledWith(2, clients[2], 'none', 'some data');
       expect(HotClientPlugin.propagate).toHaveBeenNthCalledWith(3, clients[4], 'none', 'some data');
       expect(HotClientPlugin.propagate).toHaveBeenNthCalledWith(4, clients[6], 'none', 'some data');
       expect(HotClientPlugin.propagate).toHaveBeenNthCalledWith(5, clients[8], 'none', 'some data');
-      expect(HotClientPlugin.propagate).toHaveBeenCalledTimes(5)
     });
 
     test('to all but one', () => {
       const clients = hotClientPlugin.server.clients;
+
       hotClientPlugin.propagateAll('none', 'some data', clients[4]);
+
+      expect(HotClientPlugin.propagate).toHaveBeenCalledTimes(4);
       expect(HotClientPlugin.propagate).toHaveBeenNthCalledWith(1, clients[0], 'none', 'some data');
       expect(HotClientPlugin.propagate).toHaveBeenNthCalledWith(2, clients[2], 'none', 'some data');
       expect(HotClientPlugin.propagate).toHaveBeenNthCalledWith(3, clients[6], 'none', 'some data');
       expect(HotClientPlugin.propagate).toHaveBeenNthCalledWith(4, clients[8], 'none', 'some data');
-      expect(HotClientPlugin.propagate).toHaveBeenCalledTimes(4)
     });
   });
 
@@ -750,6 +764,32 @@ describe('HotClientPlugin', () => {
       hotClientPlugin.apply(compiler);
 
       expect(hotClientPlugin.newEntry).toHaveBeenCalledWith(undefined);
+      expect(hotClientPlugin.runServer).toHaveBeenCalled();
+      expect(compiler.hooks.afterPlugins.tap).toHaveBeenCalled();
+      expect(compiler.hooks.compile.tap).toHaveBeenCalled();
+      expect(compiler.hooks.invalid.tap).toHaveBeenCalled();
+      expect(compiler.hooks.done.tap).toHaveBeenCalled();
+    });
+
+    test('watching without client', () => {
+      const compiler = {
+        options: { watch: true },
+        hooks: {
+          afterPlugins: { tap: jest.fn() },
+          compile:  { tap: jest.fn() },
+          invalid: { tap: jest.fn() },
+          done: { tap: jest.fn() }
+        }
+      };
+
+      hotClientPlugin.hotClient = false;
+
+      hotClientPlugin.newEntry = jest.fn();
+      hotClientPlugin.runServer = jest.fn();
+
+      hotClientPlugin.apply(compiler);
+
+      expect(hotClientPlugin.newEntry).not.toHaveBeenCalled();
       expect(hotClientPlugin.runServer).toHaveBeenCalled();
       expect(compiler.hooks.afterPlugins.tap).toHaveBeenCalled();
       expect(compiler.hooks.compile.tap).toHaveBeenCalled();
