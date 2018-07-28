@@ -208,7 +208,7 @@ An absolute path to a static content folder (assets like index.html, favicon, im
 
 ## Contributing
 
-We'd love to have your helping hand on `hot-client-plugin`! See [CONTRIBUTING.md](CONTRIBUTING.md) for more information on what we're looking for and how to get started.
+We'd love to have your helping hand on `hot-client-plugin`! See [CONTRIBUTING.md](https://github.com/maxim-andrews/hot-client-plugin/blob/master/.github/CONTRIBUTING.md) for more information on what we're looking for and how to get started.
 
 ## License
 
