@@ -241,7 +241,7 @@ Hot Client Plugin is open source software [licensed as MIT](https://github.com/m
 [peerDeps]: https://david-dm.org/maxim-andrews/hot-client-plugin/peer-status.svg
 [peerDeps-url]: https://david-dm.org/maxim-andrews/hot-client-plugin?type=peer
 
-[npm-badge]: https://nodei.co/npm/hot-client-plugin.png
+[npm-badge]: https://nodei.co/npm/hot-client-plugin.png?downloads=true&downloadRank=true&stars=true
 
 [size]: https://packagephobia.now.sh/badge?p=hot-client-plugin
 [size-url]: https://packagephobia.now.sh/result?p=hot-client-plugin
