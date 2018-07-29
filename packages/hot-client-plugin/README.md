@@ -139,14 +139,14 @@ The port of the WebSocket server.
 #### hotClient
 
 Type: `String`
-Default: `require.resolve('./HotClient')`
+Default: `require.resolve('hot-client-plugin/lib/HotClient')`
 
 #### hmr
 
 Type: `Object|undefined`
 Default: `undefined`
 
-The settings object for `webpack.HotModuleReplacementPlugin` plugin. Will be passed to constructor.
+The optional settings object for `webpack.HotModuleReplacementPlugin` plugin. Will be passed to constructor.
 
 #### errors
 
