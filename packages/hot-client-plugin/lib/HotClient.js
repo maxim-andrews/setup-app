@@ -313,7 +313,7 @@ function unauthorisedEditorLaunch(ipAddress) {
     msgSpan = document.getElementById('__webpack_hot_dev_msg_span__');
   }
 
-  msgSpan.innerHTML = `Your machine IP address '${ipAddress}' is not allowed to launch an editor on the host machine.`;
+  msgSpan.innerHTML = `Your device IP address '${ipAddress}' is not allowed to launch an editor on the host machine.`;
   msgDiv.style.width = document.body.clientWidth > 640 ? '40%' : '95%';
   infoDiv.style.opacity = 0;
   infoDiv.style.display = 'block';
