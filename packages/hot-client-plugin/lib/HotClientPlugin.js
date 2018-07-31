@@ -277,10 +277,9 @@ class HotClientPlugin {
   }
 
   addEditorIPRange (ipRange) {
-    const newRange = {
-      ...ipRange,
+    const newRange = Object.assign(ipRange, {
       range: ip6addr.createAddrRange( ipRange.first, ipRange.last )
-    };
+    });
 
     for(
       let i = 0, sRange,

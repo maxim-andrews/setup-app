@@ -42,7 +42,7 @@ If something doesn't work, please [file an issue](https://github.com/maxim-andre
 The [only browsers](https://caniuse.com/#feat=websockets) with support of *native* **WebSocket** will work with this plugin.
 
 ## Requirements
-This plugin requires a minimum of Node.js v8.11.3, Webpack v4.0.0 and [WebpackServe](https://github.com/webpack-contrib/webpack-serve).
+This plugin requires a minimum of Node.js v6.9.0, Webpack v4.0.0 and [WebpackServe](https://github.com/webpack-contrib/webpack-serve).
 
 ## Installation
 **You’ll need to have Node >= 8 on your local development machine** (but it’s not required on the server). You can use [nvm](https://github.com/creationix/nvm#installation) (macOS/Linux) or [nvm-windows](https://github.com/coreybutler/nvm-windows#node-version-manager-nvm-for-windows) to easily switch Node versions between different projects.
