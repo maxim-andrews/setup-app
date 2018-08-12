@@ -46,7 +46,6 @@
     "eslint-plugin-flowtype": "^2.50.0",
     "eslint-plugin-import": "^2.13.0",
     "jest": "^23.4.1",
-    "killable": "^1.0.0",
     "webpack": "^4.16.3"
   },
   "dependencies": {
