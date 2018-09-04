@@ -52,7 +52,7 @@
     "chokidar": "^2.0.4",
     "debug": "^3.1.0",
     "ip6addr": "^0.2.2",
-    "react-dev-utils": "^6.0.0-next.b2fd8db8",
+    "react-dev-utils": "^6.0.0-next.a671462c",
     "react-error-overlay": "^5.0.0-next.a671462c",
     "ws": "^6.0.0"
   },
