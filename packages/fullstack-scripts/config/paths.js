@@ -14,6 +14,7 @@ const url = require('url');
 // https://github.com/facebookincubator/create-react-app/issues/637
 const appDirectory = fs.realpathSync(process.cwd());
 const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
+const appPkgJsn = require(resolveApp('package.json'));
 
 const envPublicUrl = process.env.PUBLIC_URL;
 
@@ -28,8 +29,8 @@ function ensureSlash(path, needsSlash) {
   }
 }
 
-const getPublicUrl = appPackageJson =>
-  envPublicUrl || require(appPackageJson).homepage;
+const getPublicUrl = appPkgJsn =>
+  envPublicUrl || appPkgJsn.homepage;
 
 // We use `PUBLIC_URL` environment variable or "homepage" field to infer
 // "public path" at which the app is served.
@@ -37,8 +38,8 @@ const getPublicUrl = appPackageJson =>
 // single-page apps that may serve index.html for nested URLs like /todos/42.
 // We can't use a relative path in HTML because we don't want to load something
 // like /todos/42/static/js/bundle.7289d.js. We have to know the root.
-function getServedPath(appPackageJson) {
-  const publicUrl = getPublicUrl(appPackageJson);
+function getServedPath(appPkgJsn) {
+  const publicUrl = getPublicUrl(appPkgJsn);
   const servedUrl =
     envPublicUrl || (publicUrl ? url.parse(publicUrl).pathname : '/');
   return ensureSlash(servedUrl, true);
@@ -47,7 +48,7 @@ function getServedPath(appPackageJson) {
 const resolveOwn = relativePath => path.resolve(__dirname, '..', relativePath);
 
 // we're in ./node_modules/fullstack-scripts/config/
-module.exports = {
+const paths = {
   dotenv: resolveApp('.env'),
   appPath: resolveApp('.'),
   appBuild: resolveApp('build'),
@@ -59,8 +60,18 @@ module.exports = {
   yarnLockFile: resolveApp('yarn.lock'),
   testsSetup: resolveApp('src/setupTests.js'),
   appNodeModules: resolveApp('node_modules'),
-  publicUrl: getPublicUrl(resolveApp('package.json')),
-  servedPath: getServedPath(resolveApp('package.json')),
+  publicUrl: getPublicUrl(appPkgJsn),
+  servedPath: getServedPath(appPkgJsn),
   ownPath: resolveOwn('.'),
   ownNodeModules: resolveOwn('node_modules'), // This is empty on npm 3
 };
+
+if (appPkgJsn.serverSideRendering) {
+  const ssrCfg = appPkgJsn.serverSideRendering;
+
+  paths.appBuild = resolveApp(ssrCfg.client || 'build/client');
+  paths.appBuildSsr = resolveApp(ssrCfg.buildPath || 'build/ssr');
+  paths.appSsrIndexJs = resolveApp(ssrCfg.srcPath || 'src/server.side.renderer.js');
+}
+
+module.exports = paths;

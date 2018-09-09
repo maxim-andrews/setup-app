@@ -9,6 +9,7 @@
 const fs = require('fs');
 const path = require('path');
 const proxy = require('koa-proxy');
+const compress = require('koa-compress');
 const serveStatic = require('koa-static');
 const ignoredFiles = require('react-dev-utils/ignoredFiles');
 const noopServiceWorkerMiddleware = require('noop-service-worker-middleware');
@@ -18,15 +19,19 @@ const paths = require('./paths');
 const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
 const host = process.env.HOST || '0.0.0.0';
 
-const appSrc = (paths.appSrc || fs.realpathSync(path.join(__dirname, '..', 'src')));
-const serverPath = path.join(appSrc, 'server.js');
+const CWD = process.cwd();
+const appSrc = (paths.appSrc || fs.realpathSync(path.join(CWD, 'src')));
+const appPkgJsn = require(paths.appPackageJson);
 
-let serverRouter;
+let appBackend = () => '';
 
-try {
-  serverRouter = require(serverPath);
-} catch (e) {
-  serverRouter = false;
+if (appPkgJsn.appBackend) {
+  try {
+    appBackend = require(fs.realpathSync(path.join(CWD, appPkgJsn.appBackend || 'server/setup')));
+  } catch (e) {
+    console.log(e);
+    process.exit(0);
+  }
 }
 
 module.exports = function(port, compiler, proxyConfig) {
@@ -84,15 +89,6 @@ module.exports = function(port, compiler, proxyConfig) {
     host,
     port,
     add(app, middleware) {
-      // if we have backend then we add proxy and historyApiFallback to router instead of paths.
-      const proxyRouter = serverRouter || app;
-
-      // if backend router exists we should added it
-      if (serverRouter) {
-        app.use(proxyRouter.routes());
-        app.use(proxyRouter.allowedMethods());
-      }
-
       // This service worker file is effectively a 'no-op' that will reset any
       // previous service worker registered for the same host:port combination.
       // We do this in development to avoid hitting the production cache if
@@ -100,12 +96,18 @@ module.exports = function(port, compiler, proxyConfig) {
       // https://github.com/facebookincubator/create-react-app/issues/2272#issuecomment-302832432
       app.use(noopServiceWorkerMiddleware());
 
+      // compressed output
+      app.use(compress());
+
       // serving custom static as default webpack-serve option doesn't work well
       app.use(serveStatic(paths.appPublic, { defer: true }));
 
+      // if backend exists we should apply it
+      appBackend(app, compiler);
+
       if (proxyConfig) {
         // Enable proxy server for different requests
-        proxyRouter.use(proxy(proxyConfig));
+        app.use(proxy(proxyConfig));
       }
 
       // since we're manipulating the order of middleware added, we need to handle
