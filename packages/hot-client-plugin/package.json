@@ -1,6 +1,6 @@
 {
   "name": "hot-client-plugin",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "A webpack plugin (websocket server/client) for interacting with Hot Module Replacement plugin",
   "main": "lib/HotClientPlugin.js",
   "directories": {
