@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "chokidar": "^2.0.4",
-    "debug": "^3.2.5",
+    "debug": "^4.0.1",
     "ip6addr": "^0.2.2",
     "react-dev-utils": "=6.0.0-next.a671462c",
     "react-error-overlay": "^5.0.0-next.b2fd8db8",
