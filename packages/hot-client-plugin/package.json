@@ -37,23 +37,23 @@
   },
   "homepage": "https://github.com/maxim-andrews/hot-client-plugin#readme",
   "devDependencies": {
-    "@babel/core": "^7.0.0",
+    "@babel/core": "^7.0.1",
     "@babel/preset-env": "^7.0.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^9.0.0",
-    "babel-jest": "^23.4.2",
+    "babel-jest": "^23.6.0",
     "eslint": "^5.5.0",
     "eslint-plugin-flowtype": "^2.50.0",
     "eslint-plugin-import": "^2.14.0",
-    "jest": "^23.5.0",
-    "webpack": "^4.17.2"
+    "jest": "^23.6.0",
+    "webpack": "^4.19.0"
   },
   "dependencies": {
     "chokidar": "^2.0.4",
-    "debug": "^3.1.0",
+    "debug": "^3.2.5",
     "ip6addr": "^0.2.2",
     "react-dev-utils": "=6.0.0-next.a671462c",
-    "react-error-overlay": "^5.0.0-next.a671462c",
+    "react-error-overlay": "^5.0.0-next.b2fd8db8",
     "ws": "^6.0.0"
   },
   "peerDependencies": {
