@@ -30,31 +30,31 @@
     "websocket",
     "plugin"
   ],
-  "author": "Maxim Andrews <all.git@valutas.info> (http://maximandrews.com)",
+  "author": "Maxim Andrews <maximandrewz@users.noreply.github.com> (http://maximandrews.com)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/maxim-andrews/hot-client-plugin/issues"
   },
   "homepage": "https://github.com/maxim-andrews/hot-client-plugin#readme",
   "devDependencies": {
-    "@babel/core": "^7.0.1",
-    "@babel/preset-env": "^7.0.0",
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
     "babel-core": "^7.0.0-bridge.0",
-    "babel-eslint": "^9.0.0",
+    "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
-    "eslint": "^5.5.0",
-    "eslint-plugin-flowtype": "^2.50.0",
+    "eslint": "^5.6.1",
+    "eslint-plugin-flowtype": "^2.50.3",
     "eslint-plugin-import": "^2.14.0",
     "jest": "^23.6.0",
-    "webpack": "^4.19.0"
+    "webpack": "^4.20.2"
   },
   "dependencies": {
     "chokidar": "^2.0.4",
-    "debug": "^4.0.1",
+    "debug": "^4.1.0",
     "ip6addr": "^0.2.2",
-    "react-dev-utils": "=6.0.0-next.a671462c",
-    "react-error-overlay": "^5.0.0-next.b2fd8db8",
-    "ws": "^6.0.0"
+    "react-dev-utils": "^6.0.4",
+    "react-error-overlay": "^5.0.4",
+    "ws": "^6.1.0"
   },
   "peerDependencies": {
     "webpack": "^4.0.0"
