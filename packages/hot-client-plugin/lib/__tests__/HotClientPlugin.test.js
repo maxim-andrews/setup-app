@@ -1137,7 +1137,7 @@ describe('HotClientPlugin', () => {
     const listeningListeners = hotClientPlugin.server.listeners('listening');
 
     expect(hotClientPlugin.debug).toHaveBeenCalledTimes(1);
-    expect(hotClientPlugin.debug).toHaveBeenCalledWith('Starting server on port %s:%d ...', hotClientPlugin.host, hotClientPlugin.port);
+    expect(hotClientPlugin.debug).toHaveBeenCalledWith('Starting server at %s on port %d ...', hotClientPlugin.host, hotClientPlugin.port);
 
     expect(hotClientPlugin.server).toBeInstanceOf(WebSocket.Server);
     expect(connectionListeners.length).toBe(1);

@@ -9,6 +9,8 @@
 
 const net = require('net');
 const path = require('path');
+const http = require('http');
+const https = require('https');
 const WebSocket = require('ws');
 const ip6addr = require('ip6addr');
 const chokidar = require('chokidar');
@@ -29,7 +31,8 @@ class HotClientPlugin {
       editor = {
         allowedIPs: '127.0.0.1'
       },
-      staticContent = false
+      staticContent = false,
+      https = false
     } = options;
 
     this.host = host;
@@ -41,6 +44,7 @@ class HotClientPlugin {
     this.editor = editor;
     this.editorIPRanges = [];
     this.staticContent = staticContent ? path.resolve(staticContent) : false;
+    this.https = https;
 
     this.handlerServerConnection = this.handlerServerConnection.bind(this);
     this.handlerServerListening = this.handlerServerListening.bind(this);
@@ -330,12 +334,22 @@ class HotClientPlugin {
   }
 
   runServer () {
-    this.debug('Starting server on port %s:%d ...', this.host, this.port);
+    this.debug('Starting server at %s on port %d ...', this.host, this.port);
 
-    this.server = new WebSocket.Server({
+    const httpsOpts = this.https
+                      && typeof this.https === 'object'
+                      && this.https !== null
+                      && Object.keys(this.https).length > 0;
+
+    const serverOpts = Object.assign({
       host: this.host,
       port: this.port
-    });
+    }, httpsOpts ? this.https : {});
+
+    // TODO write tests & update README.md for this part of the code
+    const server = (this.https ? https : http).createServer(serverOpts);
+
+    this.server = new WebSocket.Server({ server });
 
     this.server.on('connection', this.handlerServerConnection);
     this.server.on('error', this.handlerServerError);
