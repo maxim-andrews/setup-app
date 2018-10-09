@@ -6,6 +6,7 @@
  */
 'use strict';
 
+const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const HotClientPlugin = require('hot-client-plugin');
@@ -31,6 +32,8 @@ const publicUrl = '';
 const env = getClientEnvironment(publicUrl);
 // parsed package.json file
 const pkgJsn = require(paths.appPackageJson);
+
+const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
 
 // This is the development configuration.
 // It is focused on developer experience and fast rebuilds.
@@ -211,7 +214,7 @@ module.exports = {
     // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
     // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
     // In development, this will be an empty string.
-    new InterpolateHtmlPlugin(env.raw),
+    new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
     // Add module names to factory functions so they appear in browser profiler.
     new webpack.NamedModulesPlugin(),
     // Makes some environment variables available to the JS code, for example:
@@ -220,7 +223,20 @@ module.exports = {
     // This is necessary to apply hot updates
     new HotClientPlugin({
       staticContent: paths.appPublic,
-      editor: { allowedIPs: '127.0.0.1' }
+      editor: { allowedIPs: '127.0.0.1' },
+      // Enable HTTPS if the HTTPS environment variable is set to 'true'
+      https: protocol === 'https' ? Object.assign(
+        {
+          passphrase: process.env.HTTPS_PASSPHRASE // A shared passphrase used for a single private key and/or a PFX.
+        },
+        process.env.HTTPS_KEY_PATH && process.env.HTTPS_CERT_PATH ? {
+          key: fs.readFileSync(process.env.HTTPS_KEY_PATH), // Private keys in PEM format.
+          cert: fs.readFileSync(process.env.HTTPS_CERT_PATH), // Cert chains in PEM format.
+        } : {},
+        process.env.HTTPS_PFX ? {
+          pfx: process.env.HTTPS_PFX, // PFX or PKCS12 encoded private key and certificate chain.
+        } : {}
+      ) : null
     }),
     // Watcher doesn't work well if you mistype casing in a path so we use
     // a plugin that prints an error when you attempt to do this.

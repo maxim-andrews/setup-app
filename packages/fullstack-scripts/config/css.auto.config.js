@@ -25,8 +25,6 @@ const BROWSERSLIST = {
   ]
 };
 
-let DEPENDENCIES = {};
-
 /*
   The configuration here is somewhat confusing.
   "postcss" loader applies autoprefixer or nextcss to our CSS.
@@ -143,14 +141,14 @@ class CSSAutoConfig {
         minimize: process.env.NODE_ENV === 'production',
         // sourceMap: process.env.NODE_ENV === 'development'
       },
-    }
+    };
   }
 
   cssConfig () {
     const loaders = this.installedLoaders() || [];
     const extensions = loaders.reduce((exts, loader) => exts.concat(LOADERS[loader]), EXT);
     const useLoaders = [
-      process.env.NODE_ENV !== 'production' ? require.resolve('style-loader') : require('mini-css-extract-plugin').loader
+      process.env.NODE_ENV !== 'production' && !process.env.CUSTOM_ENV ? require.resolve('style-loader') : require('mini-css-extract-plugin').loader
     ];
 
     useLoaders.push(CSSAutoConfig.cssLoaderConfig(loaders.length + 1));
@@ -161,7 +159,7 @@ class CSSAutoConfig {
     return {
       test: new RegExp(`\\.(${ extensions.join('|') })$`),
       use: useLoaders
-    }
+    };
   }
 }
 

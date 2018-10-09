@@ -11,6 +11,7 @@ const path = require('path');
 const proxy = require('koa-proxy');
 const compress = require('koa-compress');
 const serveStatic = require('koa-static');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ignoredFiles = require('react-dev-utils/ignoredFiles');
 const noopServiceWorkerMiddleware = require('noop-service-worker-middleware');
 const config = require('./webpack.config.dev');
@@ -20,7 +21,6 @@ const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
 const host = process.env.HOST || '0.0.0.0';
 
 const CWD = process.cwd();
-const appSrc = (paths.appSrc || fs.realpathSync(path.join(CWD, 'src')));
 const appPkgJsn = require(paths.appPackageJson);
 
 let appBackend = () => '';
@@ -80,12 +80,18 @@ module.exports = function(port, compiler, proxyConfig) {
       index: path.basename(paths.appHtml)
     },
     // Enable HTTPS if the HTTPS environment variable is set to 'true'
-    https: protocol === 'https' ? {
-      key: fs.readFileSync(process.env.HTTPS_KEY_PATH), // Private keys in PEM format.
-      cert: fs.readFileSync(process.env.HTTPS_CERT_PATH), // Cert chains in PEM format.
-      pfx: process.env.HTTPS_PFX, // PFX or PKCS12 encoded private key and certificate chain.
-      passphrase: process.env.HTTPS_PASSPHRASE // A shared passphrase used for a single private key and/or a PFX.
-    } : null,
+    https: protocol === 'https' ? Object.assign(
+      {
+        passphrase: process.env.HTTPS_PASSPHRASE // A shared passphrase used for a single private key and/or a PFX.
+      },
+      process.env.HTTPS_KEY_PATH && process.env.HTTPS_CERT_PATH ? {
+        key: fs.readFileSync(process.env.HTTPS_KEY_PATH), // Private keys in PEM format.
+        cert: fs.readFileSync(process.env.HTTPS_CERT_PATH), // Cert chains in PEM format.
+      } : {},
+      process.env.HTTPS_PFX ? {
+        pfx: process.env.HTTPS_PFX, // PFX or PKCS12 encoded private key and certificate chain.
+      } : {}
+    ) : null,
     host,
     port,
     add(app, middleware) {
@@ -103,7 +109,7 @@ module.exports = function(port, compiler, proxyConfig) {
       app.use(serveStatic(paths.appPublic, { defer: true }));
 
       // if backend exists we should apply it
-      appBackend(app, compiler);
+      appBackend(app, compiler, HtmlWebpackPlugin);
 
       if (proxyConfig) {
         // Enable proxy server for different requests
