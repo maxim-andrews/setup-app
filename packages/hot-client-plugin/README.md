@@ -22,7 +22,7 @@
 [![Hits Counter][hits]][hits-url]
 
 # Hot Client Plugin
-A [webpack 4](https://github.com/webpack/webpack) plugin (websocket server/client) for interacting with webpack Hot Module Replacement plugin. It replaces `webpack-serve` built-in opinionated `webpack-hot-client`.
+A [webpack 4](https://github.com/webpack/webpack) plugin (websocket server/client) to complete Hot Module Replacement. It replaces `webpack-serve` built-in opinionated `webpack-hot-client`.
 
 Helps to improve productivity by dynamically applying webpack updates and:
 * showing compiler and app errors across all browsers and consoles (DevTools etc) in which app is opened;
