@@ -1147,9 +1147,6 @@ describe('HotClientPlugin', () => {
     expect(listeningListeners.length).toBe(1);
     expect(listeningListeners[0]).toBe(hotClientPlugin.handlerServerListening);
 
-    hotClientPlugin.server._server.on('close', () => {
-      setTimeout(process.exit, 1);
-    });
-    hotClientPlugin.server.close();
+    hotClientPlugin.rawServer.close();
   });
 });

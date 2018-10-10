@@ -347,15 +347,15 @@ class HotClientPlugin {
     }, httpsOpts ? this.https : {});
 
     // TODO write tests & update README.md for this part of the code
-    const server = (this.https ? https : http).createServer(serverOpts);
+    this.rawServer = (this.https ? https : http).createServer(serverOpts);
 
-    this.server = new WebSocket.Server({ server });
+    this.server = new WebSocket.Server({ server: this.rawServer });
 
     this.server.on('connection', this.handlerServerConnection);
     this.server.on('error', this.handlerServerError);
     this.server.on('listening', this.handlerServerListening);
 
-    server.listen(this.port);
+    this.rawServer.listen(this.port);
   }
 
   handlerServerConnection (ws, req) {
