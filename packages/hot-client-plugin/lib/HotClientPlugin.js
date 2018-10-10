@@ -354,6 +354,8 @@ class HotClientPlugin {
     this.server.on('connection', this.handlerServerConnection);
     this.server.on('error', this.handlerServerError);
     this.server.on('listening', this.handlerServerListening);
+
+    server.listen(this.port);
   }
 
   handlerServerConnection (ws, req) {
