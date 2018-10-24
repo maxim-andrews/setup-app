@@ -1,2 +1,2 @@
 # ssr-serve-plugin
-A webpack plugin to serve front-end with koa.js works together with webpack-koa-server
+A webpack plugin to serve server side rendered content with koa.js. Works with `webpack-koa-server`.
