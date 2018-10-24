@@ -27,6 +27,13 @@ const escapeStringRegexp = require('escape-string-regexp');
 const openBrowser = require('react-dev-utils/openBrowser');
 const noopServiceWorkerMiddleware = require('noop-service-worker-middleware');
 
+/*
+ TODO
+ 1) Integrate hot-client-plugin;
+ 2) Boilerplate picker;
+ 3) Write tests.
+*/
+
 class WebpackKoaServer extends EventEmitter {
   constructor (options = {}) {
     super();
@@ -39,6 +46,7 @@ class WebpackKoaServer extends EventEmitter {
       ssl = false, // { key, cert, pfx, passphrase }
       protocol = 'http', // http | http2
       content = [],
+      watchRestart = [],
       open = true,
       appName = 'website',
       proxy = false, // { proxy config }
@@ -51,6 +59,7 @@ class WebpackKoaServer extends EventEmitter {
     this.defaultPort = port;
     this.open = open;
     this.content = typeof content === 'string' && content.length ? [content] : content;
+    this.watchRestart = typeof watchRestart === 'string' && watchRestart.length ? [watchRestart] : watchRestart;
     this.appName = appName;
     this.proxy = proxy;
     this.addMiddleware = addMiddleware;
@@ -90,10 +99,7 @@ class WebpackKoaServer extends EventEmitter {
     this.middlewareList = {};
 
     // register listeners
-    this.once('start-server', () => {
-      this.refreshTemplate();
-      this.startServer();
-    });
+    this.once('start-server', this.run.bind(this));
 
     this.on('load-template', this.loadTemplate.bind(this));
     this.on('refresh-template', this.refreshTemplate.bind(this));
@@ -103,10 +109,6 @@ class WebpackKoaServer extends EventEmitter {
 
     this.on('compilation-invalid', this.compilationInvalid.bind(this));
     this.on('compilation-done', this.compilationDone.bind(this));
-
-    this.templateWatcher = this.chokidar
-      .watch( this.template, { ignored: /(^|[/\\])\../ })
-      .on('change', this.loadTemplate.bind(this));
   }
 
   registerPlugin (plugin) {
@@ -152,6 +154,27 @@ class WebpackKoaServer extends EventEmitter {
     } while (this.plugins[randId]);
 
     return randId;
+  }
+
+  async run () {
+    this.refreshTemplate();
+    await this.startServer();
+
+    this.templateWatcher = this.chokidar
+      .watch( this.template, { ignored: /(^|[/\\])\../ })
+      .on('change', this.loadTemplate.bind(this));
+
+    if (!Array.isArray(this.watchRestart)) {
+      return false;
+    }
+
+    this.restartWatchers = this.chokidar
+      .watch( this.watchRestart, { ignored: /(^|[/\\])\../ } )
+      .on('add', this.reStartServer.bind(this))
+      .on('change', this.reStartServer.bind(this))
+      .on('unlink', this.reStartServer.bind(this))
+      .on('addDir', this.reStartServer.bind(this))
+      .on('unlinkDir', this.reStartServer.bind(this));
   }
 
   compilationInvalid (pluginId) {
@@ -338,9 +361,17 @@ class WebpackKoaServer extends EventEmitter {
     });
   }
 
-  reStartServer () {
+  async reStartServer () {
+    if (this.restartingServer) {
+      return false;
+    }
+
+    this.restartingServer = true;
+
     if (!this.rawServer) {
-      return this.startServer();
+      await this.startServer();
+      this.restartingServer = false;
+      return true;
     }
 
     if (this.isInteractive) {
@@ -348,8 +379,9 @@ class WebpackKoaServer extends EventEmitter {
     }
     console.log('Restarting WebpackKoaServer...');
 
-    this.rawServer.close(() => {
-      this.startServer();
+    this.rawServer.close(async () => {
+      await this.startServer();
+      this.restartingServer = false;
     });
   }
 
