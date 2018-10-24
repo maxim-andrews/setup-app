@@ -1,6 +1,6 @@
 {
   "name": "front-serve-plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A webpack4 plugin to serve front-end with koa.js. Works with webpack-koa-server.",
   "main": "lib/FrontServePlugin.js",
   "scripts": {
