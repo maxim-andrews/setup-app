@@ -16,7 +16,6 @@ const fs = require('fs');
 const c = require('chalk');
 const url = require('url');
 const path = require('path');
-const debug = require('debug');
 const address = require('address');
 const chokidar = require('chokidar');
 const inquirer = require('inquirer');
@@ -75,7 +74,6 @@ class WebpackKoaServer extends EventEmitter {
     this.clearConsoleCode = process.platform === 'win32' ? '\x1B[2J\x1B[0f' : '\x1B[2J\x1B[3J\x1B[H';
     this.isFirstCompile = true;
 
-    this.debug = debug('webpack-server');
     this.chokidar = chokidar;
 
     this.plugins = {};
@@ -92,7 +90,10 @@ class WebpackKoaServer extends EventEmitter {
     this.middlewareList = {};
 
     // register listeners
-    this.once('start-server', this.startServer.bind(this));
+    this.once('start-server', () => {
+      this.refreshTemplate();
+      this.startServer();
+    });
 
     this.on('load-template', this.loadTemplate.bind(this));
     this.on('refresh-template', this.refreshTemplate.bind(this));
@@ -154,9 +155,14 @@ class WebpackKoaServer extends EventEmitter {
   }
 
   compilationInvalid (pluginId) {
+    const newCompilation = !this.compiling.length;
     const idx = this.compiling.indexOf(pluginId);
     if (idx === -1) {
       this.compiling.push(pluginId);
+    }
+
+    if (!newCompilation) {
+      return;
     }
 
     if (this.isInteractive) {
@@ -165,7 +171,7 @@ class WebpackKoaServer extends EventEmitter {
     console.log('Compiling...');
   }
 
-  compilationDone (pluginId, messages) {
+  async compilationDone (pluginId, messages) {
     const idx = this.compiling.indexOf(pluginId);
     if (idx > -1) {
       this.compiling.splice(idx, 1);
@@ -176,6 +182,8 @@ class WebpackKoaServer extends EventEmitter {
     this.allStats.messages[pluginId] = messages;
 
     if (this.compiling.length === 0) {
+      // Wait until server will start
+      await this.waitForServer();
       this.flushStats();
       this.emit('all-compilled');
     }
@@ -301,6 +309,16 @@ class WebpackKoaServer extends EventEmitter {
     this.emit('template-updated', this.templateHtml);
   }
 
+  async waitForTemplate () {
+    if (!this.templateUpdateQueue.length) {
+      return Promise.resolve();
+    }
+
+    return new Promise(resolve => {
+      this.once('template-updated', resolve);
+    });
+  }
+
   appendMiddleware (middleware, priority) {
     while (this.middlewareList[priority]) {
       priority++;
@@ -365,14 +383,16 @@ class WebpackKoaServer extends EventEmitter {
       });
     }
 
-    if (typeof this.proxy === 'object' && Object.keys(this.proxy).length > 0) {
-      this.koa.use(proxy(this.proxy));
-    }
+    this.koa.use(this.indexPageMiddleware.bind(this));
 
     this.applyMiddleware();
 
     if (typeof this.addMiddleware === 'function') {
       this.addMiddleware(this.koa);
+    }
+
+    if (typeof this.proxy === 'object' && Object.keys(this.proxy).length > 0) {
+      this.koa.use(proxy(this.proxy));
     }
 
     this.rawServer = this.createServer(this.koa.callback());
@@ -402,6 +422,19 @@ class WebpackKoaServer extends EventEmitter {
     if (this.open) {
       this.openBrowser(this.urls.localUrlForBrowser);
     }
+
+    this.emit('server-started');
+  }
+
+  async indexPageMiddleware (ctx, next) {
+    await next();
+    await this.waitForTemplate();
+
+    // Producting output only there was no any other output exists
+    if (['/', '/index.html'].includes(ctx.path)
+      && !ctx.body) {
+      ctx.body = this.templateHtml;
+    }
   }
 
   printConsoleInstructions (appName) {
@@ -429,7 +462,7 @@ class WebpackKoaServer extends EventEmitter {
   }
 
   async choosePort () {
-    const port = await this.detectPort(this.defaultPort, this.host);
+    const port = await this.detectPort(this.defaultPort);
 
     return new Promise((resolve, reject) => {
       if (port === this.defaultPort) {
@@ -565,6 +598,16 @@ class WebpackKoaServer extends EventEmitter {
 
   isRoot () {
     return typeof process.getuid === 'function' && process.getuid() === 0;
+  }
+
+  async waitForServer () {
+    if (this.port) {
+      return Promise.resolve();
+    }
+
+    return new Promise(resolve => {
+      this.once('server-started', resolve);
+    });
   }
 }
 
