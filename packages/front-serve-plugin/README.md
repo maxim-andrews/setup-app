@@ -1,2 +1,2 @@
 # front-serve-plugin
-A webpack plugin to serve front-end with koa.js works together with webpack-koa-server
+A webpack4 plugin to serve front-end with koa.js. Works with webpack-koa-server.
