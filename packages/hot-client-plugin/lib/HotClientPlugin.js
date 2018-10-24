@@ -9,8 +9,6 @@
 
 const net = require('net');
 const path = require('path');
-const http = require('http');
-const https = require('https');
 const WebSocket = require('ws');
 const ip6addr = require('ip6addr');
 const chokidar = require('chokidar');
@@ -347,7 +345,8 @@ class HotClientPlugin {
     }, httpsOpts ? this.https : {});
 
     // TODO write tests & update README.md for this part of the code
-    this.rawServer = (this.https ? https : http).createServer(serverOpts);
+    this.rawServer = require(this.https ? 'https' : 'http').createServer(serverOpts);
+
 
     this.server = new WebSocket.Server({ server: this.rawServer });
 
