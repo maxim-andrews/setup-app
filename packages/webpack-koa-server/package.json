@@ -1,0 +1,78 @@
+{
+  "name": "webpack-koa-server",
+  "version": "1.0.0",
+  "description": "Runs koa.js server to serve webpack in-memory resources provided by front-serve-plugin and ssr-serve-plugin",
+  "main": "lib/WebpackKoaServer.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "files": [
+    "lib/WebpackKoaServer.js",
+    "LICENSE",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxim-andrews/webpack-koa-server.git"
+  },
+  "keywords": [
+    "webpack",
+    "webpack4",
+    "koa",
+    "koa.js",
+    "ssr-serve-plugin",
+    "front-serve-plugin"
+  ],
+  "author": "Maxim Andrews <maximandrewz@users.noreply.github.com> (http://maximandrews.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/maxim-andrews/webpack-koa-server/issues"
+  },
+  "homepage": "https://github.com/maxim-andrews/webpack-koa-server#readme",
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-eslint": "^10.0.1",
+    "babel-jest": "^23.6.0",
+    "eslint": "^5.7.0",
+    "eslint-plugin-flowtype": "^3.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "jest": "^23.6.0",
+    "webpack": "^4.22.0"
+  },
+  "dependencies": {
+    "address": "^1.0.3",
+    "detect-port-alt": "^1.1.6",
+    "koa": "^2.6.1",
+    "koa-compress": "^3.0.0",
+    "koa-proxy": "^0.9.0",
+    "koa-range": "^0.3.0",
+    "koa-static": "^5.0.0",
+    "noop-service-worker-middleware": "^2.0.0",
+    "react-dev-utils": "^6.0.5"
+  },
+  "peerDependencies": {
+    "webpack": "^4.0.0"
+  },
+  "jest": {
+    "clearMocks": true,
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "testMatch": [
+      "**/__tests__/**/?(*.)+(spec|test).js"
+    ],
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    }
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ]
+  },
+  "engines": {
+    "node": ">= 6.9.0 < 7.0.0 || >= 8.9.0"
+  }
+}
