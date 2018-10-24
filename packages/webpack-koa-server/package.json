@@ -39,7 +39,7 @@
     "eslint-plugin-flowtype": "^3.0.0",
     "eslint-plugin-import": "^2.14.0",
     "jest": "^23.6.0",
-    "webpack": "^4.22.0"
+    "webpack": "^4.23.0"
   },
   "dependencies": {
     "address": "^1.0.3",
