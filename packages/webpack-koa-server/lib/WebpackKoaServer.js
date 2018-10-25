@@ -387,6 +387,7 @@ class WebpackKoaServer extends EventEmitter {
     console.log(c.cyan('Restarting WebpackKoaServer...\n'));
 
     this.removeSockets();
+    this.removeProjectCache();
 
     this.rawServer.close(async () => {
       delete this.rawServer;
@@ -413,6 +414,18 @@ class WebpackKoaServer extends EventEmitter {
       socket.destroy();
       this.debug('socket with IP %s has been destroyed', conn.address);
     }
+  }
+
+  removeProjectCache () {
+    const CWD = process.cwd();
+    const files = Object.keys(require.cache)
+      .filter(file => file.indexOf(CWD) === 0 && !file.match(/node_modules/));
+
+    files.forEach(fileName => {
+      const resolvedPath = require.resolve(fileName);
+      this.debug('Deleting cache for %s', resolvedPath);
+      delete require.cache[resolvedPath];
+    });
   }
 
   async startServer () {
