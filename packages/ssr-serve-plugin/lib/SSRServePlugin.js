@@ -114,13 +114,6 @@ class SSRServePlugin {
       throw Error('SSRServePlugin the `output.filename` option of the webpack config must be equal to \'[name].js\'');
     }
 
-    const middleware = require(this.middleware);
-    this.middlewareMethod = middleware.default || middleware;
-
-    if (typeof this.middlewareMethod !== 'function') {
-      throw Error('SSRServePlugin `middleware` option is required and should be path to a file consisting Koa middleware.');
-    }
-
     compiler.options.entry = this.addEntryPoints(entry);
 
     if (compiler.outputFileSystem instanceof MemoryFileSystem) {
@@ -223,7 +216,12 @@ class SSRServePlugin {
   }
 
   createMiddleware() {
-    return this.middlewareMethod(this.ssrObj, async () => {
+    // include fresh middleware if server has been restarted
+    const middlewarePath = require.resolve(this.middleware);
+    const middlewareModule = require(middlewarePath);
+    const middleware = middlewareModule.default || middlewareModule;
+
+    return middleware(this.ssrObj, async () => {
       return Promise.all([
         this.waitForContent(),
         this.waitForMethods()
