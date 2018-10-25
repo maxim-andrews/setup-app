@@ -39,13 +39,13 @@
     "eslint-plugin-flowtype": "^3.0.0",
     "eslint-plugin-import": "^2.14.0",
     "jest": "^23.6.0",
-    "webpack": "^4.23.0"
+    "webpack": "^4.23.1"
   },
   "dependencies": {
     "memory-fs": "^0.4.1",
     "mime": "^2.3.1",
     "react-dev-utils": "^6.0.5",
-    "webpack-koa-server": "^1.1.0"
+    "webpack-koa-server": "^1.2.0"
   },
   "peerDependencies": {
     "webpack": "^4.0.0"
