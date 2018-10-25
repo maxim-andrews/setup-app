@@ -96,7 +96,7 @@ class CSSAutoConfig {
     }, []);
   }
 
-  setupPostCSS () {
+  setupPostCSS (ssr) {
     const plugins = [ require('postcss-flexbugs-fixes') ];
 
     if (this.moduleInstalled('postcss-preset-env')) {
@@ -120,8 +120,6 @@ class CSSAutoConfig {
     return {
       loader: require.resolve('postcss-loader'),
       options: {
-        // produce sourcemap only in development mode for debugging
-        // sourceMap: process.env.NODE_ENV === 'development',
         // Necessary for external CSS imports to work
         // https://github.com/facebookincubator/create-react-app/issues/2677
         ident: 'postcss',
@@ -138,17 +136,18 @@ class CSSAutoConfig {
         camelCase: true,
         modules: true,
         localIdentName: process.env.NODE_ENV === 'production' ? '[hash:base64:5]' : '[name]-[local]',
-        minimize: process.env.NODE_ENV === 'production',
-        // sourceMap: process.env.NODE_ENV === 'development'
+        minimize: process.env.NODE_ENV === 'production'
       },
     };
   }
 
-  cssConfig () {
+  cssConfig (ssr) {
     const loaders = this.installedLoaders() || [];
     const extensions = loaders.reduce((exts, loader) => exts.concat(LOADERS[loader]), EXT);
     const useLoaders = [
-      process.env.NODE_ENV !== 'production' && !process.env.CUSTOM_ENV ? require.resolve('style-loader') : require('mini-css-extract-plugin').loader
+      process.env.NODE_ENV !== 'production' && !ssr
+        ? require.resolve('style-loader')
+        : require('mini-css-extract-plugin').loader
     ];
 
     useLoaders.push(CSSAutoConfig.cssLoaderConfig(loaders.length + 1));

@@ -69,9 +69,21 @@ const paths = {
 if (appPkgJsn.serverSideRendering) {
   const ssrCfg = appPkgJsn.serverSideRendering;
 
-  paths.appBuild = resolveApp(ssrCfg.client || 'build/client');
+  paths.ssrTemplate = paths.appHtml || resolveApp(ssrCfg.htmlTemplate || 'public/index.html');
+  paths.ssrMiddleware = resolveApp(ssrCfg.ssrMiddleware || 'server/ssrMiddleware.js');
+  paths.appBuild = resolveApp('build/client');
   paths.appBuildSsr = resolveApp(ssrCfg.buildPath || 'build/ssr');
-  paths.appSsrIndexJs = resolveApp(ssrCfg.srcPath || 'src/server.side.renderer.js');
+
+  paths.ssrMethods = typeof ssrCfg.methods === 'object'
+    && ssrCfg.methods !== null
+    && Object.keys(ssrCfg.methods).length
+    ? Object.keys(ssrCfg.methods).reduce(
+      (allMethods, method) => {
+        allMethods[method] = resolveApp(ssrCfg.methods[method]);
+        return allMethods;
+      },
+      {}
+    ) : {};
 }
 
 module.exports = paths;
