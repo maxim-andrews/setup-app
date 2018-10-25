@@ -203,12 +203,7 @@ class SSRServePlugin {
       stats.toJson({ all: false, warnings: true, errors: true })
     );
 
-    try {
-      this.server.emit('compilation-done', this.pluginId, messages);
-    } catch (e) {
-      console.log(e);
-      process.exit(0);
-    }
+    this.server.emit('compilation-done', this.pluginId, messages);
 
     if (!messages.errors.length && !messages.warnings.length) {
       this.server.refreshTemplate();
