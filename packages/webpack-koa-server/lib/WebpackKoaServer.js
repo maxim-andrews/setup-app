@@ -16,6 +16,7 @@ const fs = require('fs');
 const c = require('chalk');
 const url = require('url');
 const path = require('path');
+const debug = require('debug');
 const address = require('address');
 const chokidar = require('chokidar');
 const inquirer = require('inquirer');
@@ -84,6 +85,7 @@ class WebpackKoaServer extends EventEmitter {
     this.isFirstCompile = true;
 
     this.chokidar = chokidar;
+    this.debug = debug('webpack-koa-server');
 
     this.plugins = {};
     this.compiling = [];
@@ -97,6 +99,8 @@ class WebpackKoaServer extends EventEmitter {
     this.templateUpdateQueue = [];
 
     this.middlewareList = {};
+
+    this.openedSockets = [];
 
     // register listeners
     this.once('start-server', this.run.bind(this));
@@ -169,7 +173,11 @@ class WebpackKoaServer extends EventEmitter {
     }
 
     this.restartWatchers = this.chokidar
-      .watch( this.watchRestart, { ignored: /(^|[/\\])\../ } )
+      .watch(this.watchRestart, {
+        ignored: /(^|[/\\])\../,
+        cwd: process.cwd(),
+        ignoreInitial: true
+      })
       .on('add', this.reStartServer.bind(this))
       .on('change', this.reStartServer.bind(this))
       .on('unlink', this.reStartServer.bind(this))
@@ -222,7 +230,7 @@ class WebpackKoaServer extends EventEmitter {
       console.log(c.green('Compiled successfully!'));
     }
     if (isSuccessful && (this.isInteractive || this.isFirstCompile)) {
-      this.printConsoleInstructions(this.appName);
+      this.printConsoleInstructions();
     }
     this.isFirstCompile = false;
 
@@ -366,23 +374,45 @@ class WebpackKoaServer extends EventEmitter {
       return false;
     }
 
-    this.restartingServer = true;
-
     if (!this.rawServer) {
       await this.startServer();
-      this.restartingServer = false;
       return true;
     }
+
+    this.restartingServer = true;
 
     if (this.isInteractive) {
       this.clearConsole();
     }
-    console.log('Restarting WebpackKoaServer...');
+    console.log(c.cyan('Restarting WebpackKoaServer...\n'));
+
+    this.removeSockets();
 
     this.rawServer.close(async () => {
+      delete this.rawServer;
+      delete this.koa;
       await this.startServer();
-      this.restartingServer = false;
     });
+  }
+
+  removeSockets () {
+    while (this.openedSockets.length) {
+      const socket = this.openedSockets.shift();
+      if (socket.destroyed) {
+        continue;
+      }
+
+      const conn = socket.address();
+      this.debug('Set keep alive to false for socket with IP %s', conn.address);
+      socket.setKeepAlive(false);
+      this.debug('Unref socket with IP %s', conn.address);
+      socket.unref()
+      this.debug('End socket with IP %s', conn.address);
+      socket.end();
+      this.debug('destroy socket with IP %s', conn.address);
+      socket.destroy();
+      this.debug('socket with IP %s has been destroyed', conn.address);
+    }
   }
 
   async startServer () {
@@ -429,9 +459,16 @@ class WebpackKoaServer extends EventEmitter {
 
     this.rawServer = this.createServer(this.koa.callback());
 
+    // for the purpouse of instant server restart
+    this.rawServer.on('connection', this.collectSockets.bind(this));
     this.rawServer.on('listening', this.onServerListen.bind(this));
-
     this.rawServer.listen(this.port);
+  }
+
+  collectSockets (socket) {
+    const conn = socket.address();
+    this.debug('Collected socket with address %s at port %s', conn.address, conn.port);
+    this.openedSockets.push(socket);
   }
 
   onServerListen () {
@@ -449,7 +486,16 @@ class WebpackKoaServer extends EventEmitter {
       this.clearConsole();
     }
 
-    console.log(c.cyan('Starting the development server...\n'));
+    // if the server has been restarted we don't need to proceed further
+    if (this.restartingServer) {
+      console.log(c.green('WebpackKoaServer has been restarted successfully!'));
+      this.printConsoleInstructions();
+      this.restartingServer = false;
+      this.emit('server-restarted');
+      return true;
+    }
+
+    console.log(c.cyan('Starting WebpackKoaServer...\n'));
 
     if (this.open) {
       this.openBrowser(this.urls.localUrlForBrowser);
@@ -469,9 +515,9 @@ class WebpackKoaServer extends EventEmitter {
     }
   }
 
-  printConsoleInstructions (appName) {
+  printConsoleInstructions () {
     console.log();
-    console.log(`You can now view ${c.bold(appName)} in the browser.`);
+    console.log(`You can now view ${c.bold(this.appName)} in the browser.`);
     console.log();
 
     if (this.urls.lanUrlForTerminal) {
