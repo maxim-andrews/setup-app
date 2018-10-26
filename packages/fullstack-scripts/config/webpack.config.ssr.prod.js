@@ -56,6 +56,10 @@ module.exports = {
     libraryTarget: 'commonjs2',
     // The build folder.
     path: paths.appBuildSsr,
+    // This does not produce a real file. It's just the virtual path that is
+    // served by WebpackDevServer in development. This is the JS bundle
+    // containing code from all our entry points, and the Webpack runtime.
+    filename: '[name].js',
     // Point sourcemap entries to original disk location (format as URL on Windows)
     devtoolModuleFilenameTemplate: info =>
       path
