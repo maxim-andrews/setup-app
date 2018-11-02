@@ -1,6 +1,6 @@
 {
   "name": "ssr-serve-plugin",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "A webpack plugin to serve server side rendered content with koa.js. Works with webpack-koa-server.",
   "main": "lib/SSRServePlugin.js",
   "scripts": {
@@ -36,7 +36,7 @@
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
     "eslint": "^5.8.0",
-    "eslint-config-setup-app": "^1.2.4",
+    "eslint-config-setup-app": "^1.2.5",
     "eslint-plugin-flowtype": "^3.2.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
@@ -48,7 +48,7 @@
     "memory-fs": "^0.4.1",
     "mime": "^2.3.1",
     "react-dev-utils": "^6.1.1",
-    "webpack-koa-server": "^1.2.4"
+    "webpack-koa-server": "^1.2.5"
   },
   "peerDependencies": {
     "webpack": "^4.0.0"
