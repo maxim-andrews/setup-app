@@ -84,16 +84,6 @@ module.exports = {
     // for React Native Web.
     extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
     alias: {
-      // Resolve Babel runtime relative to fullstack-scripts.
-      // It usually still works on npm 3 without this but it would be
-      // unfortunate to rely on, as fullstack-scripts could be symlinked,
-      // and thus babel-runtime might not be resolvable from the source.
-      'babel-runtime': path.dirname(
-        require.resolve('@babel/runtime/package.json')
-      ),
-      '@babel/runtime': path.dirname(
-        require.resolve('@babel/runtime/package.json')
-      ),
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
@@ -158,7 +148,11 @@ module.exports = {
             include: paths.appSrc,
             loader: require.resolve('babel-loader'),
             options: {
+              customize: require.resolve(
+                'babel-preset-react-app/webpack-overrides'
+              ),
               babelrc: false,
+              configFile: false,
               presets: [require.resolve('@babel/preset-react')],
               // Make sure we have a unique cache identifier, erring on the
               // side of caution.
@@ -197,6 +191,12 @@ module.exports = {
               babelrc: false,
               configFile: false,
               compact: false,
+              presets: [
+                [
+                  require.resolve('babel-preset-react-app/dependencies'),
+                  { helpers: true },
+                ],
+              ],
               cacheDirectory: true,
               // Save disk space when time isn't as important
               cacheCompression: true,

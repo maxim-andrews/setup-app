@@ -62,7 +62,7 @@ module.exports = {
   // You can exclude the *.map files from the build during deployment.
   devtool: shouldUseSourceMap ? 'source-map' : false,
   // In production, we only want to load the polyfills and the app code.
-  entry: [require.resolve('./polyfills'), paths.appIndexJs],
+  entry: [paths.appIndexJs],
   output: {
     // The build folder.
     path: paths.appBuild,
@@ -72,7 +72,7 @@ module.exports = {
     filename: 'static/js/[name].[chunkhash:8].js',
     chunkFilename: 'static/js/[name].[chunkhash:8].chunk.js',
     // We inferred the "public path" (such as / or /my-project) from homepage.
-    publicPath: publicPath,
+    publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
     devtoolModuleFilenameTemplate: info =>
       path
@@ -110,6 +110,7 @@ module.exports = {
             safari10: true,
           },
           output: {
+            ecma: 5,
             comments: false,
             // Turned on because emoji and regex is not minified properly using default
             // https://github.com/facebookincubator/create-react-app/issues/2488
@@ -166,16 +167,6 @@ module.exports = {
     // for React Native Web.
     extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
     alias: {
-      // Resolve Babel runtime relative to fullstack-scripts.
-      // It usually still works on npm 3 without this but it would be
-      // unfortunate to rely on, as fullstack-scripts could be symlinked,
-      // and thus babel-runtime might not be resolvable from the source.
-      'babel-runtime': path.dirname(
-        require.resolve('@babel/runtime/package.json')
-      ),
-      '@babel/runtime': path.dirname(
-        require.resolve('@babel/runtime/package.json')
-      ),
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
@@ -240,7 +231,11 @@ module.exports = {
             include: paths.appSrc,
             loader: require.resolve('babel-loader'),
             options: {
+              customize: require.resolve(
+                'babel-preset-react-app/webpack-overrides'
+              ),
               babelrc: false,
+              configFile: false,
               presets: [require.resolve('@babel/preset-react')],
               // Make sure we have a unique cache identifier, erring on the
               // side of caution.
@@ -279,6 +274,12 @@ module.exports = {
               babelrc: false,
               configFile: false,
               compact: false,
+              presets: [
+                [
+                  require.resolve('babel-preset-react-app/dependencies'),
+                  { helpers: true },
+                ],
+              ],
               cacheDirectory: true,
               // Save disk space when time isn't as important
               cacheCompression: true,
@@ -407,7 +408,7 @@ module.exports = {
     tls: 'empty',
     child_process: 'empty',
   },
-  target: 'node',
+  target: 'web',
   // Turn off performance processing because we utilize
   // our own hints via the FileSizeReporter
   performance: false,

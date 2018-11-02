@@ -11,11 +11,12 @@ const path = require('path');
 const webpack = require('webpack');
 const HotClientPlugin = require('hot-client-plugin');
 const FrontServePlugin = require('front-serve-plugin');
-const eslintFormatter = require('react-dev-utils/eslintFormatter');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
+const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 
 const cssAutoConfig = require('./css.auto.config');
@@ -73,26 +74,7 @@ module.exports = webpackKoaServer => {
     // These are the "entry points" to our application.
     // This means they will be the "root" imports that are included in JS bundle.
     // The first two entry points enable "hot" CSS and auto-refreshes for JS.
-    entry: [
-      // We ship a few polyfills by default:
-      require.resolve('./polyfills'),
-      // Include an alternative client for WebpackDevServer. A client's job is to
-      // connect to WebpackDevServer by a socket and get notified about changes.
-      // When you save a file, the client will either apply hot updates (in case
-      // of CSS changes), or refresh the page (in case of JS changes). When you
-      // make a syntax error, this client will display a syntax error overlay.
-      // Note: instead of the default WebpackDevServer client, we use a custom one
-      // to bring better experience for Create React App users. You can replace
-      // the line below with these two lines if you prefer the stock client:
-      // require.resolve('webpack-dev-server/client') + '?/',
-      // require.resolve('webpack/hot/dev-server'),
-      // require.resolve('hot-client-plugin/lib/hotClient'),
-      // Finally, this is your app's code:
-      paths.appIndexJs,
-      // We include the app code last so that if there is a runtime error during
-      // initialization, it doesn't blow up the WebpackDevServer client, and
-      // changing JS code would still trigger a refresh.
-    ],
+    entry: [ paths.appIndexJs ],
     output: {
       // Default path to extract files
       path: '/',
@@ -112,6 +94,18 @@ module.exports = webpackKoaServer => {
           .resolve(info.absoluteResourcePath)
           .replace(/\\/g, '/'),
     },
+    optimization: {
+      // Automatically split vendor and commons
+      // https://twitter.com/wSokra/status/969633336732905474
+      // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
+      splitChunks: {
+        chunks: 'all',
+        name: false,
+      },
+      // Keep the runtime chunk seperated to enable long term caching
+      // https://twitter.com/wSokra/status/969679223278505985
+      runtimeChunk: true,
+    },
     resolve: {
       // This allows you to set a fallback for where Webpack should look for modules.
       // We placed these paths second because we want `node_modules` to "win"
@@ -127,18 +121,8 @@ module.exports = webpackKoaServer => {
       // https://github.com/facebookincubator/create-react-app/issues/290
       // `web` extension prefixes have been added for better support
       // for React Native Web.
-      extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
+      extensions: ['.web.mjs', '.mjs', '.web.js', '.js', '.json', '.web.jsx', '.jsx'],
       alias: {
-        // Resolve Babel runtime relative to fullstack-scripts.
-        // It usually still works on npm 3 without this but it would be
-        // unfortunate to rely on, as fullstack-scripts could be symlinked,
-        // and thus babel-runtime might not be resolvable from the source.
-        'babel-runtime': path.dirname(
-          require.resolve('@babel/runtime/package.json')
-        ),
-        '@babel/runtime': path.dirname(
-          require.resolve('@babel/runtime/package.json')
-        ),
         // Support React Native Web
         // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
         'react-native': 'react-native-web',
@@ -155,19 +139,18 @@ module.exports = webpackKoaServer => {
     module: {
       strictExportPresence: true,
       rules: [
-        // TODO: Disable require.ensure as it's not a standard language feature.
-        // We are waiting for https://github.com/facebookincubator/create-react-app/issues/2176.
-        // { parser: { requireEnsure: false } },
+        // Disable require.ensure as it's not a standard language feature.
+        { parser: { requireEnsure: false } },
 
         // First, run the linter.
         // It's important to do this before Babel processes the JS.
         {
-          test: /\.(js|jsx|mjs)$/,
+          test: /\.(js|mjs|jsx)$/,
           enforce: 'pre',
           use: [
             {
               options: {
-                formatter: eslintFormatter,
+                formatter: require.resolve('react-dev-utils/eslintFormatter'),
                 eslintPath: require.resolve('eslint'),
                 baseConfig: {
                   extends: [require.resolve('eslint-config-setup-app')],
@@ -198,10 +181,13 @@ module.exports = webpackKoaServer => {
             },
             // Process JS with Babel.
             {
-              test: /\.(js|jsx|mjs)$/,
+              test: /\.(js|mjs|jsx)$/,
               include: paths.appSrc,
               loader: require.resolve('babel-loader'),
               options: {
+                customize: require.resolve(
+                  'babel-preset-react-app/webpack-overrides'
+                ),
                 babelrc: false,
                 configFile: false,
                 presets: [[require.resolve('@babel/preset-react'), { development: process.env.NODE_ENV === 'development' }]],
@@ -244,6 +230,12 @@ module.exports = webpackKoaServer => {
                 babelrc: false,
                 configFile: false,
                 compact: false,
+                presets: [
+                  [
+                    require.resolve('babel-preset-react-app/dependencies'),
+                    { helpers: true },
+                  ],
+                ],
                 cacheDirectory: true,
                 // Don't waste time on Gzipping the cache
                 cacheCompression: false,
@@ -304,8 +296,9 @@ module.exports = webpackKoaServer => {
         content: paths.appPublic,
         defaultIndex: path.basename(paths.appHtml)
       }),
-      // Add module names to factory functions so they appear in browser profiler.
-      new webpack.NamedModulesPlugin(),
+      // This gives some necessary context to module not found errors, such as
+      // the requesting resource.
+      new ModuleNotFoundPlugin(paths.appPath),
       // Makes some environment variables available to the JS code, for example:
       // if (process.env.NODE_ENV === 'development') { ... }. See `./env.js`.
       new webpack.DefinePlugin(env.stringified),
@@ -318,18 +311,14 @@ module.exports = webpackKoaServer => {
       // makes the discovery automatic so you don't have to restart.
       // See https://github.com/facebookincubator/create-react-app/issues/186
       new WatchMissingNodeModulesPlugin(paths.appNodeModules),
-      // Moment.js is an extremely popular library that bundles large locale files
-      // by default due to how Webpack interprets its code. This is a practical
-      // solution that requires the user to opt into importing specific locales.
-      // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
-      // You can remove this if you don't use Moment.js:
-      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+      // Generate a manifest file which contains a mapping of all asset filenames
+      // to their corresponding output file so that tools can pick it up without
+      // having to parse `index.html`.
+      new ManifestPlugin({
+        fileName: 'asset-manifest.json',
+        publicPath,
+      }),
     ],
-
-    // Minify the code.
-    optimization: {
-      minimize: false
-    },
     // Some libraries import Node modules but don't use them in the browser.
     // Tell Webpack to provide empty mocks for them so importing them works.
     node: {
