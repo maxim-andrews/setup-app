@@ -8,9 +8,14 @@
   "engines": {
     "node": ">=8"
   },
-  "bugs": {
-    "url": "https://github.com/maxim-andrews/fullstack-scripts/issues"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxim-andrews/setup-app.git"
   },
+  "bugs": {
+    "url": "https://github.com/maxim-andrews/setup-app/issues"
+  },
+  "homepage": "https://github.com/maxim-andrews/setup-app#readme",
   "files": [
     "bin",
     "config",
