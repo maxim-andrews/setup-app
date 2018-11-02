@@ -82,7 +82,10 @@ module.exports = {
 
   plugins: [ 'import', 'flowtype', 'jsx-a11y', 'react' ],
 
-  extends: "eslint:recommended",
+  extends: [
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ],
 
   env: {
     browser: true,
