@@ -1,0 +1,32 @@
+{
+  "name": "eslint-config-setup-app",
+  "version": "1.0.0",
+  "description": "ESLint configuration used by fullstack-scripts",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxim-andrews/eslint-config-setup-app.git"
+  },
+  "keywords": [
+    "fullstack-scripts",
+    "eslint",
+    "setup-app"
+  ],
+  "author": "Maxim Andrews <maximandrewz@users.noreply.github.com> (http://maximandrews.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/maxim-andrews/eslint-config-setup-app/issues"
+  },
+  "homepage": "https://github.com/maxim-andrews/eslint-config-setup-app#readme",
+  "files": [
+    "index.js"
+  ],
+  "peerDependencies": {
+    "babel-eslint": "^10.x",
+    "eslint": "^5.x",
+    "eslint-plugin-flowtype": "^2.x",
+    "eslint-plugin-import": "^2.x",
+    "eslint-plugin-jsx-a11y": "^6.x",
+    "eslint-plugin-react": "^7.x"
+  }
+}
