@@ -87,6 +87,12 @@ module.exports = {
     "plugin:react/recommended"
   ],
 
+  settings: {
+    react: {
+      version: '999.999.999'
+    }
+  },
+
   env: {
     browser: true,
     commonjs: true,
