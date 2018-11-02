@@ -131,7 +131,7 @@ module.exports = webpackKoaServer => {
       alias: {
         // Resolve Babel runtime relative to fullstack-scripts.
         // It usually still works on npm 3 without this but it would be
-        // unfortunate to rely on, as react-scripts could be symlinked,
+        // unfortunate to rely on, as fullstack-scripts could be symlinked,
         // and thus babel-runtime might not be resolvable from the source.
         'babel-runtime': path.dirname(
           require.resolve('@babel/runtime/package.json')
@@ -207,9 +207,6 @@ module.exports = webpackKoaServer => {
                 presets: [[require.resolve('@babel/preset-react'), { development: process.env.NODE_ENV === 'development' }]],
                 // Make sure we have a unique cache identifier, erring on the
                 // side of caution.
-                // We remove this when the user ejects because the default
-                // is sane and uses Babel options. Instead of options, we use
-                // the react-scripts and babel-preset-react-app versions.
                 cacheIdentifier: getCacheIdentifier('development', [
                   '@babel/plugin-proposal-object-rest-spread',
                   'babel-plugin-named-asset-import',
