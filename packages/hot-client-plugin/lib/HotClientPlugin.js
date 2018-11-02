@@ -339,16 +339,16 @@ class HotClientPlugin {
                       && this.https !== null
                       && Object.keys(this.https).length > 0;
 
-    const serverOpts = Object.assign({
-      host: this.host,
-      port: this.port
-    }, httpsOpts ? this.https : {});
+    const serverOpts = httpsOpts ? this.https : {};
 
     // TODO write tests & update README.md for this part of the code
     this.rawServer = require(this.https ? 'https' : 'http').createServer(serverOpts);
 
-
-    this.server = new WebSocket.Server({ server: this.rawServer });
+    this.server = new WebSocket.Server({
+      host: this.host,
+      port: this.port
+      server: this.rawServer
+    });
 
     this.server.on('connection', this.handlerServerConnection);
     this.server.on('error', this.handlerServerError);
