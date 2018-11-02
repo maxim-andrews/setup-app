@@ -28,5 +28,8 @@
     "eslint-plugin-import": "^2.x",
     "eslint-plugin-jsx-a11y": "^6.x",
     "eslint-plugin-react": "^7.x"
+  },
+  "engines": {
+    "node": ">= 8"
   }
 }

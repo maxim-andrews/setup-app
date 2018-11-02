@@ -84,6 +84,6 @@
     "extends": "setup-app"
   },
   "engines": {
-    "node": ">= 6.9.0 < 7.0.0 || >= 8.9.0"
+    "node": ">= 8"
   }
 }
