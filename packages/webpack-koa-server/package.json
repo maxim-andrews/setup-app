@@ -1,6 +1,6 @@
 {
   "name": "webpack-koa-server",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Runs koa.js server to serve webpack in-memory resources provided by front-serve-plugin and ssr-serve-plugin",
   "main": "lib/WebpackKoaServer.js",
   "scripts": {
