@@ -407,7 +407,7 @@ class WebpackKoaServer extends EventEmitter {
       this.debug('Set keep alive to false for socket with IP %s', conn.address);
       socket.setKeepAlive(false);
       this.debug('Unref socket with IP %s', conn.address);
-      socket.unref()
+      socket.unref();
       this.debug('End socket with IP %s', conn.address);
       socket.end();
       this.debug('destroy socket with IP %s', conn.address);
