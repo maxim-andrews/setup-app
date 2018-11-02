@@ -8,9 +8,10 @@
 
 const path = require('path');
 const webpack = require('webpack');
+const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const eslintFormatter = require('react-dev-utils/eslintFormatter');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
+const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 
 const cssAutoConfig = require('./css.auto.config');
 const getClientEnvironment = require('./env');
@@ -66,6 +67,10 @@ module.exports = {
         .relative(paths.appSrc, info.absoluteResourcePath)
         .replace(/\\/g, '/'),
   },
+  // Minify the code.
+  optimization: {
+    minimize: false
+  },
   resolve: {
     // This allows you to set a fallback for where Webpack should look for modules.
     // We placed these paths second because we want `node_modules` to "win"
@@ -83,12 +88,15 @@ module.exports = {
     // for React Native Web.
     extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
     alias: {
-      // Resolve Babel runtime relative to react-scripts.
+      // Resolve Babel runtime relative to fullstack-scripts.
       // It usually still works on npm 3 without this but it would be
       // unfortunate to rely on, as react-scripts could be symlinked,
       // and thus babel-runtime might not be resolvable from the source.
       'babel-runtime': path.dirname(
-        require.resolve('babel-runtime/package.json')
+        require.resolve('@babel/runtime/package.json')
+      ),
+      '@babel/runtime': path.dirname(
+        require.resolve('@babel/runtime/package.json')
       ),
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
@@ -106,9 +114,8 @@ module.exports = {
   module: {
     strictExportPresence: true,
     rules: [
-      // TODO: Disable require.ensure as it's not a standard language feature.
-      // We are waiting for https://github.com/facebookincubator/create-react-app/issues/2176.
-      // { parser: { requireEnsure: false } },
+      // Disable require.ensure as it's not a standard language feature.
+      { parser: { requireEnsure: false } },
 
       // First, run the linter.
       // It's important to do this before Babel processes the JS.
@@ -118,12 +125,13 @@ module.exports = {
         use: [
           {
             options: {
-              formatter: eslintFormatter,
+              formatter: require.resolve('react-dev-utils/eslintFormatter'),
               eslintPath: require.resolve('eslint'),
               // TODO: consider separate config for production,
               // e.g. to enable no-console and no-debugger only in production.
               baseConfig: {
-                extends: [require.resolve('eslint-config-react-app')],
+                extends: [require.resolve('eslint-config-setup-app')],
+                settings: { react: { version: '999.999.999' } },
               },
               ignore: false,
               useEslintrc: false,
@@ -150,14 +158,66 @@ module.exports = {
           },
           // Process JS with Babel.
           {
-            test: /\.(js|jsx|mjs)$/,
+            test: /\.(js|mjs|jsx)$/,
             include: paths.appSrc,
             loader: require.resolve('babel-loader'),
             options: {
               babelrc: false,
               presets: [require.resolve('@babel/preset-react')],
-              plugins: [require.resolve('@babel/plugin-proposal-object-rest-spread')],
+              // Make sure we have a unique cache identifier, erring on the
+              // side of caution.
+              // We remove this when the user ejects because the default
+              // is sane and uses Babel options. Instead of options, we use
+              // the react-scripts and babel-preset-react-app versions.
+              cacheIdentifier: getCacheIdentifier('production', [
+                '@babel/plugin-proposal-object-rest-spread',
+                'babel-plugin-named-asset-import',
+                'fullstack-scripts',
+                'react-dev-utils',
+              ]),
+              plugins: [
+                require.resolve('@babel/plugin-proposal-object-rest-spread'),
+                [
+                  require.resolve('babel-plugin-named-asset-import'),
+                  {
+                    loaderMap: {
+                      svg: {
+                        ReactComponent: '@svgr/webpack?-prettier,-svgo![path]',
+                      },
+                    },
+                  },
+                ],
+              ],
+              cacheDirectory: true,
+              // Save disk space when time isn't as important
+              cacheCompression: true,
               compact: true,
+            },
+          },
+          // Process any JS outside of the app with Babel.
+          // Unlike the application JS, we only compile the standard ES features.
+          {
+            test: /\.(js|mjs)$/,
+            exclude: /@babel(?:\/|\\{1,2})runtime/,
+            loader: require.resolve('babel-loader'),
+            options: {
+              babelrc: false,
+              configFile: false,
+              compact: false,
+              cacheDirectory: true,
+              // Save disk space when time isn't as important
+              cacheCompression: true,
+              cacheIdentifier: getCacheIdentifier('production', [
+                '@babel/plugin-proposal-object-rest-spread',
+                'babel-plugin-named-asset-import',
+                'fullstack-scripts',
+                'react-dev-utils',
+              ]),
+              // If an error happens in a package, it's possible to be
+              // because it was compiled. Thus, we don't want the browser
+              // debugger to show the original code. Instead, the code
+              // being evaluated would be much more helpful.
+              sourceMaps: false,
             },
           },
           // Configure css according to the current mode, i.e. 'developement' or 'production'
@@ -169,10 +229,10 @@ module.exports = {
           {
             loader: require.resolve('file-loader'),
             // Exclude `js` files to keep "css" loader working as it injects
-            // its runtime that would otherwise processed through "file" loader.
+            // it's runtime that would otherwise processed through "file" loader.
             // Also exclude `html` and `json` extensions so they get processed
             // by webpacks internal loaders.
-            exclude: [/\.(js|jsx|mjs)$/, /\.html$/, /\.json$/],
+            exclude: [/\.(js|mjs|jsx)$/, /\.html$/, /\.json$/],
             options: {
               name: 'static/media/[name].[hash:8].[ext]',
             },
@@ -184,6 +244,9 @@ module.exports = {
     ],
   },
   plugins: [
+    // This gives some necessary context to module not found errors, such as
+    // the requesting resource.
+    new ModuleNotFoundPlugin(paths.appPath),
     // Makes some environment variables available to the JS code, for example:
     // if (process.env.NODE_ENV === 'production') { ... }. See `./env.js`.
     // It is absolutely essential that NODE_ENV was set to production here.
@@ -193,12 +256,11 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: cssFilename,
       chunkFilename: cssChunks
-    })
+    }),
   ],
-  // Minify the code.
-  optimization: {
-    minimize: false
-  },
   node: false,
-  target: 'node'
+  target: 'node',
+  // Turn off performance processing because we utilize
+  // our own hints via the FileSizeReporter
+  performance: false,
 };

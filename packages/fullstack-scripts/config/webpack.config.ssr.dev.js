@@ -15,6 +15,7 @@ const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
+const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 
 const cssAutoConfig = require('./css.auto.config');
 const getClientEnvironment = require('./env');
@@ -79,6 +80,8 @@ module.exports = webpackKoaServer => {
       // served by WebpackDevServer in development. This is the JS bundle
       // containing code from all our entry points, and the Webpack runtime.
       filename: '[name].js',
+      // There are also additional JS chunk files if you use code splitting.
+      chunkFilename: '[name].chunk.js',
       // This is the URL that app is served from. We use "/" in development.
       publicPath,
       // Point sourcemap entries to original disk location (format as URL on Windows)
@@ -104,12 +107,15 @@ module.exports = webpackKoaServer => {
       // for React Native Web.
       extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
       alias: {
-        // Resolve Babel runtime relative to react-scripts.
+        // Resolve Babel runtime relative to fullstack-scripts.
         // It usually still works on npm 3 without this but it would be
         // unfortunate to rely on, as react-scripts could be symlinked,
         // and thus babel-runtime might not be resolvable from the source.
         'babel-runtime': path.dirname(
-          require.resolve('babel-runtime/package.json')
+          require.resolve('@babel/runtime/package.json')
+        ),
+        '@babel/runtime': path.dirname(
+          require.resolve('@babel/runtime/package.json')
         ),
         // Support React Native Web
         // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
@@ -142,7 +148,7 @@ module.exports = webpackKoaServer => {
                 formatter: eslintFormatter,
                 eslintPath: require.resolve('eslint'),
                 baseConfig: {
-                  extends: [require.resolve('eslint-config-react-app')],
+                  extends: [require.resolve('eslint-config-setup-app')],
                 },
                 ignore: false,
                 useEslintrc: false,
@@ -175,12 +181,64 @@ module.exports = webpackKoaServer => {
               loader: require.resolve('babel-loader'),
               options: {
                 babelrc: false,
+                configFile: false,
                 presets: [[require.resolve('@babel/preset-react'), { development: process.env.NODE_ENV === 'development' }]],
-                plugins: [require.resolve('@babel/plugin-proposal-object-rest-spread')],
+                // Make sure we have a unique cache identifier, erring on the
+                // side of caution.
+                // We remove this when the user ejects because the default
+                // is sane and uses Babel options. Instead of options, we use
+                // the react-scripts and babel-preset-react-app versions.
+                cacheIdentifier: getCacheIdentifier('development', [
+                  '@babel/plugin-proposal-object-rest-spread',
+                  'babel-plugin-named-asset-import',
+                  'fullstack-scripts',
+                  'react-dev-utils',
+                ]),
+                plugins: [
+                  require.resolve('@babel/plugin-proposal-object-rest-spread'),
+                  [
+                    require.resolve('babel-plugin-named-asset-import'),
+                    {
+                      loaderMap: {
+                        svg: {
+                          ReactComponent: '@svgr/webpack?-prettier,-svgo![path]',
+                        },
+                      },
+                    }
+                  ]
+                ],
                 // This is a feature of `babel-loader` for webpack (not Babel itself).
                 // It enables caching results in ./node_modules/.cache/babel-loader/
                 // directory for faster rebuilds.
-                cacheDirectory: true
+                cacheDirectory: true,
+                // Don't waste time on Gzipping the cache
+                cacheCompression: false
+              },
+            },
+            // Process any JS outside of the app with Babel.
+            // Unlike the application JS, we only compile the standard ES features.
+            {
+              test: /\.(js|mjs)$/,
+              exclude: /@babel(?:\/|\\{1,2})runtime/,
+              loader: require.resolve('babel-loader'),
+              options: {
+                babelrc: false,
+                configFile: false,
+                compact: false,
+                cacheDirectory: true,
+                // Don't waste time on Gzipping the cache
+                cacheCompression: false,
+                cacheIdentifier: getCacheIdentifier('development', [
+                  '@babel/plugin-proposal-object-rest-spread',
+                  'babel-plugin-named-asset-import',
+                  'fullstack-scripts',
+                  'react-dev-utils',
+                ]),
+                // If an error happens in a package, it's possible to be
+                // because it was compiled. Thus, we don't want the browser
+                // debugger to show the original code. Instead, the code
+                // being evaluated would be much more helpful.
+                sourceMaps: false,
               },
             },
             // Configure css according to the current mode, i.e. 'developement' or 'production'
@@ -253,6 +311,12 @@ module.exports = webpackKoaServer => {
       minimize: false
     },
     node: false,
-    target: 'node'
+    target: 'node',
+    // Turn off performance hints during development because we don't do any
+    // splitting or minification in interest of speed. These warnings become
+    // cumbersome.
+    performance: {
+      hints: false,
+    },
   };
 };
