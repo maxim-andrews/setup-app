@@ -346,7 +346,7 @@ class HotClientPlugin {
 
     this.server = new WebSocket.Server({
       host: this.host,
-      port: this.port
+      port: this.port,
       server: this.rawServer
     });
 
