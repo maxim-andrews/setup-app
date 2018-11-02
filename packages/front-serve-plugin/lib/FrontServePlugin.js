@@ -237,16 +237,59 @@ class FrontServePlugin {
   }
 
   async inject () {
+    await this.waitForCompiled();
+
     const { templateHtml, callback } = await this.server.updateTemplate();
+    const bundleFile = path.join(this.publicPath, this.bundleFilename);
+    const jsFilesOnly = this.allFiles().filter(file => /\.js$/.test(file));
+
+    jsFilesOnly.sort((a, b) =>{
+      if (a === bundleFile) {
+        return 1;
+      } else if (b === bundleFile) {
+        return -1;
+      } else if (a < b) {
+        return -1;
+      } else if (a > b) {
+        return 1;
+      }
+
+      // names must be equal
+      return 0;
+    });
+
+    console.log(jsFilesOnly);
+    process.exit(0);
+
     callback(
       templateHtml.replace(
         /^(\s*)<\/body>/m,
-        `$1$1<script type="text/javascript" src="${path.join(this.publicPath, this.bundleFilename)}"></script>\n$1</body>`
+        jsFilesOnly.map(
+          file => `$1$1<script type="text/javascript" src="${file}"></script>`
+        ).join('') +
+        '\n$1</body>'
       )
     );
 
     this.contentReady = true;
     this.emitter.emit('contentReady');
+  }
+
+  allFiles(dirPath = '/') {
+    const allContent = this.fileSystem.readdirSync(dirPath, {
+      encoding: 'utf8'
+    });
+
+    return allContent.reduce((files, file) => {
+      const fullName = path.join(dirPath, file);
+      const fileStat = this.fileSystem.statSync(fullName);
+      if (fileStat.isDirectory()) {
+        files = files.concat(this.allFiles(fullName));
+      } else if (fileStat.isFile()) {
+        files.push(fullName);
+      }
+      return files;
+    }, []);
   }
 }
 
