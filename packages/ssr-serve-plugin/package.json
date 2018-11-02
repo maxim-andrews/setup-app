@@ -13,8 +13,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/maxim-andrews/ssr-serve-plugin.git"
+    "url": "git+https://github.com/maxim-andrews/setup-app.git"
   },
+  "bugs": {
+    "url": "https://github.com/maxim-andrews/setup-app/issues"
+  },
+  "homepage": "https://github.com/maxim-andrews/setup-app#readme",
   "keywords": [
     "webpack",
     "webpack4",
@@ -25,10 +29,6 @@
   ],
   "author": "Maxim Andrews <maximandrewz@users.noreply.github.com> (http://maximandrews.com)",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/maxim-andrews/ssr-serve-plugin/issues"
-  },
-  "homepage": "https://github.com/maxim-andrews/ssr-serve-plugin#readme",
   "devDependencies": {
     "@babel/core": "^7.1.2",
     "@babel/preset-env": "^7.1.0",
@@ -74,6 +74,6 @@
     "extends": "setup-app"
   },
   "engines": {
-    "node": ">= 6.9.0 < 7.0.0 || >= 8.9.0"
+    "node": ">= 8"
   }
 }

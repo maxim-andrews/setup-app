@@ -6,11 +6,16 @@
   "author": "Maxim Andrews <maximandrewz@users.noreply.github.com> (http://maximandrews.com)",
   "license": "MIT",
   "engines": {
-    "node": ">=6"
+    "node": ">=8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxim-andrews/setup-app.git"
   },
   "bugs": {
-    "url": "https://github.com/maxim-andrews/fullstack-scripts/issues"
+    "url": "https://github.com/maxim-andrews/setup-app/issues"
   },
+  "homepage": "https://github.com/maxim-andrews/setup-app#readme",
   "files": [
     "bin",
     "config",
@@ -41,6 +46,7 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/runtime": "^7.1.2",
     "@svgr/webpack": "^3.1.0",
+    "ajv": "^6.5.4",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
