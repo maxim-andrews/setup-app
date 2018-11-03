@@ -46,6 +46,8 @@ class HotClientPlugin {
 
     this.handlerServerConnection = this.handlerServerConnection.bind(this);
     this.handlerServerListening = this.handlerServerListening.bind(this);
+    this.handlerServerError = this.handlerServerError.bind(this);
+
     this.handlerStaticContentChanged = this.handlerStaticContentChanged.bind(this);
 
     this.launchEditor = launchEditor;
@@ -57,18 +59,31 @@ class HotClientPlugin {
   }
 
   apply (compiler) {
-    const { watch, entry } = compiler.options;
+    const { watch } = compiler.options;
     if (!watch) {
       throw Error('HotClientPlugin should be configured in `watch` only mode. Configuration option `watch` should be equal to `true`.');
     }
 
-    if (this.hotClient !== false) {
-      compiler.options.entry = this.newEntry(entry);
-    }
+    this.addHotClientEntry(compiler);
 
     this.runServer();
 
+    this.setAfterPluginsHook(compiler);
+    this.setCompilerHandlers(compiler);
+  }
+
+  addHotClientEntry (compiler) {
+    if (this.hotClient !== false) {
+      const { entry } = compiler.options;
+      compiler.options.entry = this.newEntry(entry);
+    }
+  }
+
+  setAfterPluginsHook (compiler) {
     compiler.hooks.afterPlugins.tap('HotClientPlugin', this.handlerAfterPlugins.bind(this));
+  }
+
+  setCompilerHandlers (compiler) {
     compiler.hooks.compile.tap('HotClientPlugin', this.handlerCompile.bind(this, compiler));
     compiler.hooks.invalid.tap('HotClientPlugin', this.handlerInvalid.bind(this, compiler));
     compiler.hooks.done.tap('HotClientPlugin', this.handlerDone.bind(this));
@@ -339,22 +354,20 @@ class HotClientPlugin {
                       && this.https !== null
                       && Object.keys(this.https).length > 0;
 
-    const serverOpts = httpsOpts ? this.https : {};
+    const serverOpts = httpsOpts ? this.https : undefined;
 
     // TODO write tests & update README.md for this part of the code
     this.rawServer = require(this.https ? 'https' : 'http').createServer(serverOpts);
 
     this.server = new WebSocket.Server({
       host: this.host,
-      port: this.port
+      port: this.port,
       server: this.rawServer
     });
 
     this.server.on('connection', this.handlerServerConnection);
     this.server.on('error', this.handlerServerError);
     this.server.on('listening', this.handlerServerListening);
-
-    this.rawServer.listen(this.port);
   }
 
   handlerServerConnection (ws, req) {
@@ -410,7 +423,10 @@ class HotClientPlugin {
     if (this.staticContent) {
       this.debug('Start watching folder %s', this.staticContent);
 
-      this.contentWatcher = this.chokidar.watch(this.staticContent);
+      this.contentWatcher = this.chokidar
+        .watch(this.staticContent, {
+          ignoreInitial: true
+        });
 
       this.contentWatcher
         .on('add', this.handlerStaticContentChanged)

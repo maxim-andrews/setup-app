@@ -1,12 +1,16 @@
 {
   "name": "eslint-config-setup-app",
   "version": "1.2.5",
-  "description": "ESLint configuration used by fullstack-scripts",
+  "description": "ESLint configuration for fullstack-scripts",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maxim-andrews/setup-app.git"
   },
+  "bugs": {
+    "url": "https://github.com/maxim-andrews/setup-app/issues"
+  },
+  "homepage": "https://github.com/maxim-andrews/setup-app#readme",
   "keywords": [
     "fullstack-scripts",
     "eslint",
@@ -14,10 +18,6 @@
   ],
   "author": "Maxim Andrews <maximandrewz@users.noreply.github.com> (http://maximandrews.com)",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/maxim-andrews/setup-app/issues"
-  },
-  "homepage": "https://github.com/maxim-andrews/setup-app#readme",
   "files": [
     "index.js"
   ],

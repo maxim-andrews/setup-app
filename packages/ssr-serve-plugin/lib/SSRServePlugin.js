@@ -11,6 +11,7 @@ const vm = require('vm');
 const mime = require('mime');
 const path = require('path');
 const { parse } = require('url');
+const listAll = require('list-all');
 const EventEmitter = require('events');
 const querystring = require('querystring');
 const MemoryFileSystem = require('memory-fs');
@@ -75,6 +76,8 @@ class SSRServePlugin {
     this.mime = mime;
     this.unescape = querystring.unescape;
 
+    this.listAll = listAll;
+
     this.HASH_REGEXP = /[0-9a-f]{10,}/;
 
     this.emitter = new EventEmitter();
@@ -82,12 +85,24 @@ class SSRServePlugin {
   }
 
   apply (compiler) {
-    const { watch, entry, name, output: { filename, publicPath, path: outputPath } } = compiler.options;
+    const { watch, entry, name, target, output: { filename, publicPath, libraryTarget, path: outputPath } } = compiler.options;
     if (!watch) {
       throw Error('SSRServePlugin should be configured in `watch` only mode. Configuration option `watch` should be equal to `true`.');
     }
     if (!name) {
       throw Error('SSRServePlugin should be used in webpack configuration with unique `name` option only. This will help to identify errors and warnings.');
+    }
+    if (!target) {
+      throw Error('SSRServePlugin should be used in webpack configuration with set `target` option only.');
+    }
+    if (target !== 'node') {
+      throw Error('SSRServePlugin should be used in webpack configuration with option `target` set to `node` only.');
+    }
+    if (!libraryTarget) {
+      throw Error('SSRServePlugin should be used in webpack configuration with set `output.libraryTarget` option only.');
+    }
+    if (libraryTarget !== 'commonjs2') {
+      throw Error('SSRServePlugin should be used in webpack configuration with option `output.libraryTarget` set to `commonjs2` only.');
     }
 
     if (typeof outputPath === 'string' && !path.isAbsolute(outputPath)) {
@@ -315,7 +330,7 @@ class SSRServePlugin {
   }
 
   async processCompiledFiles () {
-    const files = this.fileSystem.readdirSync('/', 'utf8');
+    const files = this.listAll('/', this.fileSystem);
     this.ssrObj.methods = files.filter(file => /\.js$/.test(file))
       .reduce((methods, file) => {
         const content = this.fileSystem.readFileSync(path.join('/', file), 'utf8');
@@ -334,7 +349,7 @@ class SSRServePlugin {
         }
 
         const method = sandbox.module.exports;
-        methods[file.replace(/\.js$/, '')] = method.default || method;
+        methods[file.replace(/\.js$/i, '').replace(/^.*\//, '')] = method.default || method;
 
         return methods;
       }, {});

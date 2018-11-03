@@ -24,15 +24,26 @@ const EventEmitter = require('events');
 const { createHash } = require('crypto');
 const detectPort = require('detect-port-alt');
 const { execSync } = require('child_process');
+const HotClientPlugin = require('hot-client-plugin');
 const escapeStringRegexp = require('escape-string-regexp');
 const openBrowser = require('react-dev-utils/openBrowser');
 const noopServiceWorkerMiddleware = require('noop-service-worker-middleware');
 
 /*
  TODO
- 1) Integrate hot-client-plugin;
- 2) Boilerplate picker;
- 3) Write tests.
+ 1) Boilerplate picker;
+ 2) Write tests;
+ 3) Write articles.
+*/
+
+/*
+  // This is necessary to apply hot updates
+  new HotClientPlugin({
+    staticContent: false,
+    editor: { allowedIPs: '127.0.0.1' },
+    // Enable HTTPS if the HTTPS environment variable is set to 'true'
+    https: sslObj
+  }),
 */
 
 class WebpackKoaServer extends EventEmitter {
@@ -51,7 +62,12 @@ class WebpackKoaServer extends EventEmitter {
       open = true,
       appName = 'website',
       proxy = false, // { proxy config }
-      addMiddleware = undefined
+      addMiddleware = undefined,
+      hotClient = {
+        hotClient: require.resolve('hot-client-plugin/lib/HotClient'),
+        staticContent: false,
+        editor: { allowedIPs: '127.0.0.1' }
+      }
     } = options;
 
     this.template = path.resolve(template);
@@ -65,6 +81,7 @@ class WebpackKoaServer extends EventEmitter {
     this.proxy = proxy;
     this.addMiddleware = addMiddleware;
     this.protocol = ssl ? 'https' : 'http';
+    this.sslObj = ssl;
 
     const serverPkg = require( protocol === 'http2' ? 'http2' : ( ssl ? 'https' : 'http' ) );
     const createServerMethod = protocol === 'http2' && ssl ? 'createSecureServer' : 'createServer';
@@ -83,6 +100,11 @@ class WebpackKoaServer extends EventEmitter {
     this.isInteractive = process.stdout.isTTY;
     this.clearConsoleCode = process.platform === 'win32' ? '\x1B[2J\x1B[0f' : '\x1B[2J\x1B[3J\x1B[H';
     this.isFirstCompile = true;
+
+    this.hotClient = new HotClientPlugin(Object.assign(
+      hotClient,
+      ssl ? { https: ssl } : {}
+    ));
 
     this.chokidar = chokidar;
     this.debug = debug('webpack-koa-server');
@@ -124,6 +146,15 @@ class WebpackKoaServer extends EventEmitter {
 
     this.plugins[newID] = plugin;
 
+    if (plugin.compiler.options.target === 'web') {
+      if (!this.firstWebPluginRegistered) {
+        this.firstWebPluginRegistered = true;
+        this.hotClient.addHotClientEntry(plugin.compiler);
+        this.hotClient.setAfterPluginsHook(plugin.compiler);
+      }
+      this.hotClient.setCompilerHandlers(plugin.compiler);
+    }
+
     return newID;
   }
 
@@ -161,11 +192,15 @@ class WebpackKoaServer extends EventEmitter {
   }
 
   async run () {
+    this.hotClient.runServer();
     this.refreshTemplate();
     await this.startServer();
 
     this.templateWatcher = this.chokidar
-      .watch( this.template, { ignored: /(^|[/\\])\../ })
+      .watch( this.template, {
+        ignored: /(^|[/\\])\../,
+        ignoreInitial: true
+      })
       .on('change', this.loadTemplate.bind(this));
 
     if (!Array.isArray(this.watchRestart)) {
@@ -458,7 +493,7 @@ class WebpackKoaServer extends EventEmitter {
       });
     }
 
-    this.koa.use(this.indexPageMiddleware.bind(this));
+    this.koa.use(this.devMiddleware.bind(this));
 
     this.applyMiddleware();
 
@@ -470,7 +505,15 @@ class WebpackKoaServer extends EventEmitter {
       this.koa.use(proxy(this.proxy));
     }
 
-    this.rawServer = this.createServer(this.koa.callback());
+    // If server is configured in SSL mode we have to provide `options` to `createServer` function
+    // If options are invalid object or `createServer` doesn't support SSL
+    // server will fail. The method `createServer` is selected ad assigned in constructor
+    const serverParams = [this.koa.callback()];
+    if (this.sslObj) {
+      serverParams.unshift(this.sslObj);
+    }
+
+    this.rawServer = this.createServer.apply(null, serverParams);
 
     // for the purpouse of instant server restart
     this.rawServer.on('connection', this.collectSockets.bind(this));
@@ -517,13 +560,13 @@ class WebpackKoaServer extends EventEmitter {
     this.emit('server-started');
   }
 
-  async indexPageMiddleware (ctx, next) {
+  async devMiddleware (ctx, next) {
     await next();
-    await this.waitForTemplate();
 
     // Producting output only there was no any other output exists
     if (['/', '/index.html'].includes(ctx.path)
       && !ctx.body) {
+      await this.waitForTemplate();
       ctx.body = this.templateHtml;
     }
   }

@@ -51,6 +51,7 @@
     "chokidar": "^2.0.4",
     "detect-port-alt": "^1.1.6",
     "escape-string-regexp": "^1.0.5",
+    "hot-client-plugin": "^1.2.5",
     "inquirer": "^6.2.0",
     "koa": "^2.6.1",
     "koa-compress": "^3.0.0",

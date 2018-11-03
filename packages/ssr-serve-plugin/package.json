@@ -47,6 +47,7 @@
   "dependencies": {
     "memory-fs": "^0.4.1",
     "mime": "^2.3.1",
+    "list-all": "^1.2.5",
     "react-dev-utils": "^6.1.1",
     "webpack-koa-server": "^1.2.5"
   },

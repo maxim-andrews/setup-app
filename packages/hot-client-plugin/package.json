@@ -76,6 +76,9 @@
       "@babel/preset-env"
     ]
   },
+  "eslintConfig": {
+    "extends": "setup-app"
+  },
   "engines": {
     "node": ">= 8"
   }
