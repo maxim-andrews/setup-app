@@ -36,16 +36,6 @@ const noopServiceWorkerMiddleware = require('noop-service-worker-middleware');
  3) Write articles.
 */
 
-/*
-  // This is necessary to apply hot updates
-  new HotClientPlugin({
-    staticContent: false,
-    editor: { allowedIPs: '127.0.0.1' },
-    // Enable HTTPS if the HTTPS environment variable is set to 'true'
-    https: sslObj
-  }),
-*/
-
 class WebpackKoaServer extends EventEmitter {
   constructor (options = {}) {
     super();
