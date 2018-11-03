@@ -65,7 +65,6 @@
     "file-loader": "^2.0.0",
     "front-serve-plugin": "^1.2.5",
     "fs-extra": "^7.0.0",
-    "hot-client-plugin": "^1.2.5",
     "html-webpack-plugin": "4.0.0-alpha.2",
     "jest": "^23.6.0",
     "mini-css-extract-plugin": "^0.4.4",

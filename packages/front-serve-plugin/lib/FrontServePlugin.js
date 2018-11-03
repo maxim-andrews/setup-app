@@ -9,6 +9,7 @@
 
 const mime = require('mime');
 const path = require('path');
+const listAll = require('list-all');
 const { parse } = require('url');
 const EventEmitter = require('events');
 const querystring = require('querystring');
@@ -65,6 +66,8 @@ class FrontServePlugin {
     this.mime = mime;
     this.unescape = querystring.unescape;
 
+    this.listAll = listAll;
+
     this.HASH_REGEXP = /[0-9a-f]{10,}/;
 
     this.emitter = new EventEmitter();
@@ -73,13 +76,21 @@ class FrontServePlugin {
   }
 
   apply (compiler) {
-    const { watch, name, output: { path: outputPath, publicPath, filename } } = compiler.options;
+    const { watch, name, target, output: { path: outputPath, publicPath, filename } } = compiler.options;
     if (!watch) {
       throw Error('FrontServePlugin should be configured in `watch` only mode. Configuration option `watch` should be equal to `true`.');
     }
 
     if (!name) {
       throw Error('FrontServePlugin should be used in webpack configuration with unique `name` option only. This will help to identify errors and warnings.');
+    }
+
+    if (!target) {
+      throw Error('FrontServePlugin should be used in webpack configuration with set `target` option only.');
+    }
+
+    if (target !== 'web') {
+      throw Error('FrontServePlugin should be used in webpack configuration with option `target` set to `web` only.');
     }
 
     if (typeof outputPath === 'string' && !path.isAbsolute(outputPath)) {
@@ -241,13 +252,14 @@ class FrontServePlugin {
 
     const { templateHtml, callback } = await this.server.updateTemplate();
     const bundleFile = path.join(this.publicPath, this.bundleFilename);
-    const jsFilesOnly = this.allFiles().filter(file => /\.js$/.test(file));
+    const jsFilesOnly = this.listAll('/', this.fileSystem)
+      .filter(file => /\.js$/.test(file));
 
     jsFilesOnly.sort((a, b) =>{
       if (a === bundleFile) {
-        return 1;
-      } else if (b === bundleFile) {
         return -1;
+      } else if (b === bundleFile) {
+        return 1;
       } else if (a < b) {
         return -1;
       } else if (a > b) {
@@ -258,38 +270,25 @@ class FrontServePlugin {
       return 0;
     });
 
-    console.log(jsFilesOnly);
-    process.exit(0);
+    const injectJs = jsFilesOnly.reduce((tags, file) => {
+      const tag = `<script type="text/javascript" src="${file}"></script>`;
+
+      if (!templateHtml.includes(tag)) {
+        tags.push(tag);
+      }
+
+      return tags;
+    }, []);
 
     callback(
       templateHtml.replace(
         /^(\s*)<\/body>/m,
-        jsFilesOnly.map(
-          file => `$1$1<script type="text/javascript" src="${file}"></script>`
-        ).join('') +
-        '\n$1</body>'
+        `$1$1${ injectJs.join('\n$1$1') }\n$1</body>`
       )
     );
 
     this.contentReady = true;
     this.emitter.emit('contentReady');
-  }
-
-  allFiles(dirPath = '/') {
-    const allContent = this.fileSystem.readdirSync(dirPath, {
-      encoding: 'utf8'
-    });
-
-    return allContent.reduce((files, file) => {
-      const fullName = path.join(dirPath, file);
-      const fileStat = this.fileSystem.statSync(fullName);
-      if (fileStat.isDirectory()) {
-        files = files.concat(this.allFiles(fullName));
-      } else if (fileStat.isFile()) {
-        files.push(fullName);
-      }
-      return files;
-    }, []);
   }
 }
 

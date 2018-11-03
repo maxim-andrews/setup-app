@@ -1,0 +1,47 @@
+{
+  "name": "list-all",
+  "version": "1.2.5",
+  "description": "list all files in fs",
+  "keywords": [
+    "file-system",
+    "all",
+    "files",
+    "all-files",
+    "list-all"
+  ],
+  "author": "Maxim Andrews <maximandrewz@users.noreply.github.com> (http://maximandrews.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxim-andrews/setup-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/maxim-andrews/setup-app/issues"
+  },
+  "homepage": "https://github.com/maxim-andrews/setup-app#readme",
+  "main": "lib/list-all.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-eslint": "^10.0.1",
+    "babel-jest": "^23.6.0",
+    "eslint": "^5.8.0",
+    "eslint-config-setup-app": "^1.2.5",
+    "eslint-plugin-flowtype": "^3.2.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.11.1",
+    "jest": "^23.6.0"
+  }
+}

@@ -9,7 +9,6 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
-const HotClientPlugin = require('hot-client-plugin');
 const FrontServePlugin = require('front-serve-plugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
@@ -277,13 +276,6 @@ module.exports = webpackKoaServer => {
       ],
     },
     plugins: [
-      // This is necessary to apply hot updates
-      new HotClientPlugin({
-        staticContent: paths.appPublic,
-        editor: { allowedIPs: '127.0.0.1' },
-        // Enable HTTPS if the HTTPS environment variable is set to 'true'
-        https: sslObj
-      }),
       // Serving frontend files
       new FrontServePlugin({
         server: webpackKoaServer,
