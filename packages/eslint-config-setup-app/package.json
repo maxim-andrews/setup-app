@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-setup-app",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "ESLint configuration for fullstack-scripts",
   "main": "index.js",
   "repository": {

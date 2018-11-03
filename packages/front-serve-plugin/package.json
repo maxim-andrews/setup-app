@@ -1,6 +1,6 @@
 {
   "name": "front-serve-plugin",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "A webpack4 plugin to serve front-end with koa.js. Works with webpack-koa-server.",
   "main": "lib/FrontServePlugin.js",
   "scripts": {
@@ -37,7 +37,7 @@
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
     "eslint": "^5.8.0",
-    "eslint-config-setup-app": "^1.2.5",
+    "eslint-config-setup-app": "^1.2.6",
     "eslint-plugin-flowtype": "^3.2.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
@@ -46,11 +46,11 @@
     "webpack": "^4.23.1"
   },
   "dependencies": {
+    "list-all": "^1.2.6",
     "memory-fs": "^0.4.1",
-    "list-all": "^1.2.5",
     "mime": "^2.3.1",
     "react-dev-utils": "^6.1.1",
-    "webpack-koa-server": "^1.2.5"
+    "webpack-koa-server": "^1.2.6"
   },
   "peerDependencies": {
     "webpack": "^4.0.0"

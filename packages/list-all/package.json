@@ -1,6 +1,6 @@
 {
   "name": "list-all",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "list all files in fs",
   "keywords": [
     "file-system",
@@ -37,7 +37,7 @@
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
     "eslint": "^5.8.0",
-    "eslint-config-setup-app": "^1.2.5",
+    "eslint-config-setup-app": "^1.2.6",
     "eslint-plugin-flowtype": "^3.2.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
