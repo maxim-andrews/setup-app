@@ -27,5 +27,8 @@
   ],
   "scripts": {
     "test": "jest"
+  },
+  "devDependencies": {
+    "eslint-config-setup-app": "^1.2.7"
   }
 }
