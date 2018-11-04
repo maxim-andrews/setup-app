@@ -4,17 +4,17 @@
   "description": "Configuration and scripts for Create FullStack App",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/maxim-andrews/setup-app.git"
+    "url": "git+https://github.com/maxim-andrews/setup-app-suite.git"
   },
+  "bugs": {
+    "url": "https://github.com/maxim-andrews/setup-app-suite/issues"
+  },
+  "homepage": "https://github.com/maxim-andrews/setup-app-suite#readme",
   "author": "Maxim Andrews <maximandrewz@users.noreply.github.com> (http://maximandrews.com)",
   "license": "MIT",
   "engines": {
     "node": ">=8"
   },
-  "bugs": {
-    "url": "https://github.com/maxim-andrews/setup-app/issues"
-  },
-  "homepage": "https://github.com/maxim-andrews/setup-app#readme",
   "files": [
     "bin",
     "config",

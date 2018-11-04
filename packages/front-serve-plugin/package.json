@@ -2,6 +2,14 @@
   "name": "front-serve-plugin",
   "version": "1.2.6",
   "description": "A webpack4 plugin to serve front-end with koa.js. Works with webpack-koa-server.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxim-andrews/setup-app-suite.git"
+  },
+  "bugs": {
+    "url": "https://github.com/maxim-andrews/setup-app-suite/issues"
+  },
+  "homepage": "https://github.com/maxim-andrews/setup-app-suite#readme",
   "main": "lib/FrontServePlugin.js",
   "scripts": {
     "test": "jest"
@@ -11,14 +19,6 @@
     "LICENSE",
     "README.md"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/maxim-andrews/setup-app.git"
-  },
-  "bugs": {
-    "url": "https://github.com/maxim-andrews/setup-app/issues"
-  },
-  "homepage": "https://github.com/maxim-andrews/setup-app#readme",
   "keywords": [
     "webpack",
     "webpack4",
@@ -46,6 +46,7 @@
     "webpack": "^4.23.1"
   },
   "dependencies": {
+    "debug": "^4.1.0",
     "list-all": "^1.2.6",
     "memory-fs": "^0.4.1",
     "mime": "^2.3.1",
