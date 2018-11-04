@@ -308,6 +308,7 @@ class WebpackKoaServer extends EventEmitter {
     if (!this.template) {
       throw Error('WebpackKoaServer `template` option is required.');
     }
+    this.emit('template-invalid');
 
     this.originalTemplateHtml = this.templateHtml = this.fs.readFileSync(this.template, 'utf8');
     this.replaceEnvVars();
@@ -318,6 +319,7 @@ class WebpackKoaServer extends EventEmitter {
     if (!this.originalTemplateHtml) {
       return this.loadTemplate();
     }
+    this.emit('template-invalid');
 
     this.templateHtml = this.originalTemplateHtml;
     this.replaceEnvVars();
@@ -369,6 +371,8 @@ class WebpackKoaServer extends EventEmitter {
     if (!this.templateUpdateQueue.length) {
       return Promise.resolve();
     }
+
+    this.debug('WebpackKoaServer is waiting untill template will be available');
 
     return new Promise(resolve => {
       this.once('template-updated', resolve);
@@ -552,11 +556,11 @@ class WebpackKoaServer extends EventEmitter {
 
   async devMiddleware (ctx, next) {
     await next();
+    await this.waitForTemplate();
 
     // Producting output only there was no any other output exists
     if (['/', '/index.html'].includes(ctx.path)
       && !ctx.body) {
-      await this.waitForTemplate();
       ctx.body = this.templateHtml;
     }
   }
@@ -728,6 +732,8 @@ class WebpackKoaServer extends EventEmitter {
     if (this.port) {
       return Promise.resolve();
     }
+
+    this.debug('WebpackKoaServer is waiting untill server will restart');
 
     return new Promise(resolve => {
       this.once('server-started', resolve);

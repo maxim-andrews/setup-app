@@ -9,8 +9,9 @@
 
 const mime = require('mime');
 const path = require('path');
-const listAll = require('list-all');
+const debug = require('debug');
 const { parse } = require('url');
+const listAll = require('list-all');
 const EventEmitter = require('events');
 const querystring = require('querystring');
 const MemoryFileSystem = require('memory-fs');
@@ -67,6 +68,7 @@ class FrontServePlugin {
     this.unescape = querystring.unescape;
 
     this.listAll = listAll;
+    this.debug = debug('front-serve-plugin');
 
     this.HASH_REGEXP = /[0-9a-f]{10,}/;
 
@@ -117,13 +119,14 @@ class FrontServePlugin {
     compiler.hooks.entryOption.tap('FrontServePlugin', this.readyStartServer.bind(this));
 
     compiler.hooks.done.tap('FrontServePlugin', this.compilerDone.bind(this));
-    compiler.hooks.failed.tap('FrontServePlugin', console.log);
+    compiler.hooks.failed.tap('FrontServePlugin', this.debug);
     compiler.hooks.invalid.tap('FrontServePlugin', this.compilerIvalidated.bind(this));
 
     this.pluginId = this.server.registerPlugin(this);
 
     if (this.injectJs) {
-      this.server.on('template-loaded', this.inject.bind(this));
+      this.server.on('template-invalid', this.contentInvalid.bind(this));
+      // this.server.on('template-loaded', this.inject.bind(this));
       this.server.on('template-refreshed', this.inject.bind(this));
     }
 
@@ -139,7 +142,6 @@ class FrontServePlugin {
 
   compilerIvalidated () {
     this.contentCompiled = false;
-    this.contentReady = false;
     this.server.emit('compilation-invalid', this.pluginId);
   }
 
@@ -154,6 +156,11 @@ class FrontServePlugin {
 
     this.contentCompiled = true;
     this.emitter.emit('contentCompiled');
+    this.server.refreshTemplate();
+  }
+
+  contentInvalid () {
+    this.contentReady = false;
   }
 
   async contentMiddleware(ctx, next) {
@@ -232,6 +239,8 @@ class FrontServePlugin {
       return Promise.resolve();
     }
 
+    this.debug('FrontServePlugin is waiting untill content will be available');
+
     return new Promise(resolve => {
       this.emitter.once('contentReady', resolve);
     });
@@ -241,6 +250,8 @@ class FrontServePlugin {
     if (this.contentCompiled) {
       return Promise.resolve();
     }
+
+    this.debug('FrontServePlugin is waiting untill compiled');
 
     return new Promise(resolve => {
       this.emitter.once('contentCompiled', resolve);
@@ -255,11 +266,17 @@ class FrontServePlugin {
     const jsFilesOnly = this.listAll('/', this.fileSystem)
       .filter(file => /\.js$/.test(file));
 
-    jsFilesOnly.sort((a, b) =>{
+    const hotUpdate = /\.hot-update\.js$/;
+
+    jsFilesOnly.sort((a, b) => {
       if (a === bundleFile) {
         return -1;
       } else if (b === bundleFile) {
         return 1;
+      } else if (hotUpdate.test(a) && !hotUpdate.test(b)) {
+        return 1;
+      } else if (!hotUpdate.test(a) && hotUpdate.test(b)) {
+        return -1;
       } else if (a < b) {
         return -1;
       } else if (a > b) {
