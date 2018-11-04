@@ -361,18 +361,22 @@ class SSRServePlugin {
       }, {});
 
     if (this.injectCss) {
-      const cssStyles = files.filter(file => /\.css$/.test(file))
-        .map(file =>
-          '\t<style type="text/css">\n'
-          + this.fileSystem.readFileSync(path.join('/', file), 'utf8')
-          + '\n\t</style>'
-        );
-
       const { templateHtml, callback } = await this.server.updateTemplate();
+      const cssStyles = files.filter(file => /\.css$/.test(file))
+        .reduce((styles, file) => {
+          const style = '<style type="text/css">\n'
+            + this.fileSystem.readFileSync(path.join('/', file), 'utf8')
+            + '\n\t</style>';
+          if (!templateHtml.includes(style)) {
+            styles.push(style);
+          }
+          return styles;
+        }, []);
+
       callback(
         templateHtml.replace(
           /^(\s*)<\/head>/m,
-          `$1$1${ cssStyles.join('\n') }\n$1</head>`
+          `$1$1${ cssStyles.join('\n\t') }\n$1</head>`
         )
       );
     }
