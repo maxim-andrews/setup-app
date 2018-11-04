@@ -1,6 +1,6 @@
 {
   "name": "fullstack-scripts",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "description": "Configuration and scripts for Create FullStack App",
   "repository": {
     "type": "git",
@@ -63,7 +63,7 @@
     "eslint-plugin-jsx-a11y": "^6.1.2",
     "eslint-plugin-react": "^7.11.1",
     "file-loader": "^2.0.0",
-    "front-serve-plugin": "^1.2.7",
+    "front-serve-plugin": "^1.2.8",
     "fs-extra": "^7.0.0",
     "html-webpack-plugin": "4.0.0-alpha.2",
     "jest": "^23.6.0",
@@ -76,13 +76,13 @@
     "promise": "^8.0.2",
     "raf": "^3.4.1",
     "react-dev-utils": "^6.1.1",
-    "ssr-serve-plugin": "^1.2.7",
+    "ssr-serve-plugin": "^1.2.8",
     "style-loader": "^0.23.1",
     "sw-precache-webpack-plugin": "^0.11.5",
     "terser-webpack-plugin": "^1.1.0",
     "url-loader": "^1.1.2",
     "webpack": "^4.24.0",
-    "webpack-koa-server": "^1.2.7",
+    "webpack-koa-server": "^1.2.8",
     "webpack-manifest-plugin": "^2.0.4",
     "whatwg-fetch": "^3.0.0"
   },

@@ -1,6 +1,6 @@
 {
   "name": "list-all",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "description": "list all files in fs",
   "repository": {
     "type": "git",

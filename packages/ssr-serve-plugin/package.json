@@ -1,6 +1,6 @@
 {
   "name": "ssr-serve-plugin",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "description": "A webpack plugin to serve server side rendered content with koa.js. Works with webpack-koa-server.",
   "repository": {
     "type": "git",
@@ -46,11 +46,11 @@
   },
   "dependencies": {
     "debug": "^4.1.0",
-    "list-all": "^1.2.7",
+    "list-all": "^1.2.8",
     "memory-fs": "^0.4.1",
     "mime": "^2.3.1",
     "react-dev-utils": "^6.1.1",
-    "webpack-koa-server": "^1.2.7"
+    "webpack-koa-server": "^1.2.8"
   },
   "peerDependencies": {
     "webpack": "^4.0.0"
