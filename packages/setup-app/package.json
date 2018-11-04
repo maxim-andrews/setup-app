@@ -1,0 +1,31 @@
+{
+  "name": "setup-app",
+  "version": "1.2.7",
+  "description": "Boilerplate generator",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxim-andrews/setup-app-suite.git"
+  },
+  "bugs": {
+    "url": "https://github.com/maxim-andrews/setup-app-suite/issues"
+  },
+  "homepage": "https://github.com/maxim-andrews/setup-app-suite#readme",
+  "keywords": [
+    "ssr-serve-plugin",
+    "front-serve-plugin",
+    "webpack-koa-server"
+  ],
+  "author": "Maxim Andrews <maximandrewz@users.noreply.github.com>",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "test": "jest"
+  }
+}
