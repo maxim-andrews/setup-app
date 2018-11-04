@@ -10,6 +10,7 @@
 const vm = require('vm');
 const mime = require('mime');
 const path = require('path');
+const debug = require('debug');
 const { parse } = require('url');
 const listAll = require('list-all');
 const EventEmitter = require('events');
@@ -77,6 +78,7 @@ class SSRServePlugin {
     this.unescape = querystring.unescape;
 
     this.listAll = listAll;
+    this.debug = debug('ssr-serve-plugin');
 
     this.HASH_REGEXP = /[0-9a-f]{10,}/;
 
@@ -141,7 +143,7 @@ class SSRServePlugin {
 
     compiler.hooks.entryOption.tap('SSRServePlugin', this.readyStartServer.bind(this));
     compiler.hooks.done.tap('SSRServePlugin', this.compilerDone.bind(this));
-    compiler.hooks.failed.tap('SSRServePlugin', console.log);
+    compiler.hooks.failed.tap('SSRServePlugin', this.debug);
     compiler.hooks.invalid.tap('SSRServePlugin', this.compilerIvalidated.bind(this));
 
     this.pluginId = this.server.registerPlugin(this);
@@ -314,6 +316,8 @@ class SSRServePlugin {
       return Promise.resolve();
     }
 
+    this.debug('SSRServePlugin is waiting untill content will be available');
+
     return new Promise(resolve => {
       this.emitter.once('contentReady', resolve);
     });
@@ -323,6 +327,8 @@ class SSRServePlugin {
     if (Object.keys(this.ssrObj.methods).length) {
       return Promise.resolve();
     }
+
+    this.debug('SSRServePlugin is waiting untill methods will be available');
 
     return new Promise(resolve => {
       this.emitter.once('methodsReady', resolve);
@@ -345,7 +351,7 @@ class SSRServePlugin {
             breakOnSigint: true
           });
         } catch (e) {
-          console.log(e);
+          this.debug(e);
         }
 
         const method = sandbox.module.exports;

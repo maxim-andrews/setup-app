@@ -2,6 +2,14 @@
   "name": "hot-client-plugin",
   "version": "1.2.6",
   "description": "A webpack plugin (websocket server/client) for interacting with Hot Module Replacement plugin",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxim-andrews/setup-app-suite.git"
+  },
+  "bugs": {
+    "url": "https://github.com/maxim-andrews/setup-app-suite/issues"
+  },
+  "homepage": "https://github.com/maxim-andrews/setup-app-suite#readme",
   "main": "lib/HotClientPlugin.js",
   "directories": {
     "lib": "lib"
@@ -15,14 +23,6 @@
     "LICENSE",
     "README.md"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/maxim-andrews/setup-app.git"
-  },
-  "bugs": {
-    "url": "https://github.com/maxim-andrews/setup-app/issues"
-  },
-  "homepage": "https://github.com/maxim-andrews/setup-app#readme",
   "keywords": [
     "webpack",
     "webpack4",

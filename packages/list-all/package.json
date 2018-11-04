@@ -2,6 +2,14 @@
   "name": "list-all",
   "version": "1.2.6",
   "description": "list all files in fs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxim-andrews/setup-app-suite.git"
+  },
+  "bugs": {
+    "url": "https://github.com/maxim-andrews/setup-app-suite/issues"
+  },
+  "homepage": "https://github.com/maxim-andrews/setup-app-suite#readme",
   "keywords": [
     "file-system",
     "all",
@@ -11,14 +19,6 @@
   ],
   "author": "Maxim Andrews <maximandrewz@users.noreply.github.com> (http://maximandrews.com)",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/maxim-andrews/setup-app.git"
-  },
-  "bugs": {
-    "url": "https://github.com/maxim-andrews/setup-app/issues"
-  },
-  "homepage": "https://github.com/maxim-andrews/setup-app#readme",
   "main": "lib/list-all.js",
   "directories": {
     "lib": "lib",
