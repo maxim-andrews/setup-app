@@ -22,7 +22,7 @@
 [![Hits Counter][hits]][hits-url]
 
 # Hot Client Plugin
-A [webpack 4](https://github.com/webpack/webpack) plugin (websocket server/client) to complete Hot Module Replacement. It replaces `webpack-serve` built-in opinionated `webpack-hot-client`.
+A [webpack 4](https://github.com/webpack/webpack) plugin (websocket server/client) to complete Hot Module Replacement. At the moment it is designed to work with [WebpackKoaServer](https://github.com/maxim-andrews/setup-app-suite/tree/master/packages/webpack-koa-server) and [FrontServePlugin](https://github.com/maxim-andrews/setup-app-suite/tree/master/packages/front-serve-plugin) setup. See live example [here](https://github.com/maxim-andrews/crapjack).
 
 Helps to improve productivity by dynamically applying webpack updates and:
 * showing compiler and app errors across all browsers and consoles (DevTools etc) in which app is opened;
@@ -42,11 +42,9 @@ If something doesn't work, please [file an issue](https://github.com/maxim-andre
 The [only browsers](https://caniuse.com/#feat=websockets) with support of *native* **WebSocket** will work with this plugin.
 
 ## Requirements
-This plugin requires a minimum of Node.js v6.9.0, Webpack v4.0.0 and [WebpackServe](https://github.com/webpack-contrib/webpack-serve).
+This plugin requires a minimum of Node.js v6.9.0, Webpack v4.0.0.
 
 ## Installation
-**You’ll need to have Node >= 8 on your local development machine** (but it’s not required on the server). You can use [nvm](https://github.com/creationix/nvm#installation) (macOS/Linux) or [nvm-windows](https://github.com/coreybutler/nvm-windows#node-version-manager-nvm-for-windows) to easily switch Node versions between different projects.
-
 To install plugin, you may choose one of the following methods:
 
 ### npm
@@ -107,17 +105,6 @@ plugins: [
 ```
 
 There is no need to include `webpack.HotModuleReplacementPlugin`. It will be added by `HotClientPlugin` automatically.
-
-### WebpackServe Configuration
-The built-in hot client should be disabled by setting [options.hotClient](https://github.com/webpack-contrib/webpack-serve#optionshotclient) to false.
-
-```js
-module.exports = {
-  //...
-  hotClient: false,
-  //...
-}
-```
 
 ### List of available Hot Client Plugin constructor options
 The `options` object is optional.
