@@ -1,6 +1,6 @@
 {
   "name": "hot-client-plugin",
-  "version": "1.2.9",
+  "version": "1.2.10",
   "description": "A webpack plugin (websocket server/client) for interacting with Hot Module Replacement plugin",
   "repository": {
     "type": "git",
@@ -43,7 +43,7 @@
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
     "eslint": "^5.7.0",
-    "eslint-config-setup-app": "^1.2.9",
+    "eslint-config-setup-app": "^1.2.10",
     "eslint-plugin-flowtype": "^3.0.0",
     "eslint-plugin-import": "^2.14.0",
     "jest": "^23.6.0",
