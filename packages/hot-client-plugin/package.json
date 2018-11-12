@@ -9,7 +9,7 @@
   "bugs": {
     "url": "https://github.com/maxim-andrews/setup-app-suite/issues"
   },
-  "homepage": "https://github.com/maxim-andrews/setup-app-suite#readme",
+  "homepage": "https://github.com/maxim-andrews/setup-app-suite/tree/master/packages/hot-client-plugin#readme",
   "main": "lib/HotClientPlugin.js",
   "directories": {
     "lib": "lib"
