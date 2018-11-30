@@ -366,6 +366,7 @@ class SSRServePlugin {
         .reduce((styles, file) => {
           const style = '<style type="text/css">\n'
             + this.fileSystem.readFileSync(path.join('/', file), 'utf8')
+              .replace(/\s+\/\*# sourceMappingURL=[^*]+\*\//, '')
             + '\n\t</style>';
           if (!templateHtml.includes(style)) {
             styles.push(style);
