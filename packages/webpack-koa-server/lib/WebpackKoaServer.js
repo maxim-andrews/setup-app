@@ -528,6 +528,11 @@ class WebpackKoaServer extends EventEmitter {
         if (this.templateWatcher && typeof this.templateWatcher.close === 'function') {
           this.templateWatcher.close();
         }
+
+        if (this.restartWatchers && typeof this.restartWatchers.close === 'function') {
+          this.restartWatchers.close();
+        }
+
         process.exit();
       });
     });
