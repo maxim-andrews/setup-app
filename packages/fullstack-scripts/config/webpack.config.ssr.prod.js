@@ -245,7 +245,7 @@ module.exports = {
     // It is absolutely essential that NODE_ENV was set to production here.
     // Otherwise React will be compiled in the very slow development mode.
     new webpack.DefinePlugin(Object.assign(env.stringified, {
-      SSR: true
+      'process.env.SSR': true
     })),
     // Note: this won't work without ExtractTextPlugin.extract(..) in `loaders`.
     new MiniCssExtractPlugin({
