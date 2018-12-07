@@ -202,13 +202,16 @@ class SSRServePlugin {
     this.server.emit('start-server');
   }
 
-  compilerIvalidated () {
+  compilerIvalidated (fileName) {
     this.contentReady = false;
 
-    this.fileSystem
-      .readdirSync('/', 'utf8')
-      .filter(file => /\.css$/.test(file) || /\.css\.map$/.test(file))
-      .forEach(file => this.fileSystem.unlinkSync( path.join('/', file) ) );
+    if (/\.css$/.test(fileName)) {
+      const files = this.listAll('/', this.fileSystem);
+
+      files
+        .filter(file => /\.css$/.test(file) || /\.css\.map$/.test(file))
+        .forEach(file => this.fileSystem.unlinkSync( file ));
+    }
 
     this.server.emit('compilation-invalid', this.pluginId);
   }
@@ -337,6 +340,15 @@ class SSRServePlugin {
 
   async processCompiledFiles () {
     const files = this.listAll('/', this.fileSystem);
+
+    this.processJavaScripts(files);
+    this.processJavaScriptMaps(files);
+    this.processCSSFiles(files);
+
+    this.emitter.emit('methodsReady');
+  }
+
+  processJavaScripts (files) {
     this.ssrObj.methods = files.filter(file => /\.js$/.test(file))
       .reduce((methods, file) => {
         const content = this.fileSystem.readFileSync(path.join('/', file), 'utf8');
@@ -359,7 +371,21 @@ class SSRServePlugin {
 
         return methods;
       }, {});
+  }
 
+  processJavaScriptMaps (files) {
+    this.ssrObj.maps = files.filter(file => /\.js.map$/.test(file))
+      .reduce((maps, file) => {
+        const filePath = path.join('/', file);
+        const content = this.fileSystem.readFileSync(filePath, 'utf8');
+        maps[file.replace(/\.js.map$/i, '').replace(/^.*\//, '')] =
+          JSON.parse(content);
+
+        return maps;
+      }, {});
+  }
+
+  async processCSSFiles (files) {
     if (this.injectCss) {
       const { templateHtml, callback } = await this.server.updateTemplate();
       const cssStyles = files.filter(file => /\.css$/.test(file))
@@ -381,8 +407,6 @@ class SSRServePlugin {
         )
       );
     }
-
-    this.emitter.emit('methodsReady');
   }
 
   updateSsrHtml (templateHtml) {
