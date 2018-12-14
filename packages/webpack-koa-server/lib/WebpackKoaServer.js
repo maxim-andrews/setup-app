@@ -186,14 +186,25 @@ class WebpackKoaServer extends EventEmitter {
     this.refreshTemplate();
     await this.startServer();
 
+    this.watchTemplate();
+    this.watchContent();
+  }
+
+  watchTemplate () {
+    if (this.templateWatcher) {
+      return false;
+    }
+
     this.templateWatcher = this.chokidar
       .watch( this.template, {
         ignored: /(^|[/\\])\../,
         ignoreInitial: true
       })
       .on('change', this.loadTemplate.bind(this));
+  }
 
-    if (!Array.isArray(this.watchRestart)) {
+  watchContent () {
+    if (!Array.isArray(this.watchRestart) || this.restartWatchers) {
       return false;
     }
 

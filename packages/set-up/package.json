@@ -1,0 +1,33 @@
+{
+  "name": "set-up",
+  "version": "1.3.2",
+  "description": "Create app setup",
+  "keywords": [
+    "boilerplate",
+    "template",
+    "new",
+    "app",
+    "new-app"
+  ],
+  "author": "Maxim Andrews <maximandrewz@users.noreply.github.com>",
+  "homepage": "https://github.com/maxim-andrews/setup-app-suite#readme",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxim-andrews/setup-app-suite.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/maxim-andrews/setup-app-suite/issues"
+  }
+}
