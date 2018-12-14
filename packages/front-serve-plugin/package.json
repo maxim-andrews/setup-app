@@ -1,6 +1,6 @@
 {
   "name": "front-serve-plugin",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "A webpack4 plugin to serve front-end with koa.js. Works with webpack-koa-server.",
   "repository": {
     "type": "git",
@@ -51,7 +51,7 @@
     "memory-fs": "^0.4.1",
     "mime": "^2.3.1",
     "react-dev-utils": "^6.1.1",
-    "webpack-koa-server": "^1.3.2"
+    "webpack-koa-server": "^1.3.3"
   },
   "peerDependencies": {
     "webpack": "^4.0.0"
