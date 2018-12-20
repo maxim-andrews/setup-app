@@ -11,7 +11,6 @@ const mime = require('mime');
 const path = require('path');
 const debug = require('debug');
 const { parse } = require('url');
-const listAll = require('list-all');
 const EventEmitter = require('events');
 const querystring = require('querystring');
 const MemoryFileSystem = require('memory-fs');
@@ -67,7 +66,6 @@ class FrontServePlugin {
     this.mime = mime;
     this.unescape = querystring.unescape;
 
-    this.listAll = listAll;
     this.debug = debug('front-serve-plugin');
 
     this.HASH_REGEXP = /[0-9a-f]{10,}/;
@@ -146,6 +144,7 @@ class FrontServePlugin {
   }
 
   compilerDone (stats) {
+    this.lastStats = stats;
     // We only construct the warnings and errors for speed:
     // https://github.com/facebook/create-react-app/issues/4492#issuecomment-421959548
     const messages = this.formatWebpackMessages(
@@ -263,8 +262,8 @@ class FrontServePlugin {
 
     const { templateHtml, callback } = await this.server.updateTemplate();
     const bundleFile = path.join(this.publicPath, this.bundleFilename);
-    const jsFilesOnly = this.listAll('/', this.fileSystem)
-      .filter(file => /\.js$/.test(file));
+    const allFiles = this.lastStats ? Object.keys(this.lastStats.compilation.assets) : [];
+    const jsFilesOnly = allFiles.filter(file => /\.js$/.test(file));
 
     const hotUpdate = /\.hot-update\.js$/;
 
