@@ -12,12 +12,12 @@ const mime = require('mime');
 const path = require('path');
 const debug = require('debug');
 const { parse } = require('url');
-const listAll = require('list-all');
 const EventEmitter = require('events');
 const querystring = require('querystring');
 const MemoryFileSystem = require('memory-fs');
 const WebpackKoaServer = require('webpack-koa-server');
 const formatWebpackMessages = require('react-dev-utils/formatWebpackMessages');
+const { SourceMapConsumer } = require('source-map');
 
 class SSRServePlugin {
   constructor (options = {}) {
@@ -77,7 +77,6 @@ class SSRServePlugin {
     this.mime = mime;
     this.unescape = querystring.unescape;
 
-    this.listAll = listAll;
     this.debug = debug('ssr-serve-plugin');
 
     this.HASH_REGEXP = /[0-9a-f]{10,}/;
@@ -204,19 +203,11 @@ class SSRServePlugin {
 
   compilerIvalidated (fileName) {
     this.contentReady = false;
-
-    if (/\.css$/.test(fileName)) {
-      const files = this.listAll('/', this.fileSystem);
-
-      files
-        .filter(file => /\.css$/.test(file) || /\.css\.map$/.test(file))
-        .forEach(file => this.fileSystem.unlinkSync( file ));
-    }
-
     this.server.emit('compilation-invalid', this.pluginId);
   }
 
   compilerDone (stats) {
+    this.lastStats = stats;
     // We only construct the warnings and errors for speed:
     // https://github.com/facebook/create-react-app/issues/4492#issuecomment-421959548
     const messages = this.formatWebpackMessages(
@@ -339,11 +330,13 @@ class SSRServePlugin {
   }
 
   async processCompiledFiles () {
-    const files = this.listAll('/', this.fileSystem);
+    const files = this.lastStats ? Object.keys(this.lastStats.compilation.assets) : false;
 
-    this.processJavaScripts(files);
-    this.processJavaScriptMaps(files);
-    this.processCSSFiles(files);
+    if (files) {
+      this.processJavaScriptMaps(files);
+      this.processJavaScripts(files);
+      this.processCSSFiles(files);
+    }
 
     this.emitter.emit('methodsReady');
   }
@@ -351,6 +344,7 @@ class SSRServePlugin {
   processJavaScripts (files) {
     this.ssrObj.methods = files.filter(file => /\.js$/.test(file))
       .reduce((methods, file) => {
+        const methodName = file.replace(/\.js$/i, '').replace(/^.*\//, '');
         const content = this.fileSystem.readFileSync(path.join('/', file), 'utf8');
         const sandbox = { module: {} };
         let script;
@@ -363,11 +357,30 @@ class SSRServePlugin {
             breakOnSigint: true
           });
         } catch (e) {
-          this.debug(e);
+          const stackArray = e.stack.split('\n');
+          const sourceConsumer = new SourceMapConsumer(this.ssrObj.maps[methodName]);
+          const restStack = stackArray.slice(1).map((traceLine, i) => {
+            const matched = traceLine.match(/\s+\(?([\w<>.]+:(\d+):(\d+))\)?$/);
+            let outputLine = traceLine;
+
+            if (matched) {
+              const line = parseInt(matched[2], 10);
+              const column = parseInt(matched[3], 10);
+              const original = sourceConsumer.originalPositionFor({ line, column });
+              if ( original.source !== null && original.line !== null && original.column !== null) {
+                outputLine = traceLine.replace(matched[1], `${original.source}:${original.line}:${original.column}`);
+              }
+            }
+
+            return outputLine;
+          });
+          console.error(`${ e.constructor.name }: ${ e.message }`);
+          console.error(restStack.join('\n'));
+          process.exit(0);
         }
 
         const method = sandbox.module.exports;
-        methods[file.replace(/\.js$/i, '').replace(/^.*\//, '')] = method.default || method;
+        methods[methodName] = (method && method.default) || method;
 
         return methods;
       }, {});
