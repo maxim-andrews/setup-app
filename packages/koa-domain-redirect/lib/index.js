@@ -80,5 +80,6 @@ exports = module.exports = rdrDomains => {
   };
 };
 
+// exporting for tests only
 exports.addToAllowed = module.exports.addToAllowed = addToAllowed;
 exports.addToDomainMap = module.exports.addToDomainMap = addToDomainMap;
