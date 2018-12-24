@@ -1,0 +1,49 @@
+{
+  "name": "koa-domain-redirect",
+  "version": "1.3.3",
+  "description": "Redirects from any domain to target or to default domain",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxim-andrews/setup-app-suite.git"
+  },
+  "bugs": {
+    "url": "https://github.com/maxim-andrews/setup-app-suite/issues"
+  },
+  "homepage": "https://github.com/maxim-andrews/setup-app-suite/tree/master/packages/koa-domain-redirect#readme",
+  "author": "Maxim Andrews <maximandrewz@users.noreply.github.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=8"
+  },
+  "files": [
+    "lib",
+    "LICENSE",
+    "README.md"
+  ],
+  "keywords": [
+    "koa",
+    "domain",
+    "redirect",
+    "domain-redirect",
+    "koa-redirect",
+    "koa-domain"
+  ],
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "jest --env=jsdom --watch"
+  },
+  "eslintConfig": {
+    "extends": "setup-app"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.11.0",
+    "eslint-config-setup-app": "^1.2.10",
+    "eslint-plugin-flowtype": "^3.2.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.11.1",
+    "jest": "^23.6.0",
+    "jest-pnp-resolver": "^1.0.2"
+  }
+}
