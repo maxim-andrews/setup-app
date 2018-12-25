@@ -40,7 +40,7 @@ describe('koa-domain-redirect unit tests', () => {
         res.concat(
           domains[target].map(addToDomainMap.bind(null, domainMap, target))
         ),
-        []
+      []
     );
 
     expect(results).toEqual([ true, true, false, false, true, true, false, false, false ]);
