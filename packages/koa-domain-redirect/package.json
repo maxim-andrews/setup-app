@@ -1,6 +1,6 @@
 {
   "name": "koa-domain-redirect",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Redirects from any domain to target or to default domain",
   "repository": {
     "type": "git",

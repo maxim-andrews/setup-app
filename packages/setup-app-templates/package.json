@@ -1,0 +1,38 @@
+{
+  "name": "setup-app-templates",
+  "version": "1.3.4",
+  "description": "Templates library for setup-app package",
+  "keywords": [
+    "setup-app",
+    "template",
+    "templates",
+    "app",
+    "setup",
+    "react",
+    "redux",
+    "router",
+    "post-css",
+    "less",
+    "sass"
+  ],
+  "author": "Maxim Andrews <maximandrewz@users.noreply.github.com>",
+  "homepage": "https://github.com/maxim-andrews/setup-app-suite/tree/master/packages/setup-app-templates#readme",
+  "license": "MIT",
+  "main": "index.js",
+  "files": [
+    "templates",
+    "index.js",
+    "LICENSE",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxim-andrews/setup-app-suite.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/maxim-andrews/setup-app-suite/issues"
+  }
+}
