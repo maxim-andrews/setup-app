@@ -64,6 +64,7 @@ const paths = {
   servedPath: getServedPath(appPkgJsn),
   ownPath: resolveOwn('.'),
   ownNodeModules: resolveOwn('node_modules'), // This is empty on npm 3
+  moduleFileExtensions: ['web.mjs', 'mjs', 'web.js', 'js', 'json', 'web.jsx', 'jsx']
 };
 
 if (appPkgJsn.serverSideRendering) {
