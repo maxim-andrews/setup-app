@@ -26,6 +26,10 @@
     "jest": "^23.6.0",
     "jest-pnp-resolver": "^1.0.2"
   },
+  "dependencies": {
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0"
+  },
   "files": [
     "lib",
     "LICENSE",
