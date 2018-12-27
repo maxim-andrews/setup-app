@@ -2,26 +2,6 @@
 
 const DOMAIN_REG_EXP = new RegExp('^(([a-z0-9]+-)*[a-z0-9]+\\.)+([a-z0-9]+-)*[a-z0-9]+$', 'i');
 
-function addToAllowed (allowedArray, targetDomain) {
-  if (!DOMAIN_REG_EXP.test(targetDomain) || allowedArray.includes(targetDomain)) {
-    return false;
-  }
-
-  allowedArray.push(targetDomain);
-
-  return true;
-}
-
-function addToDomainMap (domainMap, targetDomain, sourceDomain) {
-  if (!DOMAIN_REG_EXP.test(sourceDomain) || domainMap[sourceDomain]) {
-    return false;
-  }
-
-  domainMap[sourceDomain] = targetDomain;
-
-  return true;
-}
-
 exports = module.exports = rdrDomains => {
   const objType = typeof rdrDomains;
   const allowedDomains = [];
@@ -79,6 +59,26 @@ exports = module.exports = rdrDomains => {
     }
   };
 };
+
+function addToAllowed (allowedArray, targetDomain) {
+  if (!DOMAIN_REG_EXP.test(targetDomain) || allowedArray.includes(targetDomain)) {
+    return false;
+  }
+
+  allowedArray.push(targetDomain);
+
+  return true;
+}
+
+function addToDomainMap (domainMap, targetDomain, sourceDomain) {
+  if (!DOMAIN_REG_EXP.test(sourceDomain) || domainMap[sourceDomain]) {
+    return false;
+  }
+
+  domainMap[sourceDomain] = targetDomain;
+
+  return true;
+}
 
 // exporting for tests only
 exports.addToAllowed = module.exports.addToAllowed = addToAllowed;
