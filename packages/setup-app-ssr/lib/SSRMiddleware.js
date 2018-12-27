@@ -9,9 +9,7 @@ const defaultIndex = pkgJsn.defaultIndex || 'index.html';
 const defaultOptions = {
   initStore: 'initStore',
   configureStore: 'configureStore',
-  contentMethods: {
-    main: { match: '<div id="root"></div>', replacement: '<div id="root">#@#output#@#</div>'}
-  }
+  contentMethods: { }
 };
 
 exports = module.exports = (ssrObject, waitUntilReady, opts) => {
