@@ -1,6 +1,6 @@
 'use strict';
 
-const DOMAIN_REG_EXP = new RegExp('^(([a-z0-9]+-)*[a-z0-9]+\\\.)+([a-z0-9]+-)*[a-z0-9]+$', 'i');
+const DOMAIN_REG_EXP = new RegExp('^(([a-z0-9]+-)*[a-z0-9]+\\.)+([a-z0-9]+-)*[a-z0-9]+$', 'i');
 
 function addToAllowed (allowedArray, targetDomain) {
   if (!DOMAIN_REG_EXP.test(targetDomain) || allowedArray.includes(targetDomain)) {
