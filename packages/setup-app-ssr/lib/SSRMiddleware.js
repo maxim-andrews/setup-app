@@ -1,9 +1,11 @@
 'use strict';
 
+const path = require('path');
 const ReactDOMServer = require('react-dom/server');
 const { SourceMapConsumer } = require('source-map');
 
-const pkgJsn = require('../package.json');
+const CWD = process.cwd();
+const pkgJsn = require(path.join(CWD, 'package.json'));
 const defaultIndex = pkgJsn.defaultIndex || 'index.html';
 
 const defaultOptions = {
@@ -12,39 +14,48 @@ const defaultOptions = {
   contentMethods: { }
 };
 
-exports = module.exports = (ssrObject, waitUntilReady, opts) => {
-  const options = Object.assign(defaultOptions, opts);
+exports = module.exports = configOpts => {
+  const options = Object.assign(defaultOptions, configOpts);
 
-  return async (ctx, next) => {
-    // we should wait if we if in development mode
-    if (typeof waitUntilReady === 'function') {
-      await waitUntilReady();
+  // wrapper method to avoid user interactions with internals like SSRObject
+  // and waitUntilReady
+  return (ssrObject, waitUntilReady) => {
+
+    if (typeof ssrObject === 'undefined') {
+      ssrObject = require('./SSRObject')();
     }
 
-    const methods = ssrObject.methods;
-    const maps = ssrObject.maps;
+    return async (ctx, next) => {
+      // we should wait if we if in development mode
+      if (typeof waitUntilReady === 'function') {
+        await waitUntilReady();
+      }
 
-    if (typeof pkgJsn.frontEndRendering === 'boolean'
-      && pkgJsn.frontEndRendering === false) {
-      ctx.state.serverSideOnly = true;
-    }
+      const methods = ssrObject.methods;
+      const maps = ssrObject.maps;
 
-    ctx.state.store = methods[options.configureStore](
-      methods[options.initStore](ctx)
-    );
+      if (typeof pkgJsn.frontEndRendering === 'boolean'
+        && pkgJsn.frontEndRendering === false) {
+        ctx.state.serverSideOnly = true;
+      }
 
-    await next();
-    const appPaths = ctx.allAppPaths || [];
+      ctx.state.store = methods[options.configureStore](
+        methods[options.initStore](ctx)
+      );
 
-    if (([ '/', '/' + defaultIndex ].includes(ctx.path)
-        || appPaths.includes(ctx.path)) && !ctx.body && ssrObject.html) {
-      const ctxMtds = options.contentMethods;
-      ctx.body = ssrObject.html;
+      await next();
+      const appPaths = ctx.allAppPaths || [];
 
-      await Promise.all(Object.keys(ctxMtds).map(
-        processMethod.bind(null, methods, maps, ctx, ctxMtds)
-      ));
-    }
+      if (([ '/', '/' + defaultIndex ].includes(ctx.path)
+          || appPaths.includes(ctx.path)) && !ctx.body && ssrObject.html) {
+        const ctxMtds = options.contentMethods;
+        ctx.body = ssrObject.html;
+
+        await Promise.all(Object.keys(ctxMtds).map(
+          processMethod.bind(null, methods, maps, ctx, ctxMtds)
+        ));
+      }
+    };
   };
 };
 
