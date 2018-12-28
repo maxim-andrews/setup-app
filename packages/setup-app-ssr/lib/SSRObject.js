@@ -3,17 +3,20 @@
 const fs = require('fs');
 const path = require('path');
 
-const pkgJsn = require(require.resolve(path.join(process.cwd(), 'package.json')));
-const ssrCfg = pkgJsn.serverSideRendering || {};
-const ssrBase = path.resolve(ssrCfg.buildPath);
+const CWD = process.cwd();
+const pkgJsn = require(path.join(CWD, 'package.json'));
 
+const frontCfg = pkgJsn.frontEndRendering || { buildPath: 'build/client' };
+const clientBase = path.resolve(path.join(CWD, frontCfg.buildPath));
+const ssrCfg = pkgJsn.serverSideRendering || { buildPath: 'build/ssr' };
+const ssrBase = path.resolve(path.join(CWD, ssrCfg.buildPath));
 const defaultIndex = pkgJsn.defaultIndex || 'index.html';
 
-exports = module.exports = (absolutePublicPath) => {
+exports = module.exports = () => {
   const ssrFiles = fs.readdirSync(ssrBase, 'utf8');
 
   return {
-    html: fs.readFileSync(path.resolve(path.join(absolutePublicPath, defaultIndex)), 'utf8'),
+    html: fs.readFileSync(path.join(clientBase, defaultIndex), 'utf8'),
     methods: ssrFiles.filter(file => /\.js$/.test(file))
       .reduce( (allMethods, file) => {
         const method = require(require.resolve(path.join(ssrBase, file)));
