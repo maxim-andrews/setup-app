@@ -28,6 +28,7 @@ const HotClientPlugin = require('hot-client-plugin');
 const escapeStringRegexp = require('escape-string-regexp');
 const openBrowser = require('react-dev-utils/openBrowser');
 const noopServiceWorkerMiddleware = require('noop-service-worker-middleware');
+const pkgJsn = require(path.join(process.cwd(), 'package.json'));
 
 /*
  TODO
@@ -72,6 +73,8 @@ class WebpackKoaServer extends EventEmitter {
     this.addMiddleware = addMiddleware;
     this.protocol = ssl ? 'https' : 'http';
     this.sslObj = ssl;
+
+    this.pkgJsn = pkgJsn;
 
     const serverPkg = require( protocol === 'http2' ? 'http2' : ( ssl ? 'https' : 'http' ) );
     const createServerMethod = protocol === 'http2' && ssl ? 'createSecureServer' : 'createServer';
@@ -491,6 +494,20 @@ class WebpackKoaServer extends EventEmitter {
 
     // handle range header
     this.koa.use(range);
+
+    const frontRender = this.pkgJsn.frontEndRendering;
+
+    // rewriting URL to index.html in front-end mode only
+    if (typeof frontRender === 'object'
+        && frontRender !== null
+        && typeof frontRender.devRewrite === 'object'
+        && frontRender.devRewrite !== null
+        && typeof frontRender.devRewrite.regexp === 'string'
+        && typeof frontRender.devRewrite.modifier === 'string') {
+      const rewrite = require('koa-rewrite');
+      const { regexp: regexpstr, modifier } = frontRender.devRewrite;
+      this.koa.use(rewrite(new RegExp(regexpstr, modifier), `/${ this.pkgJsn.defaultIndex || 'index.html' }`));
+    }
 
     if (Array.isArray(this.content)) {
       this.content.forEach(folder => {
