@@ -39,9 +39,17 @@ exports = module.exports = configOpts => {
         ctx.state.serverSideOnly = true;
       }
 
-      ctx.state.store = methods[options.configureStore](
-        methods[options.initStore](ctx)
-      );
+      const initStore = options.initStore;
+      const configureStore = options.configureStore;
+
+      if (typeof configureStore === 'string'
+          && typeof methods[configureStore] === 'function') {
+
+        const initialStore = typeof initStore === 'string'
+          && typeof methods[initStore] === 'function' ? methods[initStore](ctx) : {};
+
+        ctx.state.store = methods[configureStore](initialStore);
+      }
 
       await next();
       const appPaths = ctx.allAppPaths || [];
