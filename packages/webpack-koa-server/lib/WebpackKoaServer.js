@@ -502,11 +502,10 @@ class WebpackKoaServer extends EventEmitter {
         && frontRender !== null
         && typeof frontRender.devRewrite === 'object'
         && frontRender.devRewrite !== null
-        && typeof frontRender.devRewrite.regexp === 'string'
-        && typeof frontRender.devRewrite.modifier === 'string') {
+        && typeof frontRender.devRewrite.regexp === 'string') {
       const rewrite = require('koa-rewrite');
       const { regexp: regexpstr, modifier } = frontRender.devRewrite;
-      this.koa.use(rewrite(new RegExp(regexpstr, modifier), `/${ this.pkgJsn.defaultIndex || 'index.html' }`));
+      this.koa.use(rewrite(new RegExp(regexpstr, modifier || ''), `/${ this.pkgJsn.defaultIndex || 'index.html' }`));
     }
 
     if (Array.isArray(this.content)) {
