@@ -14,8 +14,10 @@ const url = require('url');
 // https://github.com/facebookincubator/create-react-app/issues/637
 const appDirectory = fs.realpathSync(process.cwd());
 const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
-const appPkgJsn = require(resolveApp('package.json'));
 
+const appPkgJsn = require(resolveApp('package.json'));
+const frontCfg = (typeof appPkgJsn.frontEndRendering === 'object'
+  && appPkgJsn.frontEndRendering !== null && appPkgJsn.frontEndRendering) || {};
 const envPublicUrl = process.env.PUBLIC_URL;
 
 function ensureSlash(path, needsSlash) {
@@ -51,7 +53,7 @@ const resolveOwn = relativePath => path.resolve(__dirname, '..', relativePath);
 const paths = {
   dotenv: resolveApp('.env'),
   appPath: resolveApp('.'),
-  appBuild: resolveApp('build'),
+  appBuild: resolveApp(frontCfg.buildPath || 'build'),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
   appIndexJs: resolveApp('src/index.js'),
@@ -72,7 +74,7 @@ if (appPkgJsn.serverSideRendering) {
 
   paths.ssrTemplate = paths.appHtml || resolveApp(ssrCfg.htmlTemplate || 'public/index.html');
   paths.ssrMiddleware = resolveApp(ssrCfg.ssrMiddleware || 'server/ssrMiddleware.js');
-  paths.appBuild = resolveApp('build/client');
+  paths.appBuild = resolveApp(frontCfg.buildPath || 'build/client');
   paths.appBuildSsr = resolveApp(ssrCfg.buildPath || 'build/ssr');
 
   paths.ssrMethods = typeof ssrCfg.methods === 'object'
