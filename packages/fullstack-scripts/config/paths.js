@@ -16,8 +16,9 @@ const appDirectory = fs.realpathSync(process.cwd());
 const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
 
 const appPkgJsn = require(resolveApp('package.json'));
-const frontCfg = (typeof appPkgJsn.frontEndRendering === 'object'
-  && appPkgJsn.frontEndRendering !== null && appPkgJsn.frontEndRendering) || {};
+const setupApp = appPkgJsn.setupApp || {};
+const frontCfg = (typeof setupApp.fer === 'object' && setupApp.fer !== null
+  && setupApp.fer) || {};
 const envPublicUrl = process.env.PUBLIC_URL;
 
 function ensureSlash(path, needsSlash) {
@@ -69,8 +70,8 @@ const paths = {
   moduleFileExtensions: ['web.mjs', 'mjs', 'web.js', 'js', 'json', 'web.jsx', 'jsx']
 };
 
-if (appPkgJsn.serverSideRendering) {
-  const ssrCfg = appPkgJsn.serverSideRendering;
+if (setupApp.ssr) {
+  const ssrCfg = setupApp.ssr;
 
   paths.ssrTemplate = paths.appHtml || resolveApp(ssrCfg.htmlTemplate || 'public/index.html');
   paths.ssrMiddleware = resolveApp(ssrCfg.ssrMiddleware || 'server/ssrMiddleware.js');

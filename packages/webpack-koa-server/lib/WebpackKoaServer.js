@@ -495,7 +495,8 @@ class WebpackKoaServer extends EventEmitter {
     // handle range header
     this.koa.use(range);
 
-    const frontRender = this.pkgJsn.frontEndRendering;
+    const setupApp = this.pkgJsn.setupApp || {};
+    const frontRender = setupApp.fer || {};
 
     // rewriting URL to index.html in front-end mode only
     if (typeof frontRender === 'object'
@@ -505,13 +506,7 @@ class WebpackKoaServer extends EventEmitter {
         && typeof frontRender.devRewrite.regexp === 'string') {
       const rewrite = require('koa-rewrite');
       const { regexp: regexpstr, modifier } = frontRender.devRewrite;
-      this.koa.use(rewrite(new RegExp(regexpstr, modifier || ''), `/${ this.pkgJsn.defaultIndex || 'index.html' }`));
-    }
-
-    if (Array.isArray(this.content)) {
-      this.content.forEach(folder => {
-        this.koa.use(serve(path.resolve(folder), { defer: true }));
-      });
+      this.koa.use(rewrite(new RegExp(regexpstr, modifier || ''), `/${ setupApp.defaultIndex || 'index.html' }`));
     }
 
     this.koa.use(this.devMiddleware.bind(this));
@@ -520,6 +515,12 @@ class WebpackKoaServer extends EventEmitter {
 
     if (typeof this.addMiddleware === 'function') {
       this.addMiddleware(this.koa);
+    }
+
+    if (Array.isArray(this.content)) {
+      this.content.forEach(folder => {
+        this.koa.use(serve(path.resolve(folder)));
+      });
     }
 
     if (typeof this.proxy === 'object' && Object.keys(this.proxy).length > 0) {
@@ -688,7 +689,7 @@ class WebpackKoaServer extends EventEmitter {
 
   pkgNameByDir (dir) {
     try {
-      return require(path.join(dir, 'package.json')).name;
+      return this.pkgJsn.name;
     } catch (e) {
       return false;
     }

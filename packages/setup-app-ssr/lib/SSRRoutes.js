@@ -33,6 +33,6 @@ exports = module.exports = appModules => {
     });
 
     // storing the necessary glue for SSRMiddleware to work properly in production
-    app.context.allAppPaths = paths;
+    app.context.state.allAppPaths = paths;
   };
 };

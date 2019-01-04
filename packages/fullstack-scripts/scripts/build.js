@@ -31,9 +31,12 @@ const printBuildError = require('react-dev-utils/printBuildError');
 
 const paths = require('../config/paths');
 const pkgJsn = require(paths.appPackageJson);
-const ssr = typeof pkgJsn.serverSideRendering !== 'undefined';
 
-const prodFrontConfig = require('../config/webpack.config.front.prod');
+const setupApp = pkgJsn.setupApp || {};
+const fer = setupApp.fer !== false;
+const ssr = typeof setupApp.ssr !== 'undefined';
+
+const prodFrontConfig = fer ? require('../config/webpack.config.front.prod') : false;
 const prodSsrConfig = ssr ? require('../config/webpack.config.ssr.prod') : false;
 
 const measureFileSizesBeforeBuild =
@@ -53,21 +56,24 @@ const builds = [];
 
 // First, read the current file sizes in build directory.
 // This lets us display how much they changed later.
-builds.push(
-  measureFileSizesBeforeBuild(paths.appBuild)
-    .then(buildProduction)
-);
-
-if (paths.appBuildSsr) {
+if (fer) {
   builds.push(
-    measureFileSizesBeforeBuild(paths.appBuildSsr)
-      .then(buildServerSide)
+    measureFileSizesBeforeBuild(paths.appBuild).then(buildClientSide)
+  );
+}
+
+if (ssr) {
+  builds.push(
+    measureFileSizesBeforeBuild(paths.appBuildSsr).then(buildServerSide)
   );
 }
 
 Promise.all(builds)
   .then(results => {
-    const warnings = results.reduce((warnings, result) => warnings.concat(result.warnings), []);
+    const warnings = results.reduce(
+      (warnings, result) => warnings.concat(result.warnings), []
+    );
+
     if (warnings.length) {
       console.log(chalk.yellow('Compiled with warnings.\n'));
       console.log(warnings.join('\n\n'));
@@ -103,14 +109,14 @@ Promise.all(builds)
     process.exit(1);
   });
 
-function buildProduction (previousFileSizes) {
+function buildClientSide (previousFileSizes) {
   // Remove all content but keep the directory so that
   // if you're in it, you don't end up in Trash
   fs.emptyDirSync(paths.appBuild);
   // Merge with the public folder
   copyPublicFolder();
   // Start the webpack build
-  return build(prodFrontConfig, 'front-end').then(res => {
+  return build(prodFrontConfig, 'clent side').then(res => {
     res.previousFileSizes = previousFileSizes;
     res.outputFolder = paths.appBuild;
     return res;
