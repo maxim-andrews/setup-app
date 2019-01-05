@@ -113,7 +113,7 @@ class WebpackKoaServer extends EventEmitter {
     this.updatingTemplate = false;
     this.templateUpdateQueue = [];
 
-    this.middlewareList = {};
+    this.pluginMiddlewareList = {};
 
     this.openedSockets = [];
 
@@ -393,21 +393,21 @@ class WebpackKoaServer extends EventEmitter {
     });
   }
 
-  appendMiddleware (middleware, priority) {
-    while (this.middlewareList[priority]) {
+  addPluginMiddleware (middleware, priority) {
+    while (this.pluginMiddlewareList[priority]) {
       priority++;
     }
 
-    this.middlewareList[priority] = middleware;
+    this.pluginMiddlewareList[priority] = middleware;
   }
 
-  applyMiddleware () {
+  applyPluginMiddleware () {
     const priorities = Object
-      .keys(this.middlewareList)
+      .keys(this.pluginMiddlewareList)
       .sort((a, b) => a - b);
 
     priorities.forEach(priority => {
-      const middleware = this.middlewareList[priority];
+      const middleware = this.pluginMiddlewareList[priority];
       this.koa.use(middleware());
     });
   }
@@ -511,7 +511,7 @@ class WebpackKoaServer extends EventEmitter {
 
     this.koa.use(this.devMiddleware.bind(this));
 
-    this.applyMiddleware();
+    this.applyPluginMiddleware();
 
     if (typeof this.addMiddleware === 'function') {
       this.addMiddleware(this.koa);

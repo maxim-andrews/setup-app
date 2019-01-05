@@ -128,7 +128,7 @@ class FrontServePlugin {
       this.server.on('template-refreshed', this.inject.bind(this));
     }
 
-    this.server.appendMiddleware(() => this.contentMiddleware.bind(this), 1000);
+    this.server.addPluginMiddleware(() => this.contentMiddleware.bind(this), 1000);
 
     // Run manually once to show this compiler is compiling
     this.compilerIvalidated();
