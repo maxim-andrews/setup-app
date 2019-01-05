@@ -7,7 +7,7 @@ const CWD = process.cwd();
 
 exports = module.exports = appModules => {
   if (!Array.isArray(appModules) || appModules.length === 0) {
-    throw Error('SSRRoutes first argument should be array'
+    throw Error('SSRRoutes first argument should be an array'
       + ' of strings of paths to your backend modules'
       + ' with at least one route');
   }
