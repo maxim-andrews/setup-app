@@ -4,6 +4,8 @@ import { NavLink } from 'react-router-dom';
 
 import Spin from '../Spin';
 import Blink from '../Blink';
+import ServerFetch from '../ServerFetch';
+
 import styles from './App.css';
 
 class App extends Component {
@@ -29,6 +31,7 @@ class App extends Component {
         <p className={styles.intro}>
           To get started, edit <code>src/Components/App/index.js</code> and save to reload.
         </p>
+        <ServerFetch />
       </div>
     );
   }

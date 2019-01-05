@@ -5,18 +5,9 @@ import {
   SET_REDUX
 } from './constants';
 
-const initialState = {
-  React: {
-    start: 0,
-    spin: true
-  },
-  Redux: {
-    start: 0,
-    spin:false
-  }
-};
+import initStore from './initStore';
 
-export default function update(state = initialState, action) {
+export default function update(state = initStore(), action) {
   switch(action.type) {
     case SET_REACT_SPIN: {
       return {

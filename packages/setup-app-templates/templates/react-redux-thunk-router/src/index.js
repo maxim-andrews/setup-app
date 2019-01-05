@@ -10,14 +10,20 @@ import './index.css';
 
 const  { history, store } = configureStore();
 
-function render(Component) {
-  ReactDOM.render(
+function render(Component, firstRender) {
+  const rootNode = document.getElementById('root');
+  const renderMethod =
+    firstRender === true && rootNode.hasChildNodes()
+      ? ReactDOM.hydrate
+      : ReactDOM.render;
+
+  renderMethod(
     <Provider store={store}>
       <ConnectedRouter history={history}>
         <Component />
       </ConnectedRouter>
     </Provider>,
-    document.getElementById('root')
+    rootNode
   );
 }
 
@@ -31,3 +37,8 @@ if(module.hot) {
 }
 
 registerServiceWorker();
+
+/* ,
+"devRewrite": {
+  "regexp": "^\\/(spin|blink)$"
+} */
