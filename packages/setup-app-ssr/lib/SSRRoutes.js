@@ -1,18 +1,19 @@
 'use strict';
 
 const path = require('path');
+const pathToRegExp = require('path-to-regexp');
 
 const CWD = process.cwd();
 
 exports = module.exports = appModules => {
   if (!Array.isArray(appModules) || appModules.length === 0) {
-    throw Error('SSRRoutes first argument should be array'
+    throw Error('SSRRoutes first argument should be an array'
       + ' of strings of paths to your backend modules'
       + ' with at least one route');
   }
 
   return app => {
-    const paths = [];
+    const pathRegExps = [];
 
     appModules.forEach(modulePath => {
       try {
@@ -25,7 +26,7 @@ exports = module.exports = appModules => {
         app.use(routerObj.routes(), routerObj.allowedMethods());
 
         // preparing necessary "glue" for SSRMiddleware to work properly in production
-        routerObj.stack.forEach(p => paths.push(p.path));
+        routerObj.stack.forEach(p => pathRegExps.push(pathToRegExp(p.path)));
       } catch (e) {
         console.error(e);
         process.exit(0);
@@ -33,6 +34,6 @@ exports = module.exports = appModules => {
     });
 
     // storing the necessary glue for SSRMiddleware to work properly in production
-    app.context.allAppPaths = paths;
+    app.context.allAppPathRegExps = pathRegExps;
   };
 };

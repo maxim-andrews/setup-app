@@ -6,7 +6,9 @@ const { SourceMapConsumer } = require('source-map');
 
 const CWD = process.cwd();
 const pkgJsn = require(path.join(CWD, 'package.json'));
-const defaultIndex = pkgJsn.defaultIndex || 'index.html';
+const setupApp = pkgJsn.setupApp || {};
+
+const defaultIndex = setupApp.defaultIndex || 'index.html';
 
 const defaultOptions = {
   initStore: 'initStore',
@@ -34,8 +36,7 @@ exports = module.exports = configOpts => {
       const methods = ssrObject.methods;
       const maps = ssrObject.maps;
 
-      if (typeof pkgJsn.frontEndRendering === 'boolean'
-        && pkgJsn.frontEndRendering === false) {
+      if (typeof setupApp.fer === 'boolean' && setupApp.fer === false) {
         ctx.state.serverSideOnly = true;
       }
 
@@ -46,16 +47,21 @@ exports = module.exports = configOpts => {
           && typeof methods[configureStore] === 'function') {
 
         const initialStore = typeof initStore === 'string'
-          && typeof methods[initStore] === 'function' ? methods[initStore](ctx) : {};
+          && typeof methods[initStore] === 'function'
+          ? methods[initStore](ctx) : {};
 
         ctx.state.store = methods[configureStore](initialStore);
       }
 
-      await next();
-      const appPaths = ctx.allAppPaths || [];
+      const ssrSkipStreams = [ '/', '/' + defaultIndex ].includes(ctx.path);
+      const appPaths = ctx.allAppPathRegExps || [];
+      const pathMatched = appPaths.some(pathRegExp => pathRegExp.test(ctx.path));
 
-      if (([ '/', '/' + defaultIndex ].includes(ctx.path)
-          || appPaths.includes(ctx.path)) && !ctx.body && ssrObject.html) {
+      if (!ssrSkipStreams || pathMatched) {
+        await next();
+      }
+
+      if (!ctx.body && ssrObject.html) {
         const ctxMtds = options.contentMethods;
         ctx.body = ssrObject.html;
 

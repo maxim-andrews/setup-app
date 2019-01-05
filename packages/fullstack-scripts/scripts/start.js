@@ -32,16 +32,18 @@ const pkgJsn = require(paths.appPackageJson);
 const publicUrl = '';
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
-const front = pkgJsn.frontEndRendering !== false;
-const ssr = typeof pkgJsn.serverSideRendering !== 'undefined';
+
+const setupApp = pkgJsn.setupApp || {};
+const front = setupApp.fer !== false;
+const ssr = typeof setupApp.ssr !== 'undefined';
 
 // Current working directory
 const CWD = process.cwd();
 
-function getBackendMethod () {
-  if (pkgJsn.appBackend) {
+function getBackendMethod (backendType) {
+  if (setupApp[backendType]) {
     try {
-      const backendPath = require.resolve(path.join(CWD, pkgJsn.appBackend || 'server/routes'));
+      const backendPath = require.resolve(path.join(CWD, setupApp[backendType]));
       const appBackend = require(backendPath);
       return  appBackend.default || appBackend;
     } catch (e) {
@@ -49,7 +51,7 @@ function getBackendMethod () {
     }
   }
 
-  return () => '';
+  return () => {};
 }
 
 const configs = [];
@@ -59,16 +61,28 @@ const ssrConfig = ssr ? require('../config/webpack.config.ssr.dev') : false;
 // for server restart
 const watchRestart = [];
 
-if (ssr || pkgJsn.appBackend) {
-  watchRestart.push('./src/**/*.backend.js');
+if (ssr && setupApp.ssr.ssrMiddleware) {
+  watchRestart.push(setupApp.ssr.ssrMiddleware);
+}
 
-  if (pkgJsn.appBackend) {
-    watchRestart.push(pkgJsn.appBackend);
-  }
+if (typeof setupApp.backendBefore === 'string') {
+  watchRestart.push(setupApp.backendBefore);
+}
 
-  if (ssr && pkgJsn.serverSideRendering.ssrMiddleware) {
-    watchRestart.push(pkgJsn.serverSideRendering.ssrMiddleware);
-  }
+if (typeof setupApp.backendAfter === 'string') {
+  watchRestart.push(setupApp.backendAfter);
+}
+
+if (typeof setupApp.watchBackendFiles === 'string') {
+  setupApp.watchBackendFiles = [ setupApp.watchBackendFiles ];
+}
+
+if (Array.isArray(setupApp.watchBackendFiles)) {
+  setupApp.watchBackendFiles.forEach(file => {
+    if (typeof file === 'string') {
+      watchRestart.push(file);
+    }
+  });
 }
 
 const webpackKoaServer = new WebpackKoaServer({
@@ -81,9 +95,8 @@ const webpackKoaServer = new WebpackKoaServer({
   protocol: 'http',
   content: paths.appPublic,
   watchRestart,
-  addMiddleware: (app) => {
-    getBackendMethod()(app);
-  }
+  backendBefore: getBackendMethod('backendBefore'),
+  backendAfter: getBackendMethod('backendAfter')
 });
 
 if (front) {

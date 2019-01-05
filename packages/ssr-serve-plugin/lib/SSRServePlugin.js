@@ -152,9 +152,9 @@ class SSRServePlugin {
     this.server.on('template-updated', this.updateSsrHtml.bind(this));
 
     if (this.contentWare) {
-      this.server.appendMiddleware(() => this.contentMiddleware.bind(this), 10000);
+      this.server.addPluginMiddleware(() => this.contentMiddleware.bind(this), 10000);
     }
-    this.server.appendMiddleware(this.createMiddleware.bind(this), 10001);
+    this.server.addPluginMiddleware(this.createMiddleware.bind(this), 10001);
 
     // Run manually once to show this compiler is compiling
     this.compilerIvalidated();

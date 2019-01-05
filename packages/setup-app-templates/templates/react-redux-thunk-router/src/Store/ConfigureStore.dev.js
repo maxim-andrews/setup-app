@@ -1,12 +1,12 @@
 import { routerMiddleware } from 'connected-react-router';
 import { createStore, applyMiddleware, compose } from 'redux';
-import createHistory from 'history/createBrowserHistory';
+import { createBrowserHistory } from 'history';
 import thunk from 'redux-thunk';
 
 import createRootReducer from './reducers';
 
 export default function configureStore(initialState) {
-  const history = createHistory();
+  const history = createBrowserHistory();
   const middleware = routerMiddleware(history);
 
   const composeEnhancers =
@@ -14,9 +14,7 @@ export default function configureStore(initialState) {
     || compose;
 
   // Middleware you want to use in development:
-  const enhancer = composeEnhancers(
-    applyMiddleware(middleware, thunk)
-  );
+  const enhancer = composeEnhancers(applyMiddleware(middleware, thunk));
 
   // Note: only Redux >= 3.1.0 supports passing enhancer as third argument.
   // See https://github.com/rackt/redux/releases/tag/v3.1.0

@@ -1,0 +1,39 @@
+.server-data-holder {
+  width: 95%;
+  max-width: 500px;
+  margin: 10px auto;
+  padding: 30px 10px;
+}
+
+.server-data-holder label,
+.server-data-holder span {
+  display: inline-block;
+  width: 120px;
+  text-align: right;
+  padding: 0 5px;
+  margin: 5px 0;
+}
+
+.server-data-holder span {
+  text-align: left;
+  width: 160px;
+}
+
+.server-data-holder button {
+  font-size: 1.2em;
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin: 15px;
+}
+
+.server-data-holder button:disabled {
+  color: #ccc;
+  background-color: #fcfcfc;
+}
+
+.server-data-holder .error-message {
+  color: #f00;
+  width: 100%;
+  margin-top: 10px;
+  height: 18px;
+}

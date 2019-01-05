@@ -1,11 +1,17 @@
 import {
+  SET_SERVER_ONLY
 } from '../Constants';
 
-const initialState = {
-};
+import initStore from './initStore';
 
-export default function update(state = initialState, action) {
+export default function update(state = initStore(), action) {
   switch(action.type) {
+    case SET_SERVER_ONLY: {
+      return {
+        ...state,
+        serverOnly: true
+      };
+    }
     default: {
       //
     }
