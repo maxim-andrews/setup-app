@@ -53,11 +53,11 @@ exports = module.exports = configOpts => {
         ctx.state.store = methods[configureStore](initialStore);
       }
 
-      const appPaths = ctx.state.allAppPaths || [];
-      const ssrShouldProcess = [ '/', '/' + defaultIndex ].includes(ctx.path)
-        || appPaths.includes(ctx.path);
+      const ssrSkipStreams = [ '/', '/' + defaultIndex ].includes(ctx.path);
+      const appPaths = ctx.allAppPathRegExps || [];
+      const pathMatched = appPaths.some(pathRegExp => pathRegExp.test(ctx.path));
 
-      if (!ssrShouldProcess) {
+      if (!ssrSkipStreams || pathMatched) {
         await next();
       }
 
