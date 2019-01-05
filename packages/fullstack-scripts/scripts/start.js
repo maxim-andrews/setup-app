@@ -40,10 +40,10 @@ const ssr = typeof setupApp.ssr !== 'undefined';
 // Current working directory
 const CWD = process.cwd();
 
-function getBackendMethod () {
-  if (setupApp.appBackend) {
+function getBackendMethod (backendType) {
+  if (setupApp[backendType]) {
     try {
-      const backendPath = require.resolve(path.join(CWD, setupApp.appBackend || 'server/routes'));
+      const backendPath = require.resolve(path.join(CWD, setupApp[backendType]));
       const appBackend = require(backendPath);
       return  appBackend.default || appBackend;
     } catch (e) {
@@ -51,7 +51,7 @@ function getBackendMethod () {
     }
   }
 
-  return () => '';
+  return () => {};
 }
 
 const configs = [];
@@ -61,16 +61,28 @@ const ssrConfig = ssr ? require('../config/webpack.config.ssr.dev') : false;
 // for server restart
 const watchRestart = [];
 
-if (ssr || setupApp.appBackend) {
-  watchRestart.push('./src/**/*.backend.js');
+if (ssr && setupApp.ssr.ssrMiddleware) {
+  watchRestart.push(setupApp.ssr.ssrMiddleware);
+}
 
-  if (setupApp.appBackend) {
-    watchRestart.push(setupApp.appBackend);
-  }
+if (typeof setupApp.backendBefore === 'string') {
+  watchRestart.push(setupApp.backendBefore);
+}
 
-  if (ssr && setupApp.ssr.ssrMiddleware) {
-    watchRestart.push(setupApp.ssr.ssrMiddleware);
-  }
+if (typeof setupApp.backendAfter === 'string') {
+  watchRestart.push(setupApp.backendAfter);
+}
+
+if (typeof setupApp.watchBackendFiles === 'string') {
+  setupApp.watchBackendFiles = [ setupApp.watchBackendFiles ];
+}
+
+if (Array.isArray(setupApp.watchBackendFiles)) {
+  setupApp.watchBackendFiles.forEach(file => {
+    if (typeof file === 'string') {
+      watchRestart.push(file);
+    }
+  });
 }
 
 const webpackKoaServer = new WebpackKoaServer({
@@ -83,9 +95,8 @@ const webpackKoaServer = new WebpackKoaServer({
   protocol: 'http',
   content: paths.appPublic,
   watchRestart,
-  addMiddleware: (app) => {
-    getBackendMethod()(app);
-  }
+  backendBefore: getBackendMethod('backendBefore'),
+  backendAfter: getBackendMethod('backendAfter')
 });
 
 if (front) {

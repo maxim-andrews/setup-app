@@ -53,7 +53,8 @@ class WebpackKoaServer extends EventEmitter {
       open = true,
       appName = 'website',
       proxy = false, // { proxy config }
-      addMiddleware = undefined,
+      backendBefore = undefined,
+      backendAfter = undefined,
       hotClient = {
         hotClient: require.resolve('hot-client-plugin/lib/HotClient'),
         staticContent: false,
@@ -70,7 +71,8 @@ class WebpackKoaServer extends EventEmitter {
     this.watchRestart = typeof watchRestart === 'string' && watchRestart.length ? [watchRestart] : watchRestart;
     this.appName = appName;
     this.proxy = proxy;
-    this.addMiddleware = addMiddleware;
+    this.backendBefore = backendBefore;
+    this.backendAfter = backendAfter;
     this.protocol = ssl ? 'https' : 'http';
     this.sslObj = ssl;
 
@@ -509,12 +511,16 @@ class WebpackKoaServer extends EventEmitter {
       this.koa.use(rewrite(new RegExp(regexpstr, modifier || ''), `/${ setupApp.defaultIndex || 'index.html' }`));
     }
 
+    if (typeof this.backendBefore === 'function') {
+      this.backendBefore(this.koa);
+    }
+
     this.koa.use(this.devMiddleware.bind(this));
 
     this.applyPluginMiddleware();
 
-    if (typeof this.addMiddleware === 'function') {
-      this.addMiddleware(this.koa);
+    if (typeof this.backendAfter === 'function') {
+      this.backendAfter(this.koa);
     }
 
     if (Array.isArray(this.content)) {
