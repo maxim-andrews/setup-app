@@ -53,11 +53,7 @@ exports = module.exports = configOpts => {
         ctx.state.store = methods[configureStore](initialStore);
       }
 
-      const ssrSkipStreams = [ '/', '/' + defaultIndex ].includes(ctx.path);
-      const appPaths = ctx.allAppPathRegExps || [];
-      const pathMatched = appPaths.some(pathRegExp => pathRegExp.test(ctx.path));
-
-      if (!ssrSkipStreams || pathMatched) {
+      if (![ '/', '/' + defaultIndex ].includes(ctx.path)) {
         await next();
       }
 
