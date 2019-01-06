@@ -77,6 +77,8 @@ class WebpackKoaServer extends EventEmitter {
     this.sslObj = ssl;
 
     this.pkgJsn = pkgJsn;
+    this.setupApp = pkgJsn.setupApp || {};
+    this.defaultIndex = pkgJsn.defaultIndex || 'index.html';
 
     const serverPkg = require( protocol === 'http2' ? 'http2' : ( ssl ? 'https' : 'http' ) );
     const createServerMethod = protocol === 'http2' && ssl ? 'createSecureServer' : 'createServer';
@@ -594,13 +596,14 @@ class WebpackKoaServer extends EventEmitter {
   }
 
   async devMiddleware (ctx, next) {
-    await next();
     await this.waitForTemplate();
 
     // Producting output only there was no any other output exists
-    if (['/', '/index.html'].includes(ctx.path)
-      && !ctx.body) {
+    if (['/', '/' + this.defaultIndex ].includes(ctx.path)
+      && ctx.method === 'GET') {
       ctx.body = this.templateHtml;
+    } else {
+      return next();
     }
   }
 
