@@ -124,7 +124,7 @@ class FrontServePlugin {
 
     if (this.injectJs) {
       this.server.on('template-invalid', this.contentInvalid.bind(this));
-      // this.server.on('template-loaded', this.inject.bind(this));
+      this.server.on('template-loaded', this.inject.bind(this));
       this.server.on('template-refreshed', this.inject.bind(this));
     }
 
@@ -258,9 +258,10 @@ class FrontServePlugin {
   }
 
   async inject () {
+    const { templateHtml, callback } = await this.server.updateTemplate();
+
     await this.waitForCompiled();
 
-    const { templateHtml, callback } = await this.server.updateTemplate();
     const bundleFile = path.join(this.publicPath, this.bundleFilename);
     const allFiles = this.lastStats ? Object.keys(this.lastStats.compilation.assets) : [];
     const jsFilesOnly = allFiles.filter(file => /\.js$/.test(file));

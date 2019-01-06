@@ -329,16 +329,52 @@ class SSRServePlugin {
     });
   }
 
-  async processCompiledFiles () {
+  processCompiledFiles () {
     const files = this.lastStats ? Object.keys(this.lastStats.compilation.assets) : false;
 
     if (files) {
+      this.processCSSFiles(files);
       this.processJavaScriptMaps(files);
       this.processJavaScripts(files);
-      this.processCSSFiles(files);
     }
 
     this.emitter.emit('methodsReady');
+  }
+
+  async processCSSFiles (files) {
+    if (this.injectCss) {
+      const { templateHtml, callback } = await this.server.updateTemplate();
+      const cssStyles = files.filter(file => /\.css$/.test(file))
+        .reduce((styles, file) => {
+          const style = '<style type="text/css">\n'
+            + this.fileSystem.readFileSync(path.join('/', file), 'utf8')
+              .replace(/\s+\/\*# sourceMappingURL=[^*]+\*\//, '')
+            + '\n\t</style>';
+          if (!templateHtml.includes(style)) {
+            styles.push(style);
+          }
+          return styles;
+        }, []);
+
+      callback(
+        templateHtml.replace(
+          /^(\s*)<\/head>/m,
+          `$1$1${ cssStyles.join('\n\t') }\n$1</head>`
+        )
+      );
+    }
+  }
+
+  processJavaScriptMaps (files) {
+    this.ssrObj.maps = files.filter(file => /\.js.map$/.test(file))
+      .reduce((maps, file) => {
+        const filePath = path.join('/', file);
+        const content = this.fileSystem.readFileSync(filePath, 'utf8');
+        maps[file.replace(/\.js.map$/i, '').replace(/^.*\//, '')] =
+          JSON.parse(content);
+
+        return maps;
+      }, {});
   }
 
   processJavaScripts (files) {
@@ -384,42 +420,6 @@ class SSRServePlugin {
 
         return methods;
       }, {});
-  }
-
-  processJavaScriptMaps (files) {
-    this.ssrObj.maps = files.filter(file => /\.js.map$/.test(file))
-      .reduce((maps, file) => {
-        const filePath = path.join('/', file);
-        const content = this.fileSystem.readFileSync(filePath, 'utf8');
-        maps[file.replace(/\.js.map$/i, '').replace(/^.*\//, '')] =
-          JSON.parse(content);
-
-        return maps;
-      }, {});
-  }
-
-  async processCSSFiles (files) {
-    if (this.injectCss) {
-      const { templateHtml, callback } = await this.server.updateTemplate();
-      const cssStyles = files.filter(file => /\.css$/.test(file))
-        .reduce((styles, file) => {
-          const style = '<style type="text/css">\n'
-            + this.fileSystem.readFileSync(path.join('/', file), 'utf8')
-              .replace(/\s+\/\*# sourceMappingURL=[^*]+\*\//, '')
-            + '\n\t</style>';
-          if (!templateHtml.includes(style)) {
-            styles.push(style);
-          }
-          return styles;
-        }, []);
-
-      callback(
-        templateHtml.replace(
-          /^(\s*)<\/head>/m,
-          `$1$1${ cssStyles.join('\n\t') }\n$1</head>`
-        )
-      );
-    }
   }
 
   updateSsrHtml (templateHtml) {
