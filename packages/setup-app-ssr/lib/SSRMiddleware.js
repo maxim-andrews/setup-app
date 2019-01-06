@@ -8,8 +8,6 @@ const CWD = process.cwd();
 const pkgJsn = require(path.join(CWD, 'package.json'));
 const setupApp = pkgJsn.setupApp || {};
 
-const defaultIndex = setupApp.defaultIndex || 'index.html';
-
 const defaultOptions = {
   initStore: 'initStore',
   configureStore: 'configureStore',
@@ -53,9 +51,7 @@ exports = module.exports = configOpts => {
         ctx.state.store = methods[configureStore](initialStore);
       }
 
-      if (![ '/', '/' + defaultIndex ].includes(ctx.path)) {
-        await next();
-      }
+      await next();
 
       if (!ctx.body && ssrObject.html) {
         const ctxMtds = options.contentMethods;
