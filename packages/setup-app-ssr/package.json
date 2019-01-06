@@ -1,6 +1,6 @@
 {
   "name": "setup-app-ssr",
-  "version": "2.0.0-alpha.0",
+  "version": "2.0.1-alpha.0",
   "description": "SSR utils and middleware for setup-app users",
   "repository": {
     "type": "git",
