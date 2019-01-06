@@ -116,6 +116,7 @@ class WebpackKoaServer extends EventEmitter {
 
     this.updatingTemplate = false;
     this.templateUpdateQueue = [];
+    this.templateReady = false;
 
     this.pluginMiddlewareList = {};
 
@@ -362,6 +363,7 @@ class WebpackKoaServer extends EventEmitter {
     }
 
     this.updatingTemplate = true;
+    this.templateReady = false;
 
     return Promise.resolve({
       templateHtml: this.templateHtml,
@@ -381,12 +383,14 @@ class WebpackKoaServer extends EventEmitter {
     }
 
     this.updatingTemplate = false;
+    this.templateReady = true;
 
+    // TODO fix by removing if unnecessary
     this.emit('template-updated', this.templateHtml);
   }
 
   async waitForTemplate () {
-    if (!this.templateUpdateQueue.length) {
+    if (this.templateReady) {
       return Promise.resolve();
     }
 
