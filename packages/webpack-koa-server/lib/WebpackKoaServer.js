@@ -504,16 +504,16 @@ class WebpackKoaServer extends EventEmitter {
     this.koa.use(range);
 
     const setupApp = this.pkgJsn.setupApp || {};
-    const frontRender = setupApp.fer || {};
+    const clientRender = setupApp.csr || {};
 
     // rewriting URL to index.html in front-end mode only
-    if (typeof frontRender === 'object'
-        && frontRender !== null
-        && typeof frontRender.devRewrite === 'object'
-        && frontRender.devRewrite !== null
-        && typeof frontRender.devRewrite.regexp === 'string') {
+    if (typeof clientRender === 'object'
+        && clientRender !== null
+        && typeof clientRender.devRewrite === 'object'
+        && clientRender.devRewrite !== null
+        && typeof clientRender.devRewrite.regexp === 'string') {
       const rewrite = require('koa-rewrite');
-      const { regexp: regexpstr, modifier } = frontRender.devRewrite;
+      const { regexp: regexpstr, modifier } = clientRender.devRewrite;
       this.koa.use(rewrite(new RegExp(regexpstr, modifier || ''), `/${ setupApp.defaultIndex || 'index.html' }`));
     }
 

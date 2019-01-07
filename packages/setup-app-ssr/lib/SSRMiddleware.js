@@ -34,7 +34,7 @@ exports = module.exports = configOpts => {
       const methods = ssrObject.methods;
       const maps = ssrObject.maps;
 
-      if (typeof setupApp.fer === 'boolean' && setupApp.fer === false) {
+      if (typeof setupApp.csr === 'boolean' && setupApp.csr === false) {
         ctx.state.serverSideOnly = true;
       }
 
