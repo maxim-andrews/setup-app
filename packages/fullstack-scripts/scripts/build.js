@@ -33,10 +33,10 @@ const paths = require('../config/paths');
 const pkgJsn = require(paths.appPackageJson);
 
 const setupApp = pkgJsn.setupApp || {};
-const fer = setupApp.fer !== false;
+const csr = setupApp.csr !== false;
 const ssr = typeof setupApp.ssr !== 'undefined';
 
-const prodFrontConfig = fer ? require('../config/webpack.config.front.prod') : false;
+const prodCsrConfig = csr ? require('../config/webpack.config.csr.prod') : false;
 const prodSsrConfig = ssr ? require('../config/webpack.config.ssr.prod') : false;
 
 const measureFileSizesBeforeBuild =
@@ -56,7 +56,7 @@ const builds = [];
 
 // First, read the current file sizes in build directory.
 // This lets us display how much they changed later.
-if (fer) {
+if (csr) {
   builds.push(
     measureFileSizesBeforeBuild(paths.appBuild).then(buildClientSide)
   );
@@ -64,7 +64,7 @@ if (fer) {
 
 if (ssr) {
   builds.push(
-    measureFileSizesBeforeBuild(paths.appBuildSsr).then(buildServerSide)
+    measureFileSizesBeforeBuild(paths.appBuildServer).then(buildServerSide)
   );
 }
 
@@ -116,7 +116,7 @@ function buildClientSide (previousFileSizes) {
   // Merge with the public folder
   copyPublicFolder();
   // Start the webpack build
-  return build(prodFrontConfig, 'clent side').then(res => {
+  return build(prodCsrConfig, 'clent side').then(res => {
     res.previousFileSizes = previousFileSizes;
     res.outputFolder = paths.appBuild;
     return res;
@@ -126,10 +126,10 @@ function buildClientSide (previousFileSizes) {
 function buildServerSide (previousFileSizes) {
   // Remove all content but keep the directory so that
   // if you're in it, you don't end up in Trash
-  fs.emptyDirSync(paths.appBuildSsr);
+  fs.emptyDirSync(paths.appBuildServer);
   // Start the webpack build
   return build(prodSsrConfig, 'server side').then(res => {
-    const dir2Remove = path.join(paths.appBuildSsr, 'static');
+    const dir2Remove = path.join(paths.appBuildServer, 'static');
     const assets = Object.keys(res.stats.compilation.assets);
 
     res.stats.compilation.assets = assets.reduce((assetObj, asset) => {
@@ -144,7 +144,7 @@ function buildServerSide (previousFileSizes) {
     fs.rmdirSync(dir2Remove);
 
     res.previousFileSizes = previousFileSizes;
-    res.outputFolder = paths.appBuildSsr;
+    res.outputFolder = paths.appBuildServer;
     return res;
   });
 }

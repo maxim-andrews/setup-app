@@ -17,8 +17,8 @@ const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
 
 const appPkgJsn = require(resolveApp('package.json'));
 const setupApp = appPkgJsn.setupApp || {};
-const frontCfg = (typeof setupApp.fer === 'object' && setupApp.fer !== null
-  && setupApp.fer) || {};
+const clientCfg = (typeof setupApp.csr === 'object' && setupApp.csr !== null
+  && setupApp.csr) || {};
 const envPublicUrl = process.env.PUBLIC_URL;
 
 function ensureSlash(path, needsSlash) {
@@ -54,7 +54,7 @@ const resolveOwn = relativePath => path.resolve(__dirname, '..', relativePath);
 const paths = {
   dotenv: resolveApp('.env'),
   appPath: resolveApp('.'),
-  appBuild: resolveApp(frontCfg.buildPath || 'build'),
+  appBuild: resolveApp(clientCfg.buildPath || 'build'),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
   appIndexJs: resolveApp('src/index.js'),
@@ -75,8 +75,8 @@ if (setupApp.ssr) {
 
   paths.ssrTemplate = paths.appHtml || resolveApp(ssrCfg.htmlTemplate || 'public/index.html');
   paths.ssrMiddleware = resolveApp(ssrCfg.ssrMiddleware || 'server/ssrMiddleware.js');
-  paths.appBuild = resolveApp(frontCfg.buildPath || 'build/client');
-  paths.appBuildSsr = resolveApp(ssrCfg.buildPath || 'build/ssr');
+  paths.appBuild = resolveApp(clientCfg.buildPath || 'build/client');
+  paths.appBuildServer = resolveApp(ssrCfg.buildPath || 'build/server');
 
   paths.ssrMethods = typeof ssrCfg.methods === 'object'
     && ssrCfg.methods !== null

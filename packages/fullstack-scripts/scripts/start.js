@@ -34,7 +34,7 @@ const publicUrl = '';
 const env = getClientEnvironment(publicUrl);
 
 const setupApp = pkgJsn.setupApp || {};
-const front = setupApp.fer !== false;
+const csr = setupApp.csr !== false;
 const ssr = typeof setupApp.ssr !== 'undefined';
 
 // Current working directory
@@ -55,7 +55,7 @@ function getBackendMethod (backendType) {
 }
 
 const configs = [];
-const frontConfig = front ? require('../config/webpack.config.front.dev') : false;
+const csrConfig = csr ? require('../config/webpack.config.csr.dev') : false;
 const ssrConfig = ssr ? require('../config/webpack.config.ssr.dev') : false;
 
 // for server restart
@@ -99,8 +99,8 @@ const webpackKoaServer = new WebpackKoaServer({
   backendAfter: getBackendMethod('backendAfter')
 });
 
-if (front) {
-  configs.push(frontConfig(webpackKoaServer));
+if (csr) {
+  configs.push(csrConfig(webpackKoaServer));
 }
 
 if (ssr) {

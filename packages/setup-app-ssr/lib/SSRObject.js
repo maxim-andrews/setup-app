@@ -7,9 +7,9 @@ const CWD = process.cwd();
 const pkgJsn = require(path.join(CWD, 'package.json'));
 const setupApp = pkgJsn.setupApp || {};
 
-const frontCfg = setupApp.fer || { buildPath: 'build/client' };
-const clientBase = path.resolve(path.join(CWD, frontCfg.buildPath));
-const ssrCfg = setupApp.ssr || { buildPath: 'build/ssr' };
+const csrCfg = setupApp.csr || { buildPath: 'build/client' };
+const clientBase = path.resolve(path.join(CWD, csrCfg.buildPath));
+const ssrCfg = setupApp.ssr || { buildPath: 'build/server' };
 const ssrBase = path.resolve(path.join(CWD, ssrCfg.buildPath));
 const defaultIndex = setupApp.defaultIndex || 'index.html';
 
