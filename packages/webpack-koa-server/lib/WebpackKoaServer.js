@@ -27,7 +27,7 @@ const { execSync } = require('child_process');
 const HotClientPlugin = require('hot-client-plugin');
 const escapeStringRegexp = require('escape-string-regexp');
 const openBrowser = require('react-dev-utils/openBrowser');
-const noopServiceWorkerMiddleware = require('noop-service-worker-middleware');
+const koaResetServiceWorkerMiddleware = require('koa-reset-service-worker-middleware');
 const pkgJsn = require(path.join(process.cwd(), 'package.json'));
 
 /*
@@ -495,7 +495,7 @@ class WebpackKoaServer extends EventEmitter {
     // We do this in development to avoid hitting the production cache if
     // it used the same host and port.
     // https://github.com/facebookincubator/create-react-app/issues/2272#issuecomment-302832432
-    this.koa.use(noopServiceWorkerMiddleware());
+    this.koa.use(koaResetServiceWorkerMiddleware());
 
     // compressed output
     this.koa.use(compress());
