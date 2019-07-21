@@ -1,0 +1,34 @@
+{
+  "name": "koa-reset-service-worker-middleware",
+  "version": "2.0.0-alpha.2",
+  "description": "Reset any previous service worker registered",
+  "keywords": [
+    "koa",
+    "koa2",
+    "service",
+    "worker",
+    "reset",
+    "middleware"
+  ],
+  "author": "Maxim Andrews <maximandrews@users.noreply.github.com>",
+  "homepage": "https://github.com/maxim-andrews/setup-app-suite#readme",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maxim-andrews/setup-app-suite.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/maxim-andrews/setup-app-suite/issues"
+  }
+}
