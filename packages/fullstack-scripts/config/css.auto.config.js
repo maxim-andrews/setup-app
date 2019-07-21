@@ -96,7 +96,7 @@ class CSSAutoConfig {
     }, []);
   }
 
-  setupPostCSS (ssr) {
+  setupPostCSS () {
     const plugins = [ require('postcss-flexbugs-fixes') ];
 
     if (this.moduleInstalled('postcss-preset-env')) {
@@ -133,10 +133,10 @@ class CSSAutoConfig {
       loader: require.resolve('css-loader'),
       options: {
         importLoaders,
-        camelCase: true,
-        modules: true,
-        localIdentName: process.env.NODE_ENV === 'production' ? '[hash:base64:5]' : '[name]-[local]',
-        minimize: process.env.NODE_ENV === 'production'
+        localsConvention: 'camelCase',
+        modules: {
+          localIdentName: process.env.NODE_ENV === 'production' ? '[hash:base64:5]' : '[name]-[local]',
+        }
       },
     };
   }
