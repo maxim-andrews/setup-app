@@ -27,9 +27,11 @@
     "jest-pnp-resolver": "^1.2.1"
   },
   "dependencies": {
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
     "source-map": "^0.7.3"
+  },
+  "peerDependencies": {
+    "react": "^16.x",
+    "react-dom": "^16.x"
   },
   "files": [
     "lib",

@@ -62,7 +62,7 @@
     "eslint-plugin-flowtype": "^3.11.1",
     "eslint-plugin-import": "^2.18.0",
     "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-react": "^7.14.2",
+    "eslint-plugin-react": "^7.14.3",
     "file-loader": "^4.0.0",
     "front-serve-plugin": "^2.0.0-2.0.0-alpha.3.0",
     "fs-extra": "^8.1.0",
@@ -93,5 +93,12 @@
   },
   "eslintConfig": {
     "extends": "setup-app"
+  },
+  "devDependencies": {
+    "less": "^3.9.0",
+    "less-loader": "^5.0.0",
+    "node-sass": "^4.12.0",
+    "postcss-preset-env": "^6.7.0",
+    "sass-loader": "^7.1.0"
   }
 }

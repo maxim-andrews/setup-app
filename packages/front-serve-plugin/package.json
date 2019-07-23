@@ -36,24 +36,27 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.2",
     "babel-jest": "^24.8.0",
+    "debug": "^4.1.1",
     "eslint": "^6.1.0",
     "eslint-config-setup-app": "^2.0.0-2.0.0-alpha.3.0",
     "eslint-plugin-flowtype": "^3.12.1",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-react": "^7.14.2",
+    "eslint-plugin-react": "^7.14.3",
     "jest": "^24.8.0",
     "react-dev-utils": "^9.0.1",
+    "webpack-koa-server": "^2.0.0-2.0.0-alpha.3.0",
     "webpack": "^4.36.1"
   },
   "dependencies": {
-    "debug": "^4.1.1",
     "memory-fs": "^0.4.1",
-    "mime": "^2.4.4",
-    "webpack-koa-server": "^2.0.0-2.0.0-alpha.3.0"
+    "mime": "^2.4.4"
   },
   "peerDependencies": {
-    "webpack": "^4.0.0"
+    "debug": "^4.x",
+    "react-dev-utils": "^9.x",
+    "webpack": "^4.x",
+    "webpack-koa-server": "^2.x"
   },
   "jest": {
     "clearMocks": true,
