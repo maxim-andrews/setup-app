@@ -7,17 +7,18 @@
     "test": "fullstack-scripts test --env=jsdom"
   },
   "devDependencies": {
-    "fullstack-scripts": "^1.3.8",
-    "prop-types": "^15.6.2",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0"
+    "fullstack-scripts": "^2.0.0-alpha.6",
+    "prop-types": "^15.7.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
   },
   "dependencies": {
-    "koa": "^2.6.2",
+    "koa": "^2.7.0",
     "koa-compress": "^3.0.0",
     "koa-morgan": "^1.0.1",
     "koa-range": "^0.3.0",
-    "koa-static": "^4.0.3"
+    "koa-static": "^5.0.0",
+    "setup-app-ssr": "^2.0.0-alpha.6"
   },
   "eslintConfig": {
     "extends": "setup-app"
@@ -63,69 +64,108 @@
       "main": "src/server.side.renderer.js"
     },
     "ssrMiddleware": "server/ssrMiddleware.js",
-    "buildPath": "build/ssr"
+    "buildPath": "build/server"
   },
   "appBackend": "server/routes.js",
   "setup-app": {
     "label": "React Only",
-    "styles": [{
-      "label": "CSS Only",
-      "patterns": "*\\/css\\/([^\\/]+\\.css)"
-    }, {
-      "label": "Post CSS Only",
-      "pattern": "*\\/postcss\\/([^\\/]+\\.css)",
-      "modules": [ "postcss-preset-env" ]
-    }, {
-      "label": "SASS Only",
-      "pattern": "*\\/sass\\/([^\\/]+\\.scss)",
-      "modules": [ "node-sass", "sass-loader" ]
-    }, {
-      "label": "LESS Only",
-      "pattern": "*\\/less\\/([^\\/]+\\.less)",
-      "modules": [ "less", "less-loader" ]
-    }, {
-      "label": "Post CSS & SASS",
-      "pattern": "*\\/postcss-sass\\/([^\\/]+\\.s?css)",
-      "modules": [ "postcss-preset-env", "node-sass", "sass-loader" ]
-    }, {
-      "label": "Post CSS & LESS",
-      "pattern": "*\\/postcss-less\\/([^\\/]+\\.(le|c)ss)",
-      "modules": [ "postcss-preset-env", "less", "less-loader" ]
-    }, {
-      "label": "Post CSS & SASS & LESS",
-      "pattern": "*\\/postcss-sass-less\\/([^\\/]+\\.(le|s?c)ss)",
-      "modules": [ "postcss-preset-env", "node-sass", "sass-loader", "less", "less-loader" ]
-    }, {
-      "label": "SASS & LESS",
-      "pattern": "*\\/sass-less\\/([^\\/]+\\.(le|s?c)ss)",
-      "modules": [ "node-sass", "sass-loader", "less", "less-loader" ]
-    }],
-    "server": [{
-      "block": {
-        "start": "server-side-rendering-start",
-        "end": "server-side-rendering-end"
+    "styles": [
+      {
+        "label": "CSS Only",
+        "patterns": "*\\/css\\/([^\\/]+\\.css)"
       },
-      "files": [
-        "server/routes.js",
-        "server/ssrMiddleware.js"
-      ],
-      "pkgJsn": {
-        "dependencies": [ "setup-app-ssr" ],
-        "defaultIndex": "index.html",
-        "frontEndRendering": {
-          "buildPath": "build/client"
-        },
-        "serverSideRendering": {
-          "methods": {
-            "main": "src/server.side.renderer.js"
-          },
-          "ssrMiddleware": "server/ssrMiddleware.js",
-          "buildPath": "build/ssr"
-        },
-        "appBackend": "server/routes.js"
+      {
+        "label": "Post CSS Only",
+        "pattern": "*\\/postcss\\/([^\\/]+\\.css)",
+        "modules": [
+          "postcss-preset-env"
+        ]
+      },
+      {
+        "label": "SASS Only",
+        "pattern": "*\\/sass\\/([^\\/]+\\.scss)",
+        "modules": [
+          "node-sass",
+          "sass-loader"
+        ]
+      },
+      {
+        "label": "LESS Only",
+        "pattern": "*\\/less\\/([^\\/]+\\.less)",
+        "modules": [
+          "less",
+          "less-loader"
+        ]
+      },
+      {
+        "label": "Post CSS & SASS",
+        "pattern": "*\\/postcss-sass\\/([^\\/]+\\.s?css)",
+        "modules": [
+          "postcss-preset-env",
+          "node-sass",
+          "sass-loader"
+        ]
+      },
+      {
+        "label": "Post CSS & LESS",
+        "pattern": "*\\/postcss-less\\/([^\\/]+\\.(le|c)ss)",
+        "modules": [
+          "postcss-preset-env",
+          "less",
+          "less-loader"
+        ]
+      },
+      {
+        "label": "Post CSS & SASS & LESS",
+        "pattern": "*\\/postcss-sass-less\\/([^\\/]+\\.(le|s?c)ss)",
+        "modules": [
+          "postcss-preset-env",
+          "node-sass",
+          "sass-loader",
+          "less",
+          "less-loader"
+        ]
+      },
+      {
+        "label": "SASS & LESS",
+        "pattern": "*\\/sass-less\\/([^\\/]+\\.(le|s?c)ss)",
+        "modules": [
+          "node-sass",
+          "sass-loader",
+          "less",
+          "less-loader"
+        ]
       }
-    }, {
-
-    }]
+    ],
+    "server": [
+      {
+        "block": {
+          "start": "server-side-rendering-start",
+          "end": "server-side-rendering-end"
+        },
+        "files": [
+          "server/routes.js",
+          "server/ssrMiddleware.js"
+        ],
+        "pkgJsn": {
+          "dependencies": [
+            "setup-app-ssr"
+          ],
+          "defaultIndex": "index.html",
+          "frontEndRendering": {
+            "buildPath": "build/client"
+          },
+          "serverSideRendering": {
+            "methods": {
+              "main": "src/server.side.renderer.js"
+            },
+            "ssrMiddleware": "server/ssrMiddleware.js",
+            "buildPath": "build/server"
+          },
+          "appBackend": "server/routes.js"
+        }
+      },
+      {}
+    ]
   }
 }
