@@ -58,8 +58,8 @@
     "chokidar": "^3.0.2",
     "detect-port-alt": "^1.1.6",
     "escape-string-regexp": "^2.0.0",
-    "hot-client-plugin": "^2.0.0-alpha.3",
     "inquirer": "^6.2.1",
+    "hot-client-plugin": "^2.0.0-alpha.3",
     "koa-reset-service-worker-middleware": "^2.0.0-2.0.0-alpha.3.0",
     "react-dev-utils": "^9.0.1"
   },
