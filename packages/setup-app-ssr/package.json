@@ -1,6 +1,6 @@
 {
   "name": "setup-app-ssr",
-  "version": "2.0.0-2.0.0-alpha.3.0",
+  "version": "2.0.0-alpha.0",
   "description": "SSR utils and middleware for setup-app users",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
   "devDependencies": {
     "babel-eslint": "^10.0.2",
     "eslint": "^6.0.1",
-    "eslint-config-setup-app": "^2.0.0-2.0.0-alpha.3.0",
+    "eslint-config-setup-app": "^2.0.0-alpha.0",
     "eslint-plugin-flowtype": "^3.11.1",
     "eslint-plugin-import": "^2.18.0",
     "eslint-plugin-jsx-a11y": "^6.2.3",
