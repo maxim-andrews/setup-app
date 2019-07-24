@@ -1,6 +1,6 @@
 {
   "name": "setup-app-templates",
-  "version": "2.0.0-2.0.0-alpha.3.0",
+  "version": "2.0.0-alpha.7",
   "description": "Templates library for setup-app package",
   "keywords": [
     "setup-app",
