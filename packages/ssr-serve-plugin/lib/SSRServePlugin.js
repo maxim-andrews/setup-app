@@ -164,7 +164,7 @@ class SSRServePlugin {
     let newEntry;
 
     if (typeof entry === 'function') {
-      newEntry = () => this.combineEntry(entry(...arguments));
+      newEntry = () => this.combineEntry(entry());
     } else {
       newEntry = this.combineEntry(entry);
     }

@@ -94,14 +94,21 @@ async function processMethod (methods, maps, ctx, ctxMtds, method) {
 }
 
 async function showError (e, map) {
-  const stackArray = e.stack.split('\n');
+  // React Developers copy error message to stack
+  // This line removes unnecessary duplicate message in stack
+  // https://github.com/facebook/react/issues/16188
+  const stackArray = e.stack.replace(e.message, '').split('\n');
   const sourceConsumer = await new SourceMapConsumer(map);
   const restStack = stackArray.slice(1).map((traceLine, i) => {
+    if (!traceLine.includes('anonymous')) {
+      return i === 0
+        ? traceLine.replace(/(\s*at)[^(]+\(([^)]+)\)/i, '$1 $2')
+        : traceLine;
+    }
     const lineColumn = traceLine.split(':').slice(1).map(int => parseInt(int, 10));
     const original = sourceConsumer.originalPositionFor({ line: lineColumn[0], column: lineColumn[1] });
-    const processedTrace = traceLine.replace(/\([^)]+\)$/, `(${original.source}:${original.line}:${original.column})`);
-    return i === 0 ? processedTrace.replace(/(\s*at)[^(]+\(([^)]+)\)/i, '$1 $2') : processedTrace;
+    return traceLine.replace(/\([^)]+\)$/, `(${original.source}:${original.line}:${original.column})`);
   });
-  console.error(`${ e.constructor.name }: ${ e.message }`);
-  console.error(restStack.join('\n'));
+  console.error('\x1b[31m\x1b[1m%s\x1b[0m', `SSR ${ e.constructor.name }:\n${ e.message }`);
+  console.error('\x1b[31m%s\x1b[0m', restStack.join('\n'));
 }

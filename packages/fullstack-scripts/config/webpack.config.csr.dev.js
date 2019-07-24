@@ -62,7 +62,7 @@ const sslObj = protocol === 'https' ? Object.assign(
 module.exports = webpackKoaServer => {
   return {
     // Name of the configuration to identify errors and warnings
-    name: 'front-dev',
+    name: 'csr-dev',
     // Should be configured in watch mode to have Hot Module Replacement
     watch: true,
     // We set mode in scripts/start.js
