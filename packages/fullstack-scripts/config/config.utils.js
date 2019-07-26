@@ -6,6 +6,9 @@
  */
 'use strict';
 
+const path = require('path');
+const MODULES_PATH = path.join(process.cwd(), 'node_modules');
+
 function json2RegExp (obj) {
   if (Array.isArray(obj)) {
     return obj.map(json2RegExp);
@@ -25,6 +28,9 @@ function json2RegExp (obj) {
   return obj;
 }
 
+// const relsoveModule = moduleName => path.resolve(MODULES_PATH, moduleName);
+
 module.exports = {
-  json2RegExp
+  json2RegExp,
+  // relsoveModule
 };

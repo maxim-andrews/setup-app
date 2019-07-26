@@ -8,6 +8,9 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
+
+const cfu = require('./config.utils');
 
 const LOADERS = {
   sass: [ 'scss', 'sass' ],
@@ -41,10 +44,10 @@ const BROWSERSLIST = {
   in the main CSS file.
 */
 
-class CSSAutoConfig {
+class StylesAutoConfig {
   constructor (pkg) {
     this.pkg = pkg;
-    this.deps = CSSAutoConfig.getDependencies(pkg);
+    this.deps = StylesAutoConfig.getDependencies(pkg);
   }
 
   static getDependencies (pkg) {
@@ -81,7 +84,7 @@ class CSSAutoConfig {
 
   moduleInstalled (pkgName) {
     const depExists = Boolean(this.deps[pkgName]);
-    const folderExists = CSSAutoConfig.pkgFolderExists(pkgName);
+    const folderExists = StylesAutoConfig.pkgFolderExists(pkgName);
 
     return depExists && folderExists;
   }
@@ -96,24 +99,24 @@ class CSSAutoConfig {
     }, []);
   }
 
-  setupPostCSS () {
+  setupPostCSS (nested = false) {
     const plugins = [ require('postcss-flexbugs-fixes') ];
 
     if (this.moduleInstalled('postcss-preset-env')) {
       plugins.push(require('postcss-preset-env')(Object.assign(
         {
           stage: 3,
-          features: { 'nesting-rules': true },
           autoprefixer: {
             flexbox: 'no-2009'
           }
         },
-        CSSAutoConfig.getBrowsersList(this.pkg)
+        nested ? { features: { 'nesting-rules': true } } : {},
+        StylesAutoConfig.getBrowsersList(this.pkg)
       )));
     } else if (this.moduleInstalled('autoprefixer')) {
       plugins.push(require('autoprefixer')(Object.assign(
         { flexbox: 'no-2009' },
-        CSSAutoConfig.getBrowsersList(this.pkg)
+        StylesAutoConfig.getBrowsersList(this.pkg)
       )));
     }
 
@@ -134,32 +137,55 @@ class CSSAutoConfig {
       options: {
         importLoaders,
         localsConvention: 'camelCase',
-        modules: {
-          localIdentName: process.env.NODE_ENV === 'production' ? '[hash:base64:5]' : '[name]-[local]',
-        }
+        modules: process.env.NODE_ENV !== 'production'
+          ? { localIdentName: '[name]-[local]' }
+          : { getLocalIdent: (context, localIdentName, localName, options) => {
+                const passPhrase = `${context.resourcePath
+                                             .replace(context.rootContext, '')
+                                             .replace(/\.[a-z0-9]+$/i, '')} ${localName}`
+                const hash = crypto.createHash('sha256').update(passPhrase);
+                return hash.digest('base64')
+                           .replace(/[^a-z]+/ig, '')
+                           .substring(0, 5);
+              }
+          }
       },
     };
   }
 
-  cssConfig (ssr) {
-    const loaders = this.installedLoaders() || [];
-    const extensions = loaders.reduce((exts, loader) => exts.concat(LOADERS[loader]), EXT);
+  loaderConfig (loaderName, extensions, ssr, postcss) {
     const useLoaders = [
       process.env.NODE_ENV !== 'production' && !ssr
         ? require.resolve('style-loader')
         : require('mini-css-extract-plugin').loader
     ];
 
-    useLoaders.push(CSSAutoConfig.cssLoaderConfig(loaders.length + 1));
-    useLoaders.push(this.setupPostCSS());
+    useLoaders.push(StylesAutoConfig.cssLoaderConfig(postcss ? 1 : 2));
+    useLoaders.push(this.setupPostCSS(postcss));
 
-    loaders.forEach(loaderName => useLoaders.push(require.resolve(`${ loaderName }-loader`)));
+    if (!postcss) {
+      useLoaders.push(cfu.relsoveModule(`${ loaderName }-loader`));
+    }
 
     return {
-      test: new RegExp(`\\.(${ extensions.join('|') })$`),
+      test: Array.isArray(extensions)
+        ? new RegExp(`\\.(${ extensions.join('|') })$`)
+        : new RegExp(`\\.${ extensions }$`),
       use: useLoaders
     };
   }
+
+  styleRules (ssr) {
+    const loaders = this.installedLoaders() || [];
+
+    return [
+      this.loaderConfig('css', 'css', ssr, true)
+    ].concat(
+      loaders.map(
+        loader => this.loaderConfig(loader, LOADERS[loader], ssr)
+      )
+    );
+  }
 }
 
-module.exports = pkg => new CSSAutoConfig(pkg);
+module.exports = pkg => new StylesAutoConfig(pkg);

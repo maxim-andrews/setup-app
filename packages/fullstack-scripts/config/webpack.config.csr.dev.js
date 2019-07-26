@@ -18,9 +18,11 @@ const ManifestPlugin = require('webpack-manifest-plugin');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 
-const cssAutoConfig = require('./css.auto.config');
+const stylesAutoConfig = require('./styles.auto.config');
 const getClientEnvironment = require('./env');
 const paths = require('./paths');
+
+const cfu = require('./config.utils');
 
 // Warn and crash if required files are missing
 if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
@@ -106,6 +108,15 @@ module.exports = webpackKoaServer => {
       runtimeChunk: true,
     },
     resolve: {
+      alias: {
+        // There should be only one react and react-dom copy as it causes issue with hooks
+        // https://fb.me/react-invalid-hook-call
+        react: cfu.relsoveModule('react'),
+        'react-dom': cfu.relsoveModule('react-dom'),
+        // Support React Native Web
+        // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
+        'react-native': 'react-native-web',
+      },
       // This allows you to set a fallback for where Webpack should look for modules.
       // We placed these paths second because we want `node_modules` to "win"
       // if there are any conflicts. This matches Node resolution mechanism.
@@ -121,11 +132,6 @@ module.exports = webpackKoaServer => {
       // `web` extension prefixes have been added for better support
       // for React Native Web.
       extensions: paths.moduleFileExtensions.map(ext => `.${ext}`),
-      alias: {
-        // Support React Native Web
-        // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
-        'react-native': 'react-native-web',
-      },
       plugins: [
         // Prevents users from importing files from outside of src/ (or node_modules/).
         // This often causes confusion because we only process files within src/ with babel.
@@ -250,9 +256,11 @@ module.exports = webpackKoaServer => {
                 // being evaluated would be much more helpful.
                 sourceMaps: false,
               },
-            },
-            // Configure css according to the current mode, i.e. 'developement' or 'production'
-            cssAutoConfig(pkgJsn).cssConfig(),
+            }
+          ].concat(
+          // Configure css styles according to a current mode, i.e. 'developement' or 'production'
+          stylesAutoConfig(pkgJsn).styleRules(),
+          [
             // "file" loader makes sure those assets get served by WebpackDevServer.
             // When you `import` an asset, you get its (virtual) filename.
             // In production, they would get copied to the `build` folder.
@@ -269,7 +277,7 @@ module.exports = webpackKoaServer => {
                 name: 'static/media/[name].[hash:8].[ext]',
               },
             },
-          ],
+          ]),
         },
         // ** STOP ** Are you adding a new loader?
         // Make sure to add the new loader(s) before the "file" loader.
