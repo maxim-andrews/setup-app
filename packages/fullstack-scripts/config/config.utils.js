@@ -28,9 +28,9 @@ function json2RegExp (obj) {
   return obj;
 }
 
-// const relsoveModule = moduleName => path.resolve(MODULES_PATH, moduleName);
+const relsoveModule = moduleName => path.resolve(MODULES_PATH, moduleName);
 
 module.exports = {
   json2RegExp,
-  // relsoveModule
+  relsoveModule
 };
