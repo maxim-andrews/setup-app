@@ -6,6 +6,9 @@
  */
 'use strict';
 
+const path = require('path');
+const MODULES_PATH = path.join(process.cwd(), 'node_modules');
+
 function json2RegExp (obj) {
   if (Array.isArray(obj)) {
     return obj.map(json2RegExp);
@@ -25,6 +28,19 @@ function json2RegExp (obj) {
   return obj;
 }
 
+const relsoveModule = moduleName => path.resolve(MODULES_PATH, moduleName);
+const getLocalIdent = (context, localIdentName, localName, options) => {
+      const passPhrase = `${context.resourcePath
+                                   .replace(context.rootContext, '')
+                                   .replace(/\.[a-z0-9]+$/i, '')} ${localName}`
+      const hash = crypto.createHash('sha256').update(passPhrase);
+      return hash.digest('base64')
+                 .replace(/[^a-z]+/ig, '')
+                 .substring(0, 5);
+    }
+
 module.exports = {
-  json2RegExp
+  json2RegExp,
+  relsoveModule,
+  getLocalIdent
 };

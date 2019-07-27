@@ -8,14 +8,17 @@
 
 const path = require('path');
 const webpack = require('webpack');
+const nodeExternals = require('webpack-node-externals');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 
-const cssAutoConfig = require('./css.auto.config');
+const stylesAutoConfig = require('./styles.auto.config');
 const getClientEnvironment = require('./env');
 const paths = require('./paths');
+
+const cfu = require('./config.utils');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -68,14 +71,20 @@ module.exports = {
     minimize: false
   },
   resolve: {
+    alias: {
+      // There should be only one react and react-dom copy as it causes issue with hooks
+      // https://fb.me/react-invalid-hook-call
+      react: cfu.relsoveModule('react'),
+      'react-dom': cfu.relsoveModule('react-dom'),
+      // Support React Native Web
+      // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
+      'react-native': 'react-native-web',
+    },
     // This allows you to set a fallback for where Webpack should look for modules.
     // We placed these paths second because we want `node_modules` to "win"
     // if there are any conflicts. This matches Node resolution mechanism.
     // https://github.com/facebookincubator/create-react-app/issues/253
-    modules: ['node_modules', paths.appNodeModules].concat(
-      // It is guaranteed to exist because we tweak it in `env.js`
-      process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
-    ),
+    modules: [ paths.appNodeModules ],
     // These are the reasonable defaults supported by the Node ecosystem.
     // We also include JSX as a common component filename extension to support
     // some tools, although we do not recommend using it, see:
@@ -83,11 +92,6 @@ module.exports = {
     // `web` extension prefixes have been added for better support
     // for React Native Web.
     extensions: paths.moduleFileExtensions.map(ext => `.${ext}`),
-    alias: {
-      // Support React Native Web
-      // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
-      'react-native': 'react-native-web',
-    },
     plugins: [
       // Prevents users from importing files from outside of src/ (or node_modules/).
       // This often causes confusion because we only process files within src/ with babel.
@@ -212,9 +216,11 @@ module.exports = {
               // being evaluated would be much more helpful.
               sourceMaps: false,
             },
-          },
-          // Configure css according to the current mode, i.e. 'developement' or 'production'
-          cssAutoConfig(pkgJsn).cssConfig(true),
+          }
+        ].concat(
+        // Configure css styles according to a current mode, i.e. 'developement' or 'production'
+        stylesAutoConfig(pkgJsn).styleRules(true),
+        [
           // "file" loader makes sure assets end up in the `build` folder.
           // When you `import` an asset, you get its filename.
           // This loader doesn't use a "test" so it will catch all modules
@@ -232,7 +238,7 @@ module.exports = {
           },
           // ** STOP ** Are you adding a new loader?
           // Make sure to add the new loader(s) before the "file" loader.
-        ],
+        ]),
       },
     ],
   },
@@ -255,6 +261,9 @@ module.exports = {
   ],
   node: false,
   target: 'node',
+  externals: [nodeExternals({
+    whitelist: [ moduleName => !['react', 'react-dom'].includes(moduleName)]
+  })],
   // Turn off performance processing because we utilize
   // our own hints via the FileSizeReporter
   performance: false,

@@ -7,6 +7,7 @@
 
 'use strict';
 
+const fs = require('fs');
 const vm = require('vm');
 const mime = require('mime');
 const path = require('path');
@@ -378,23 +379,30 @@ class SSRServePlugin {
   }
 
   processJavaScripts (files) {
+    const CWD = process.cwd();
+    const newRequire = moduleName => {
+      try {
+        return require(moduleName);
+      } catch (e) {}
+
+      return require(path.join(CWD, 'node_modules', moduleName));
+    };
+
     this.ssrObj.methods = files.filter(file => /\.js$/.test(file))
       .reduce((methods, file) => {
         const methodName = file.replace(/\.js$/i, '').replace(/^.*\//, '');
         const content = this.fileSystem.readFileSync(path.join('/', file), 'utf8');
-        const sandbox = { module: {} };
+        const sandbox = { module: {}, require: newRequire };
         let script;
+
         try {
           script = new vm.Script(content);
           vm.createContext(sandbox);
-          script.runInContext(sandbox, {
-            filename: file,
-            displayErrors: true,
-            breakOnSigint: true
-          });
+          script.runInContext(sandbox, { filename: file, displayErrors: true, breakOnSigint: true });
         } catch (e) {
           const stackArray = e.stack.split('\n');
           const sourceConsumer = new SourceMapConsumer(this.ssrObj.maps[methodName]);
+
           const restStack = stackArray.slice(1).map((traceLine, i) => {
             const matched = traceLine.match(/\s+\(?([\w<>.]+:(\d+):(\d+))\)?$/);
             let outputLine = traceLine;
@@ -410,7 +418,7 @@ class SSRServePlugin {
 
             return outputLine;
           });
-          console.error(`${ e.constructor.name }: ${ e.message }`);
+          console.error(`Pre SSR ${ e.constructor.name }: ${ e.message }`);
           console.error(restStack.join('\n'));
           process.exit(0);
         }

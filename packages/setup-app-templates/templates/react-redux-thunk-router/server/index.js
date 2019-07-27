@@ -11,9 +11,9 @@ const ssrMiddleware = require('./ssrMiddleware');
 const CWD = process.cwd();
 const pkgJsn = require(path.join(CWD, 'package.json'));
 const setupApp = pkgJsn.setupApp || {};
-const frontCfg = setupApp.fer || {};
+const csrCfg = setupApp.csr || {};
 const absolutePublicPath = path.resolve(
-  path.join(CWD, frontCfg.buildPath || 'build/client')
+  path.join(CWD, csrCfg.buildPath || 'build/client')
 );
 
 const port = parseInt(process.env.PORT, 10) || 3000;
