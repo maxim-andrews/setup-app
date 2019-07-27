@@ -1,10 +1,10 @@
 'use strict';
 
 const path = require('path');
-const ReactDOMServer = require('react-dom/server');
 const { SourceMapConsumer } = require('source-map');
 
 const CWD = process.cwd();
+const ReactDOMServer = require(path.join(CWD, 'node_modules', 'react-dom', 'server'));
 const pkgJsn = require(path.join(CWD, 'package.json'));
 const setupApp = pkgJsn.setupApp || {};
 
