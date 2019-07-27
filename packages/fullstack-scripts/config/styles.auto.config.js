@@ -11,6 +11,7 @@ const path = require('path');
 const crypto = require('crypto');
 
 const cfu = require('./config.utils');
+const getLocalIdent = cfu.getLocalIdent;
 
 const LOADERS = {
   sass: [ 'scss', 'sass' ],
@@ -139,16 +140,7 @@ class StylesAutoConfig {
         localsConvention: 'camelCase',
         modules: process.env.NODE_ENV !== 'production'
           ? { localIdentName: '[name]-[local]' }
-          : { getLocalIdent: (context, localIdentName, localName, options) => {
-                const passPhrase = `${context.resourcePath
-                                             .replace(context.rootContext, '')
-                                             .replace(/\.[a-z0-9]+$/i, '')} ${localName}`
-                const hash = crypto.createHash('sha256').update(passPhrase);
-                return hash.digest('base64')
-                           .replace(/[^a-z]+/ig, '')
-                           .substring(0, 5);
-              }
-          }
+          : { getLocalIdent }
       },
     };
   }
