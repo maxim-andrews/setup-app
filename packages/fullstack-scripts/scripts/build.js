@@ -116,7 +116,7 @@ function buildClientSide (previousFileSizes) {
   // Merge with the public folder
   copyPublicFolder();
   // Start the webpack build
-  return build(prodCsrConfig, 'clent side').then(res => {
+  return build(prodCsrConfig, 'client side').then(res => {
     res.previousFileSizes = previousFileSizes;
     res.outputFolder = paths.appBuild;
     return res;

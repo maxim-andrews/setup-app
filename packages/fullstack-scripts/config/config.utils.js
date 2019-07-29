@@ -7,6 +7,8 @@
 'use strict';
 
 const path = require('path');
+const crypto = require('crypto');
+
 const MODULES_PATH = path.join(process.cwd(), 'node_modules');
 
 function json2RegExp (obj) {
