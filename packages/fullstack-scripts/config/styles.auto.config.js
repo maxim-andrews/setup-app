@@ -8,7 +8,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
 
 const cfu = require('./config.utils');
 const getLocalIdent = cfu.getLocalIdent;
@@ -161,7 +160,10 @@ class StylesAutoConfig {
 
     return {
       test: Array.isArray(extensions)
-        ? new RegExp(`\\.(${ extensions.join('|') })$`)
+        ? ( extensions.length > 1
+          ? new RegExp(`\\.(${ extensions.join('|') })$`)
+          : new RegExp(`\\.${ extensions.join('') }$`)
+          )
         : new RegExp(`\\.${ extensions }$`),
       use: useLoaders
     };
