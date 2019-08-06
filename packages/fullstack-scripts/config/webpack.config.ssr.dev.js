@@ -9,7 +9,6 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
-const nodeExternals = require('webpack-node-externals');
 const SSRServePlugin = require('ssr-serve-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
@@ -327,9 +326,10 @@ module.exports = webpackKoaServer => {
     ],
     node: false,
     target: 'node',
-    externals: [nodeExternals({
-      whitelist: [ moduleName => !['react', 'react-dom'].includes(moduleName)]
-    })],
+    externals: {
+      react: 'react',
+      'react-dom': 'react-dom'
+    },
     // Turn off performance hints during development because we don't do any
     // splitting or minification in interest of speed. These warnings become
     // cumbersome.
