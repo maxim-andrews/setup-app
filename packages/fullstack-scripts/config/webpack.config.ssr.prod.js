@@ -8,7 +8,6 @@
 
 const path = require('path');
 const webpack = require('webpack');
-const nodeExternals = require('webpack-node-externals');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
@@ -261,9 +260,10 @@ module.exports = {
   ],
   node: false,
   target: 'node',
-  externals: [nodeExternals({
-    whitelist: [ moduleName => !['react', 'react-dom'].includes(moduleName)]
-  })],
+  externals: {
+    react: 'react',
+    'react-dom': 'react-dom'
+  },
   // Turn off performance processing because we utilize
   // our own hints via the FileSizeReporter
   performance: false,
