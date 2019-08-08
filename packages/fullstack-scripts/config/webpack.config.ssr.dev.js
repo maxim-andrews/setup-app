@@ -326,10 +326,7 @@ module.exports = webpackKoaServer => {
     ],
     node: false,
     target: 'node',
-    externals: {
-      react: 'react',
-      'react-dom': 'react-dom'
-    },
+    externals: [ 'react', 'react-dom' ],
     // Turn off performance hints during development because we don't do any
     // splitting or minification in interest of speed. These warnings become
     // cumbersome.

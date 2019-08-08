@@ -260,10 +260,7 @@ module.exports = {
   ],
   node: false,
   target: 'node',
-  externals: {
-    react: 'react',
-    'react-dom': 'react-dom'
-  },
+  externals: [ 'react', 'react-dom' ],
   // Turn off performance processing because we utilize
   // our own hints via the FileSizeReporter
   performance: false,
