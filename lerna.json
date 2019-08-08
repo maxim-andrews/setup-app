@@ -1,6 +1,12 @@
 {
+  "version": "2.0.0-alpha.13",
+  "npmClient": "npm",
+  "command": {
+    "publish": {
+      "pre-dist-tag": "next"
+    }
+  },
   "packages": [
     "packages/*"
-  ],
-  "version": "2.0.0-alpha.13"
+  ]
 }
