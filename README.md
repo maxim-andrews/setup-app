@@ -1,2 +1,2 @@
 # setup-app-suite
-Mono-repository for `setup-app` boilerplate picker package 
+Mono-repository for `kra.js` full stack framework
