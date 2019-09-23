@@ -1,6 +1,6 @@
 {
   "name": "webpack-koa-server",
-  "version": "2.0.0-alpha.15",
+  "version": "2.0.0-alpha.16",
   "description": "Runs koa.js server to serve webpack in-memory resources provided by front-serve-plugin and ssr-serve-plugin",
   "repository": {
     "type": "git",
@@ -37,7 +37,7 @@
     "babel-jest": "^24.9.0",
     "debug": "^4.1.1",
     "eslint": "^6.4.0",
-    "eslint-config-setup-app": "^2.0.0-alpha.15",
+    "eslint-config-setup-app": "^2.0.0-alpha.16",
     "eslint-plugin-flowtype": "^4.3.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
@@ -57,9 +57,9 @@
     "chokidar": "^3.1.1",
     "detect-port-alt": "^1.1.6",
     "escape-string-regexp": "^2.0.0",
-    "hot-client-plugin": "^2.0.0-alpha.15",
+    "hot-client-plugin": "^2.0.0-alpha.16",
     "inquirer": "^7.0.0",
-    "koa-reset-service-worker-middleware": "^2.0.0-alpha.6",
+    "koa-reset-service-worker-middleware": "^2.0.0-alpha.16",
     "react-dev-utils": "^9.0.4"
   },
   "peerDependencies": {
