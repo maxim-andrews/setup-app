@@ -3,5 +3,5 @@
 if (process.env.SSR === true) {
   exports = module.exports = require('./CreateReducers.ssr');
 } else {
-  exports = module.exports = require('./CreateReducers.fer');
+  exports = module.exports = require('./CreateReducers.csr');
 }

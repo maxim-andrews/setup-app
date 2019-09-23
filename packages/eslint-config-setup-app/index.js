@@ -75,7 +75,7 @@ const restrictedGlobals = [
   'top'
 ];
 
-module.exports = {
+exports = module.exports = {
   root: true,
 
   parser: 'babel-eslint',

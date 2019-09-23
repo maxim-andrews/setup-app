@@ -108,11 +108,7 @@ class WebpackKoaServer extends EventEmitter {
 
     this.plugins = {};
     this.compiling = [];
-    this.allStats = {
-      errorsCount: 0,
-      warningsCount: 0,
-      messages: {}
-    };
+    this.resetStats();
 
     this.updatingTemplate = false;
     this.templateUpdateQueue = [];
@@ -244,6 +240,16 @@ class WebpackKoaServer extends EventEmitter {
       this.clearConsole();
     }
     console.log('Compiling...');
+
+    this.resetStats();
+  }
+
+  resetStats () {
+    this.allStats = {
+      errorsCount: 0,
+      warningsCount: 0,
+      messages: {}
+    };
   }
 
   async compilationDone (pluginId, messages) {
@@ -278,9 +284,19 @@ class WebpackKoaServer extends EventEmitter {
     }
     this.isFirstCompile = false;
 
-    let printHints = false;
+    // selecting first key with errors or just first key
+    const pluginId = Object.keys(this.allStats.messages).reduce(
+      (selectedKey, curKey) => {
+        if (typeof selectedKey !== 'undefined') {
+          return selectedKey;
+        } else if ( isSuccessful || this.allStats.messages[curKey].errors.length ) {
+          return curKey;
+        }
 
-    const pluginId = Object.keys(this.allStats.messages).shift();
+        return;
+      },
+      undefined
+    );
     const messages = this.allStats.messages[pluginId];
     const configName = this.plugins[pluginId].compiler.options.name;
 
@@ -301,26 +317,18 @@ class WebpackKoaServer extends EventEmitter {
       console.log(c.yellow(`Compilation ${c.bold(configName)} compiled with warnings.\n`));
       console.log(messages.warnings.join('\n\n'));
 
-      if (printHints) {
-        // Teach some ESLint tricks.
-        console.log(
-          '\nSearch for the ' +
-            c.underline(c.yellow('keywords')) +
-            ' to learn more about each warning.'
-        );
-        console.log(
-          'To ignore, add ' +
-            c.cyan('// eslint-disable-next-line') +
-            ' to the line before.\n'
-        );
-      }
+      // Teach some ESLint tricks.
+      console.log(
+        '\nSearch for the ' +
+          c.underline(c.yellow('keywords')) +
+          ' to learn more about each warning.'
+      );
+      console.log(
+        'To ignore, add ' +
+          c.cyan('// eslint-disable-next-line') +
+          ' to the line before.\n'
+      );
     }
-
-    this.allStats = {
-      errorsCount: 0,
-      warningsCount: 0,
-      messages: {}
-    };
   }
 
   loadTemplate () {

@@ -1,0 +1,9 @@
+header nav ul li a {
+  color: #fff;
+  font-size: 25px;
+
+  &:hover,
+  &.active {
+    text-decoration: none;
+  }
+}

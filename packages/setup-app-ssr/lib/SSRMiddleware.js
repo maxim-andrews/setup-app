@@ -31,15 +31,13 @@ exports = module.exports = configOpts => {
         await waitUntilReady();
       }
 
-      const methods = ssrObject.methods;
-      const maps = ssrObject.maps;
+      const { methods, maps } = ssrObject;
 
       if (typeof setupApp.csr === 'boolean' && setupApp.csr === false) {
         ctx.state.serverSideOnly = true;
       }
 
-      const initStore = options.initStore;
-      const configureStore = options.configureStore;
+      const { initStore, configureStore } = options;
 
       if (typeof configureStore === 'string'
           && typeof methods[configureStore] === 'function') {

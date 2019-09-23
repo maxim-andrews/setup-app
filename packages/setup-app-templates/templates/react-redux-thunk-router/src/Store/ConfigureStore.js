@@ -3,16 +3,12 @@
 let configureStore;
 
 if (process.env.SSR === true) {
-  if (process.env.NODE_ENV === 'production') {
-    configureStore = require('./ConfigureStore.ssr.prod');
-  } else {
-    configureStore = require('./ConfigureStore.ssr.dev');
-  }
+  configureStore = require('./ConfigureStore.ssr');
 } else {
   if (process.env.NODE_ENV === 'production') {
-    configureStore = require('./ConfigureStore.prod');
+    configureStore = require('./ConfigureStore.csr.prod');
   } else {
-    configureStore = require('./ConfigureStore.dev');
+    configureStore = require('./ConfigureStore.csr.dev');
   }
 }
 

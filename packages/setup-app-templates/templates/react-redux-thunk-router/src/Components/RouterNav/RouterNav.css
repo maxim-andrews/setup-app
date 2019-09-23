@@ -1,0 +1,26 @@
+header nav {
+  width: 80%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+header nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+header nav ul li {
+  display: inline-block;
+  margin: 0 10px;
+}
+
+header nav ul li a {
+  color: #fff;
+  font-size: 25px;
+}
+
+header nav ul li a:hover,
+header nav ul li a.active {
+  text-decoration: none;
+}

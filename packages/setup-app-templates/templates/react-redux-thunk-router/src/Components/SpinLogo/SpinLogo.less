@@ -1,0 +1,22 @@
+.logo-holder {
+  display: inline-block;
+  height: 100px;
+}
+
+.logo {
+  display: block;
+  height: 80px;
+
+  .spin-logo & {
+    animation: logo-spin infinite 5s linear;
+  }
+}
+
+.spin-logo button {
+  visibility: hidden;
+}
+
+@keyframes logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

@@ -16,17 +16,17 @@
     "node": ">=8"
   },
   "devDependencies": {
-    "babel-eslint": "^10.0.2",
-    "eslint": "^6.0.1",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.4.0",
     "eslint-config-setup-app": "^2.0.0-alpha.15",
-    "eslint-plugin-flowtype": "^3.11.1",
-    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-flowtype": "^4.3.0",
+    "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-react": "^7.14.2",
-    "jest": "^24.8.0",
+    "eslint-plugin-react": "^7.14.3",
+    "jest": "^24.9.0",
     "jest-pnp-resolver": "^1.2.1",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0"
   },
   "dependencies": {
     "source-map": "^0.7.3"

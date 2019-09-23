@@ -1,0 +1,43 @@
+.server-data-holder {
+  & {
+    width: 95%;
+    max-width: 500px;
+    margin: 10px auto;
+    padding: 30px 10px;
+  }
+
+  & label,
+  & span {
+    display: inline-block;
+    width: 120px;
+    text-align: right;
+    padding: 0 5px;
+    margin: 5px 0;
+  }
+
+  & span {
+    text-align: left;
+    width: 160px;
+  }
+
+  & button {
+    & {
+      font-size: 1.2em;
+      padding: 10px 15px;
+      border-radius: 10px;
+      margin: 15px;
+    }
+
+    &:disabled {
+      color: #ccc;
+      background-color: #fcfcfc;
+    }
+  }
+
+  & .error-message {
+    color: #f00;
+    width: 100%;
+    margin-top: 10px;
+    height: 18px;
+  }
+}

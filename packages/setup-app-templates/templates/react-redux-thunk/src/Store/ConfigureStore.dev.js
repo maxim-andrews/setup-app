@@ -9,9 +9,7 @@ export default function configureStore(initialState) {
     || compose;
 
   // Middleware you want to use in development:
-  const enhancer = composeEnhancers(
-    applyMiddleware(thunk)
-  );
+  const enhancer = composeEnhancers( applyMiddleware(thunk) );
 
   // Note: only Redux >= 3.1.0 supports passing enhancer as third argument.
   // See https://github.com/rackt/redux/releases/tag/v3.1.0

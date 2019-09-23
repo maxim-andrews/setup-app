@@ -34,5 +34,20 @@
   },
   "bugs": {
     "url": "https://github.com/maxim-andrews/setup-app-suite/issues"
+  },
+  "dependencies": {
+    "acorn": "^7.0.0",
+    "acorn-jsx": "^5.0.2",
+    "acorn-jsx-walk": "^2.0.0",
+    "acorn-walk": "^7.0.0",
+    "babel-eslint": "^10.0.3",
+    "cross-spawn": "^7.0.0",
+    "eslint": "^6.4.0",
+    "eslint-config-setup-app": "^2.0.0-alpha.15",
+    "eslint-plugin-flowtype": "^4.3.0",
+    "eslint-plugin-import": "^2.18.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.14.3",
+    "inquirer": "^7.0.0"
   }
 }

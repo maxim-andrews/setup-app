@@ -1,0 +1,11 @@
+.body-holder {
+  & {
+    text-align: center;
+    height: 100%;
+    position: relative;
+  }
+
+  & .intro {
+    font-size: large;
+  }
+}

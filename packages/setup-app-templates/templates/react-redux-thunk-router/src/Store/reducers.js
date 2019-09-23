@@ -1,15 +1,31 @@
-import { combineReducers } from 'redux';
-import { connectRouter } from 'connected-react-router';
-
 import shared from '../Shared/Reducers';
-import spin from '../Components/SpinLogo/reducer';
-import server from '../Components/ServerFetch/reducer';
+// kra-mod-start
+/* eslint-disable import/first */
+if (KRA.THUNK) {
+  import spin from '../Components/SpinLogo/reducer.thunk'; // kra-mod-replace .thunk
+} else {
+  import spin from '../Components/SpinLogo/reducer';
+}
+if (KRA.BACKEND) {
 
-const createRootReducer = history => combineReducers({
-  router: connectRouter(history),
-  shared,
-  spin,
-  server
-});
+  import server from '../Components/ServerFetch/reducer';
+}
+/* eslint-enable import/first */
+// kra-mod-end
 
-export default createRootReducer;
+// kra-mod-start
+if (KRA.BACKEND) {
+  const reducers = {
+    shared,
+    spin,
+    server
+  };
+} else {
+  const reducers = {
+    shared,
+    spin
+  };
+}
+// kra-mod-end
+
+export default reducers;
