@@ -1,0 +1,14 @@
+header nav ul li {
+  display: inline-block;
+  margin: 0 10px;
+
+  a {
+    color: #fff;
+    font-size: 25px;
+
+    &:hover,
+    &.active {
+      text-decoration: none;
+    }
+  }
+}

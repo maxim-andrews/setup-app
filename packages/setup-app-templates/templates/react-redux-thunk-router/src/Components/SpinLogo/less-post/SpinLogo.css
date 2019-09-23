@@ -1,0 +1,8 @@
+.logo-holder {
+  display: inline-block;
+  height: 100px;
+}
+
+.spin-logo button {
+    visibility: hidden;
+}

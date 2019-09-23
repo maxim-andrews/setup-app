@@ -1,27 +1,78 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { Provider } from 'react-redux';
-import { StaticRouter } from 'react-router';
+// kra-mod-start
+/* eslint-disable import/first */
+if (KRA.REDUX && KRA.ROUTER) {
+  import PropTypes from 'prop-types';
+  import { Provider } from 'react-redux';
+  import { StaticRouter } from 'react-router';
+} else if (KRA.REDUX) {
+  import PropTypes from 'prop-types';
+  import { Provider } from 'react-redux';
+} else if (KRA.ROUTER) {
+  import PropTypes from 'prop-types';
+  import { StaticRouter } from 'react-router';
+}
+/* eslint-enable import/first */
+// kra-mod-end
 
 import App from './Components/App';
 import './index.css';
 
-const context = {};
+// kra-mod-start
+if (KRA.ROUTER) {
+  const context = {};
+}
+// kra-mod-end
 
-// eslint-disable-next-line react/display-name
-function ServerSide({ path, store }) {
-  return (
-    <Provider store={store}>
+// kra-mod-start
+if (KRA.REDUX && KRA.ROUTER) {
+  // eslint-disable-next-line react/display-name
+  function ServerSide ({ path, store }) {
+    return (
+      <Provider store={store}>
+        <StaticRouter location={path} context={context}>
+          <App />
+        </StaticRouter>
+      </Provider>
+    );
+  }
+
+  ServerSide.propTypes = {
+    path: PropTypes.string.isRequired,
+    store: PropTypes.object.isRequired
+  };
+} else if (KRA.REDUX) {
+  // eslint-disable-next-line react/display-name
+  function ServerSide ({ store }) {
+    return (
+      <Provider store={store}>
+        <App />
+      </Provider>
+    );
+  }
+
+  ServerSide.propTypes = {
+    store: PropTypes.object.isRequired
+  };
+} else if (KRA.ROUTER) {
+  // eslint-disable-next-line react/display-name
+  function ServerSide ({ path }) {
+    return (
       <StaticRouter location={path} context={context}>
         <App />
       </StaticRouter>
-    </Provider>
-  );
-}
+    );
+  }
 
-ServerSide.propTypes = {
-  path: PropTypes.string.isRequired,
-  store: PropTypes.object.isRequired
-};
+  ServerSide.propTypes = {
+    path: PropTypes.string.isRequired
+  };
+} else {
+  // eslint-disable-next-line react/display-name
+  function ServerSide () {
+    return <App />;
+  }
+}
+// kra-mod-end
 
 export default ServerSide;

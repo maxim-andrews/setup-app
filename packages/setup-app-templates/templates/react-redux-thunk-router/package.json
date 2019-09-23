@@ -14,8 +14,6 @@
     "node-sass": "^4.12.0",
     "postcss-preset-env": "^6.7.0",
     "prop-types": "^15.7.2",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
     "react-redux": "^7.1.0",
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
@@ -30,6 +28,8 @@
     "koa-range": "^0.3.0",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "setup-app-ssr": "^2.0.0-alpha.8"
   },
   "eslintConfig": {
