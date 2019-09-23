@@ -21,7 +21,7 @@ function render(Component) {
   );
 }
 
-render(App, true);
+render(App);
 
 if(module.hot) {
   module.hot.accept('./Components/App', () => {
