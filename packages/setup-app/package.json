@@ -39,5 +39,8 @@
   },
   "eslintConfig": {
     "extends": "setup-app"
+  },
+  "dependencies": {
+    "setup-app-templates": "file:../setup-app-templates"
   }
 }
