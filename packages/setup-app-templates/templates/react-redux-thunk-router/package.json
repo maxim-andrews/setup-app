@@ -7,30 +7,30 @@
   },
   "devDependencies": {
     "connected-react-router": "^6.5.2",
-    "fullstack-scripts": "^2.0.0-alpha.8",
-    "history": "^4.9.0",
-    "less": "^3.9.0",
+    "fullstack-scripts": "2.0.0-alpha.17",
+    "history": "^4.10.1",
+    "less": "^3.10.3",
     "less-loader": "^5.0.0",
     "node-sass": "^4.12.0",
     "postcss-preset-env": "^6.7.0",
     "prop-types": "^15.7.2",
-    "react-redux": "^7.1.0",
-    "react-router": "^5.0.1",
-    "react-router-dom": "^5.0.1",
+    "react-redux": "^7.1.1",
+    "react-router": "^5.1.1",
+    "react-router-dom": "^5.1.1",
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",
-    "sass-loader": "^7.1.0"
+    "sass-loader": "^8.0.0"
   },
   "dependencies": {
-    "koa": "^2.7.0",
+    "koa": "^2.8.2",
     "koa-compress": "^3.0.0",
     "koa-morgan": "^1.0.1",
     "koa-range": "^0.3.0",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "setup-app-ssr": "^2.0.0-alpha.8"
+    "react": "^16.10.1",
+    "react-dom": "^16.10.1",
+    "setup-app-ssr": "2.0.0-alpha.17"
   },
   "eslintConfig": {
     "extends": "setup-app"

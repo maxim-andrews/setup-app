@@ -284,12 +284,16 @@ class WebpackKoaServer extends EventEmitter {
     }
     this.isFirstCompile = false;
 
+    // console.log(this.allStats.messages);
+
     // selecting first key with errors or just first key
     const pluginId = Object.keys(this.allStats.messages).reduce(
       (selectedKey, curKey) => {
         if (typeof selectedKey !== 'undefined') {
           return selectedKey;
-        } else if ( isSuccessful || this.allStats.messages[curKey].errors.length ) {
+        } else if ( isSuccessful
+            || this.allStats.messages[curKey].errors.length
+            || this.allStats.messages[curKey].warnings.length) {
           return curKey;
         }
 
@@ -307,28 +311,30 @@ class WebpackKoaServer extends EventEmitter {
       if (messages.errors.length > 1) {
         messages.errors.length = 1;
       }
-      console.log(c.red(`Compilation ${c.bold(configName)} failed to compile.\n`));
-      console.log(messages.errors.join('\n\n'));
+      console.error(c.red(`Compilation ${c.bold(configName)} failed to compile.\n`));
+      console.error(messages.errors.join('\n\n'));
       return;
     }
 
     // Show warnings if no errors were found.
     if (messages.warnings.length) {
-      console.log(c.yellow(`Compilation ${c.bold(configName)} compiled with warnings.\n`));
-      console.log(messages.warnings.join('\n\n'));
+      console.error(c.yellow(`Compilation ${c.bold(configName)} compiled with warnings.\n`));
+      console.error(messages.warnings.join('\n\n'));
 
       // Teach some ESLint tricks.
-      console.log(
+      console.error(
         '\nSearch for the ' +
           c.underline(c.yellow('keywords')) +
           ' to learn more about each warning.'
       );
-      console.log(
+      console.error(
         'To ignore, add ' +
           c.cyan('// eslint-disable-next-line') +
           ' to the line before.\n'
       );
     }
+
+    this.resetStats();
   }
 
   loadTemplate () {

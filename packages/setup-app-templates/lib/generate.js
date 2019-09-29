@@ -6,6 +6,7 @@ const pluginFlowtype = require('eslint-plugin-flowtype');
 const pluginImport = require('eslint-plugin-import');
 const pluginJsxA11y = require('eslint-plugin-jsx-a11y');
 const pluginReact = require('eslint-plugin-react');
+const pluginReactHooksOrig = require('eslint-plugin-react-hooks');
 const esLintConfig = require('eslint-config-setup-app');
 const Linter = require("eslint").Linter;
 
@@ -27,13 +28,28 @@ function prepareLinterRules (plugin) {
   }, {});
 }
 
+const pluginReactHooks = Object.assign({}, pluginReactHooksOrig);
+
+if (typeof pluginReactHooks.configs === 'undefined') {
+  pluginReactHooks.configs = {
+    recommended: {
+      plugins: [ 'react-hooks' ],
+      rules: {
+        'react-hooks/rules-of-hooks': 'error',
+        'react-hooks/exhaustive-deps': 'warn'
+      }
+    }
+  }
+}
+
 const linter = new Linter();
 const allRules = Object.assign(
   {},
   prepareLinterRules(pluginFlowtype),
   prepareLinterRules(pluginImport),
   prepareLinterRules(pluginJsxA11y),
-  prepareLinterRules(pluginReact)
+  prepareLinterRules(pluginReact),
+  prepareLinterRules(pluginReactHooks)
 );
 
 esLintConfig.rules = Object.assign(
@@ -42,6 +58,7 @@ esLintConfig.rules = Object.assign(
   pluginImport.configs.recommended.rules,
   pluginJsxA11y.configs.recommended.rules,
   pluginReact.configs.recommended.rules,
+  pluginReactHooks.configs.recommended.rules,
   esLintConfig.rules
 );
 
@@ -78,6 +95,8 @@ exports = module.exports = (KRAVARS, tplCfg, dstDir) => {
   while (FILES_TO_PARSE.length > 0) {
     const curFile = FILES_TO_PARSE.shift();
 
+    // console.log(curFile);
+
     if (FILES[curFile].parse !== true || FILES[curFile].parsed === true) {
       continue;
     }
@@ -110,8 +129,6 @@ exports = module.exports = (KRAVARS, tplCfg, dstDir) => {
         `\x1b[31mUnclosed kra-mod-start at ${curFile}:${KRAMODIFY.startLine}:${KRAMODIFY.startCol}\x1b[0m\u0007`
       );
     }
-
-    // console.log(curFile);
 
     if (MODIFICATIONS.length > 0) {
       // console.log(`Found modifications in \u001b[1m${entryPoint}\u001b[0m`);

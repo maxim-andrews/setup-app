@@ -22,6 +22,7 @@ if (KRA.BACKEND && KRA.ROUTER) {
   import Blink from '../Blink';
   import RouterNav from '../RouterNav';
 } else if (KRA.BACKEND) {
+  import SpinLogo from '../SpinLogo';
   import ServerFetch from '../ServerFetch';
 } else if (KRA.REDUX) {
   import Spin from '../Spin';
@@ -155,6 +156,7 @@ if (KRA.BACKEND && KRA.REDUX && KRA.ROUTER) {
       <div className={styles.bodyHolder}>
         <header>
           <div className={styles.logoSloganHolder}>
+            <SpinLogo />
             <h2>Welcome to simple React setup by <code>KRA.js</code></h2>
           </div>
         </header>

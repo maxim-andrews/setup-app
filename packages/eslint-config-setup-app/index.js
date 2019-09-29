@@ -80,7 +80,7 @@ exports = module.exports = {
 
   parser: 'babel-eslint',
 
-  plugins: [ 'import', 'flowtype', 'jsx-a11y', 'react' ],
+  plugins: [ 'import', 'flowtype', 'jsx-a11y', 'react', 'react-hooks' ],
 
   extends: [
     "eslint:recommended",
@@ -256,6 +256,10 @@ exports = module.exports = {
     quotes: [ 'error', 'single' ],
     semi: [ 'error', 'always' ],
     'no-console': 'off',
-    curly: 'warn'
+    curly: 'warn',
+
+    // https://reactjs.org/docs/hooks-rules.html
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn'
   }
 };

@@ -12,7 +12,7 @@ if (KRA.REDUX) {
 /* eslint-disable import/first */
 if (KRA.THUNK) {
   import { fetchServerData } from './actions.thunk'; // kra-mod-replace .thunk
-} else {
+} else if (KRA.REDUX) {
   import { setFetching, setOsTime, setError } from './actions';
 }
 /* eslint-enable import/first */
@@ -56,28 +56,26 @@ if (KRA.SASS && KRA.LESS && KRA.POSTCSS) {
 // kra-mod-start
 if (KRA.REDUX && KRA.THUNK) {
   function ServerFetch ({ hostTime, hostOS, fetching, error, fetchServerData }) {
-    render() {
-      return (
-        <div className={styles.serverDataHolder}>
-          <div>
-            <label htmlFor="host-time">Host Time</label>
-            <span id="host-time">{hostTime}</span>
-          </div>
-          <div>
-            <label htmlFor="host-os">Host OS</label>
-            <span id="host-os">{hostOS}</span>
-          </div>
-          <div className={styles.errorMessage}>{error || ''}</div>
-          <button
-            onClick={fetchServerData}
-            disabled={fetching}>{
-              fetching
-                ? '5 Secs Server Side Delayed Fetching...'
-                : 'Fetch from Server'
-            }</button>
+    return (
+      <div className={styles.serverDataHolder}>
+        <div>
+          <label htmlFor="host-time">Host Time</label>
+          <span id="host-time">{hostTime}</span>
         </div>
-      );
-    }
+        <div>
+          <label htmlFor="host-os">Host OS</label>
+          <span id="host-os">{hostOS}</span>
+        </div>
+        <div className={styles.errorMessage}>{error || ''}</div>
+        <button
+          onClick={fetchServerData}
+          disabled={fetching}>{
+            fetching
+              ? '5 Secs Server Side Delayed Fetching...'
+              : 'Fetch from Server'
+          }</button>
+      </div>
+    );
   }
 } else if (KRA.REDUX) {
   function ServerFetch ({ hostTime, hostOS, error, fetching, setFetching, setOsTime, setError }) {
@@ -117,28 +115,22 @@ if (KRA.REDUX && KRA.THUNK) {
         });
     }
 
-    render() {
-      return (
-        <div className={styles.serverDataHolder}>
-          <div>
-            <label htmlFor="host-time">Host Time</label>
-            <span id="host-time">{hostTime}</span>
-          </div>
-          <div>
-            <label htmlFor="host-os">Host OS</label>
-            <span id="host-os">{hostOS}</span>
-          </div>
-          <div className={styles.errorMessage}>{error || ''}</div>
-          <button
-            onClick={fetchServerData}
-            disabled={fetching}>{
-              fetching
-                ? '5 Secs Server Side Delayed Fetching...'
-                : 'Fetch from Server'
-            }</button>
+    return (
+      <div className={styles.serverDataHolder}>
+        <div>
+          <label htmlFor="host-time">Host Time</label>
+          <span id="host-time">{hostTime}</span>
         </div>
-      );
-    }
+        <div>
+          <label htmlFor="host-os">Host OS</label>
+          <span id="host-os">{hostOS}</span>
+        </div>
+        <div className={styles.errorMessage}>{error || ''}</div>
+        <button
+          onClick={fetchServerData}
+          disabled={fetching}>Fetch from Server</button>
+      </div>
+    );
   }
 } else {
   class ServerFetch extends React.Component {
@@ -213,11 +205,7 @@ if (KRA.REDUX && KRA.THUNK) {
           <div className={styles.errorMessage}>{this.state.error || ''}</div>
           <button
             onClick={this.fetchServerData}
-            disabled={this.state.fetching}>{
-              this.state.fetching
-                ? '5 Secs Server Side Delayed Fetching...'
-                : 'Fetch from Server'
-            }</button>
+            disabled={this.state.fetching}>Fetch from Server</button>
         </div>
       );
     }
