@@ -1,6 +1,6 @@
 {
   "name": "setup-app-templates",
-  "version": "2.0.0-alpha.16",
+  "version": "2.0.0-alpha.17",
   "description": "Templates library for setup-app package",
   "keywords": [
     "setup-app",
@@ -43,7 +43,7 @@
     "babel-eslint": "^10.0.3",
     "cross-spawn": "^7.0.0",
     "eslint": "^6.4.0",
-    "eslint-config-setup-app": "^2.0.0-alpha.16",
+    "eslint-config-setup-app": "^2.0.0-alpha.17",
     "eslint-plugin-flowtype": "^4.3.0",
     "eslint-plugin-import": "^2.18.0",
     "eslint-plugin-jsx-a11y": "^6.2.3",

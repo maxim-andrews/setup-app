@@ -1,6 +1,6 @@
 {
   "name": "list-all",
-  "version": "2.0.0-alpha.16",
+  "version": "2.0.0-alpha.17",
   "description": "list all files in fs",
   "repository": {
     "type": "git",
@@ -37,7 +37,7 @@
     "babel-eslint": "^10.0.3",
     "babel-jest": "^24.9.0",
     "eslint": "^6.4.0",
-    "eslint-config-setup-app": "^2.0.0-alpha.16",
+    "eslint-config-setup-app": "^2.0.0-alpha.17",
     "eslint-plugin-flowtype": "^4.3.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
