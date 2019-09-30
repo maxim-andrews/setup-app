@@ -1,9 +1,11 @@
-import React from 'react';
 // kra-mod-start
 /* eslint-disable import/first */
 if (KRA.REDUX) {
+  import React from 'react';
   import { connect } from 'react-redux';
   import PropTypes from 'prop-types';
+} else {
+  import React, { useReducer } from 'react';
 }
 /* eslint-enable import/first */
 // kra-mod-end
@@ -13,6 +15,10 @@ if (KRA.REDUX) {
 if (KRA.THUNK) {
   import { fetchServerData } from './actions.thunk'; // kra-mod-replace .thunk
 } else if (KRA.REDUX) {
+  import { setFetching, setOsTime, setError } from './actions';
+} else {
+  import reducer from './reducer';
+  import initStore from './initStore';
   import { setFetching, setOsTime, setError } from './actions';
 }
 /* eslint-enable import/first */
@@ -133,26 +139,15 @@ if (KRA.REDUX && KRA.THUNK) {
     );
   }
 } else {
-  class ServerFetch extends React.Component {
-    constructor(props) {
-      super(props);
+  function ServerFetch () {
+    const [ state, dispatch ] = useReducer(reducer, initStore());
 
-      this.state = {
-        hostOS: 'Fetch It',
-        hostTime: 'Fetch It',
-        fetching: false,
-        error: false
-      };
-
-      this.fetchServerData = this.fetchServerData.bind(this);
-    }
-
-    fetchServerData () {
-      if (this.state.fetching) {
+    function fetchServerData () {
+      if (state.fetching) {
         return;
       }
 
-      this.setState({ fetching: true });
+      dispatch(setFetching());
 
       fetch('/hostosandtime', {
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -166,49 +161,38 @@ if (KRA.REDUX && KRA.THUNK) {
       })
         .then(response => {
           if (response.status >= 400) {
-            this.setState({
-              fetching: false,
-              error: response.statusText
-            });
             throw Error(response.statusText);
           }
 
           return response.json();
         })
         .then(json => {
-          this.setState({
-            fetching: false,
-            error: false,
+          dispatch(setOsTime({
             hostOS: json.hostOS,
             hostTime: json.time
-          });
+          }));
         })
         .catch(e => {
-          this.setState({
-            fetching: false,
-            error: e.message
-          });
+          dispatch(setError(e.message));
         });
     }
 
-    render() {
-      return (
-        <div className={styles.serverDataHolder}>
-          <div>
-            <label htmlFor="host-time">Host Time</label>
-            <span id="host-time">{this.state.hostTime}</span>
-          </div>
-          <div>
-            <label htmlFor="host-os">Host OS</label>
-            <span id="host-os">{this.state.hostOS}</span>
-          </div>
-          <div className={styles.errorMessage}>{this.state.error || ''}</div>
-          <button
-            onClick={this.fetchServerData}
-            disabled={this.state.fetching}>Fetch from Server</button>
+    return (
+      <div className={styles.serverDataHolder}>
+        <div>
+          <label htmlFor="host-time">Host Time</label>
+          <span id="host-time">{state.hostTime}</span>
         </div>
-      );
-    }
+        <div>
+          <label htmlFor="host-os">Host OS</label>
+          <span id="host-os">{state.hostOS}</span>
+        </div>
+        <div className={styles.errorMessage}>{state.error || ''}</div>
+        <button
+          onClick={fetchServerData}
+          disabled={state.fetching}>Fetch from Server</button>
+      </div>
+    );
   }
 }
 // kra-mod-end
