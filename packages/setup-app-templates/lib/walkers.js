@@ -4,22 +4,26 @@ const kraWalkers = {
   IfStatement: (node, state, c) => {
     const { type, loc, test, consequent, alternate, start, end } = node;
     // console.log(type);
-    // console.log(state.fullSource.substring(start, end));
+    // const stSource = state.fullSource.substring(start, end);
+    // console.log(stSource);
     // console.dir(Object.keys(node), { depth: null });
-    const testState = Object.assign({}, state);
+    const cleanState = Object.assign({}, state);
+    delete cleanState.modifications;
+
+    const testState = Object.assign({}, cleanState);
     c(test, testState);
     // console.log('testRes', testState.label, testState.value);
     let mods = [];
     // console.log();
     if (testState.value) {
-      const newState = Object.assign({}, state);
-      c(consequent, newState);
-      if (Array.isArray(newState.modifications)) {
-        mods = mods.concat(newState.modifications);
+      const conseqState = Object.assign({}, cleanState);
+      c(consequent, conseqState);
+      if (Array.isArray(conseqState.modifications)) {
+        mods = mods.concat(conseqState.modifications);
       }
     } else if (alternate !== null) {
-      const alterState = Object.assign({}, state);
-      c(alternate, state);
+      const alterState = Object.assign({}, cleanState);
+      c(alternate, alterState);
       if (Array.isArray(alterState.modifications)) {
         mods = mods.concat(alterState.modifications);
       }
@@ -29,7 +33,6 @@ const kraWalkers = {
       if (!Array.isArray(state.modifications)) {
         state.modifications = [];
       }
-
       state.modifications = state.modifications.concat(mods);
     }
   },
@@ -106,6 +109,12 @@ const kraWalkers = {
         state.value = leftState.value !== rightState.value;
         break;
       }
+      default: {
+        console.log('\n\nKRA walker.\nNot defined operator:', operator);
+        console.log();
+        console.log();
+        break;
+      }
     }
   },
   MemberExpression: (node, state, c) => {
@@ -151,6 +160,9 @@ const kraWalkers = {
     // console.log(type, start, end);
     // console.log(state.fullSource.substring(start, end));
     // console.dir(Object.keys(node), { depth: null });
+    const cleanState = Object.assign({}, state);
+    delete cleanState.modifications;
+
     let blockStart = start + 1;
     let mods = [];
     body.forEach(bNode => {
@@ -161,7 +173,7 @@ const kraWalkers = {
           end: bNode.start,
           source: state.fullSource.substring(blockStart, bNode.start).replace(/^\n/, '').replace(/\n$/, '')
         });
-        const bodyState = Object.assign({}, state);
+        const bodyState = Object.assign({}, cleanState);
         c(bNode, bodyState);
         if (Array.isArray(bodyState.modifications)) {
           mods = mods.concat(bodyState.modifications);
