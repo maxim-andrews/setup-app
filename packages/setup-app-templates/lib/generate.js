@@ -177,6 +177,7 @@ exports = module.exports = (KRAVARS, tplCfg, dstDir) => {
     } catch (e) {
       console.error('Error parsing file:');
       console.error(curFile);
+      console.log(FILES[curFile].source);
       console.error(e);
     }
 
