@@ -17,6 +17,7 @@ const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
 
 const appPkgJsn = require(resolveApp('package.json'));
 const setupApp = appPkgJsn.setupApp || {};
+const CSR = setupApp.csr === false;
 const clientCfg = (typeof setupApp.csr === 'object' && setupApp.csr !== null
   && setupApp.csr) || {};
 const envPublicUrl = process.env.PUBLIC_URL;
@@ -57,7 +58,6 @@ const paths = {
   appBuild: resolveApp(clientCfg.buildPath || 'build'),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
-  appIndexJs: resolveApp('src/index.js'),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),
   yarnLockFile: resolveApp('yarn.lock'),
@@ -69,6 +69,10 @@ const paths = {
   ownNodeModules: resolveOwn('node_modules'), // This is empty on npm 3
   moduleFileExtensions: ['web.mjs', 'mjs', 'web.js', 'js', 'json', 'web.jsx', 'jsx']
 };
+
+if (CSR) {
+  paths.appIndexJs = resolveApp('src/index.js')
+}
 
 if (setupApp.ssr) {
   const ssrCfg = setupApp.ssr;
