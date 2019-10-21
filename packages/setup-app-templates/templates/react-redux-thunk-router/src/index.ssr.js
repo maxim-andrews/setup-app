@@ -19,18 +19,12 @@ import App from './Components/App';
 import './index.css';
 
 // kra-mod-start
-if (KRA.ROUTER) {
-  const context = {};
-}
-// kra-mod-end
-
-// kra-mod-start
 if (KRA.REDUX && KRA.ROUTER) {
   // eslint-disable-next-line react/display-name
-  function ServerSide ({ path, store }) {
+  function ServerSide ({ path, store, routerCtx }) {
     return (
       <Provider store={store}>
-        <StaticRouter location={path} context={context}>
+        <StaticRouter location={path} context={routerCtx}>
           <App />
         </StaticRouter>
       </Provider>
@@ -39,7 +33,8 @@ if (KRA.REDUX && KRA.ROUTER) {
 
   ServerSide.propTypes = {
     path: PropTypes.string.isRequired,
-    store: PropTypes.object.isRequired
+    store: PropTypes.object.isRequired,
+    routerCtx: PropTypes.object.isRequired
   };
 } else if (KRA.REDUX) {
   // eslint-disable-next-line react/display-name
@@ -56,16 +51,17 @@ if (KRA.REDUX && KRA.ROUTER) {
   };
 } else if (KRA.ROUTER) {
   // eslint-disable-next-line react/display-name
-  function ServerSide ({ path }) {
+  function ServerSide ({ path, routerCtx }) {
     return (
-      <StaticRouter location={path} context={context}>
+      <StaticRouter location={path} context={routerCtx}>
         <App />
       </StaticRouter>
     );
   }
 
   ServerSide.propTypes = {
-    path: PropTypes.string.isRequired
+    path: PropTypes.string.isRequired,
+    routerCtx: PropTypes.object.isRequired
   };
 } else {
   // eslint-disable-next-line react/display-name

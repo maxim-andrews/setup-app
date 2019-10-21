@@ -74,7 +74,7 @@
     },
     "ssr": {
       "methods": {
-        "main": "src/server.side.renderer.js",
+        "main": "src/index.ssr.js",
         "initStore": "src/Store/initStore.js",
         "configureStore": "src/Store/ConfigureStore.js"
       },

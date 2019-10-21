@@ -61,7 +61,7 @@
   },
   "serverSideRendering": {
     "methods": {
-      "main": "src/server.side.renderer.js"
+      "main": "src/index.ssr.js"
     },
     "ssrMiddleware": "server/ssrMiddleware.js",
     "buildPath": "build/server"
@@ -157,7 +157,7 @@
           },
           "serverSideRendering": {
             "methods": {
-              "main": "src/server.side.renderer.js"
+              "main": "src/index.ssr.js"
             },
             "ssrMiddleware": "server/ssrMiddleware.js",
             "buildPath": "build/server"
