@@ -131,6 +131,12 @@ function processFile (
   pathMatch,
   pathMod = ''
 ) {
+  if (Array.isArray(file)) {
+    pathMod = file[2] || '';
+    pathMatch = file[1];
+    file = file[0];
+  }
+
   // console.log(path.join(CPD, file), path.resolve(path.join(CPD, file)));
   const fileToProcess = resolveFile(path.resolve(path.join(CPD, file)));
 
