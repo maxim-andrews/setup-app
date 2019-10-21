@@ -12,7 +12,7 @@ if (KRA.REDUX) {
 /* eslint-disable import/first */
 if (KRA.REDUX && KRA.THUNK) {
   import { spinReact, spinRedux } from './actions.thunk'; // kra-mod-replace .thunk
-} else if (KRA.REDUX) {
+} else if (KRA.CSR && KRA.REDUX) {
   import { spinReact, spinRedux } from './actions';
 }
 /* eslint-enable import/first */
@@ -65,12 +65,16 @@ if (KRA.SASS && KRA.LESS && KRA.POSTCSS) {
 // kra-mod-end
 
 // kra-mod-start
-if (KRA.REDUX) {
+if (KRA.CSR && KRA.REDUX) {
   const spintIt = {
     React: spinReact,
     Redux: spinRedux
   };
+}
+// kra-mod-end
 
+// kra-mod-start
+if (KRA.REDUX) {
   const logo = {
     React: reactLogo,
     Redux: reduxLogo
@@ -84,16 +88,25 @@ if (KRA.REDUX && KRA.THUNK) {
     return (
       <div className={styles.logoHolder + (spin ? ` ${styles.spinLogo}` : '')}>
         <img src={logo} className={styles.logo} alt={`${type} Logo`} />
-        <button onClick={spinIt} disabled={start > 0}>{start > 0 ? `Starts in ${start}` : `Spin ${type}`}</button>
+        <button className={styles.btn} onClick={spinIt} disabled={start > 0}>{start > 0 ? `Starts in ${start}` : `Spin ${type}`}</button>
       </div>
     );
   };
-} else if (KRA.REDUX) {
+} else if (KRA.CSR && KRA.REDUX) {
   const SpinLogo = ({ type, spin, spinIt, logo }) => {
     return (
       <div className={styles.logoHolder + (spin ? ` ${styles.spinLogo}` : '')}>
         <img src={logo} className={styles.logo} alt={`${type} Logo`} />
-        <button onClick={spinIt}>{`Spin ${type}`}</button>
+        <button className={styles.btn} onClick={spinIt}>{`Spin ${type}`}</button>
+      </div>
+    );
+  };
+} else if (KRA.REDUX) {
+  const SpinLogo = ({ type, spin, path, logo }) => {
+    return (
+      <div className={styles.logoHolder + (spin ? ` ${styles.spinLogo}` : '')}>
+        <img src={logo} className={styles.logo} alt={`${type} Logo`} />
+        <a className={styles.btn} href={path + '?type=' + type}>{`Spin ${type}`}</a>
       </div>
     );
   };
@@ -128,7 +141,7 @@ if (KRA.REDUX && KRA.THUNK) {
       spinIt: () => dispatch(spintIt[ownProps.type]())
     })
   )(SpinLogo);
-} else if (KRA.REDUX) {
+} else if (KRA.CSR && KRA.REDUX) {
   SpinLogo.propTypes = {
     type: PropTypes.string.isRequired,
     spin: PropTypes.bool.isRequired,
@@ -143,6 +156,21 @@ if (KRA.REDUX && KRA.THUNK) {
     }),
     (dispatch, ownProps) => ({
       spinIt: () => dispatch(spintIt[ownProps.type]())
+    })
+  )(SpinLogo);
+} else if (KRA.REDUX) {
+  SpinLogo.propTypes = {
+    type: PropTypes.string.isRequired,
+    spin: PropTypes.bool.isRequired,
+    logo: PropTypes.string.isRequired,
+    path: PropTypes.string.isRequired
+  };
+
+  export default connect(
+    (state, ownProps) => ({
+      spin: state.spin[ownProps.type],
+      logo: logo[ownProps.type],
+      path: state.spin.path
     })
   )(SpinLogo);
 } else {

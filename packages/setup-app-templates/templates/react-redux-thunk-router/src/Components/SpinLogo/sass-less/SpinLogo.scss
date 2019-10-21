@@ -1,8 +1,10 @@
-.logo {
-  display: block;
-  height: 80px;
+.logo-holder {
+  .logo {
+    display: block;
+    height: 80px;
+  }
 
-  .spin-logo & {
+  &.spin-logo .logo {
     animation: logo-spin infinite 5s linear;
   }
 }

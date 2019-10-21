@@ -9,16 +9,25 @@ if (KRA.ROUTER) {
 
 // kra-mod-start
 /* eslint-disable import/first */
-if (KRA.BACKEND && KRA.ROUTER) {
+if (KRA.BACKEND && KRA.ROUTER && KRA.REDUX) {
   import Spin from '../Spin';
+  import Blink from '../Blink';
+  import RouterNav from '../RouterNav';
+  import ServerFetch from '../ServerFetch';
+} else if (KRA.BACKEND && KRA.ROUTER) {
+  import SpinLogo from '../SpinLogo';
   import Blink from '../Blink';
   import RouterNav from '../RouterNav';
   import ServerFetch from '../ServerFetch';
 } else if (KRA.BACKEND && KRA.REDUX) {
   import Spin from '../Spin';
   import ServerFetch from '../ServerFetch';
-} else if (KRA.ROUTER) {
+} else if (KRA.REDUX && KRA.ROUTER) {
   import Spin from '../Spin';
+  import Blink from '../Blink';
+  import RouterNav from '../RouterNav';
+} else if (KRA.ROUTER) {
+  import SpinLogo from '../SpinLogo';
   import Blink from '../Blink';
   import RouterNav from '../RouterNav';
 } else if (KRA.BACKEND) {
@@ -137,7 +146,7 @@ if (KRA.BACKEND && KRA.REDUX && KRA.ROUTER) {
           <div className={styles.logoSloganHolder}>
             <Switch>
               <Redirect exact from="/" to="/spin"/>
-              <Route path="/spin" component={Spin} />
+              <Route path="/spin" component={SpinLogo} />
               <Route path="/blink" component={Blink} />
             </Switch>
             <h2>Welcome to simple React & Router setup by <code>KRA.js</code></h2>
@@ -192,7 +201,7 @@ if (KRA.BACKEND && KRA.REDUX && KRA.ROUTER) {
           <div className={styles.logoSloganHolder}>
             <Switch>
               <Redirect exact from="/" to="/spin"/>
-              <Route path="/spin" component={Spin} />
+              <Route path="/spin" component={SpinLogo} />
               <Route path="/blink" component={Blink} />
             </Switch>
             <h2>Welcome to simple React & Router setup by <code>KRA.js</code></h2>
