@@ -6,7 +6,14 @@ const pkgJsnCfg = require('./pkgJsnCnf');
 function entryFiles (KRAVARS) {
   const files = [];
 
-  files.push( './src/index.js' );
+  if (KRAVARS.CSR) {
+    files.push( './src/index.js' );
+  } else if (KRAVARS.BACKEND && KRAVARS.REDUX) {
+    files.push( './src/Store/initStore.js' );
+    files.push( [ './src/Store/ConfigureStore.ssr.js', '.ssr', '' ] );
+    files.push( './src/Components/SpinLogo/SpinLogo.backend.js' );
+  }
+
   files.push( './server/index.js' );
   files.push( './public/favicon.ico' );
   files.push( './public/index.html' );
@@ -15,7 +22,7 @@ function entryFiles (KRAVARS) {
   files.push( './README.md' );
 
   if (KRAVARS.SSR) {
-    files.push( './src/server.side.renderer.js' );
+    files.push( './src/index.ssr.js' );
   }
 
   if (KRAVARS.BACKEND) {
@@ -58,6 +65,14 @@ function pkgJsn (PKGVARS, KRAVARS) {
 
     copyPkgJsnProps(pkgTpl, pkgOut, cfgObj.cfg);
   });
+
+  if (typeof KRAVARS.CSR === 'undefined' || KRAVARS.CSR !== true) {
+    if (typeof pkgOut.setupApp === 'undefined') {
+      pkgOut.setupApp = {};
+    }
+
+    pkgOut.setupApp.csr = false;
+  }
 
   return pkgOut;
 }
