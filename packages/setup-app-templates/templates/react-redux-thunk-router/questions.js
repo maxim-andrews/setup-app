@@ -2,6 +2,21 @@ const c = require('chalk');
 
 exports = module.exports = [{
   type: 'checkbox',
+  name: 'renderings',
+  message: 'Please, select the rendering type(s) you would like to have (at least one)\n',
+  choices: [{
+    name: 'Client Side Rendering',
+    value: 'CSR',
+    checked: true
+  }, {
+    name: 'Server Side Rendering',
+    value: 'SSR'
+  }],
+  validate: input =>
+    input.length !== 0
+    || 'You must select at least one rendering type. Please, make your choice.'
+}, {
+  type: 'checkbox',
   name: 'reactOptions',
   message: 'Please, select modules you would like to use(optional)\n',
   choices: [{
@@ -17,7 +32,7 @@ exports = module.exports = [{
   name: 'THUNK',
   message: `Would you like to use ${ c.cyan('thunk') } with ${ c.cyan('redux') }?`,
   default: false,
-  when: answers => answers.reactOptions.includes('REDUX')
+  when: answers => answers.reactOptions.includes('REDUX') && answers.renderings.includes('CSR')
 }, {
   type: 'checkbox',
   name: 'prestyles',
@@ -32,21 +47,6 @@ exports = module.exports = [{
     name: 'LESS',
     value: 'LESS'
   }]
-}, {
-  type: 'checkbox',
-  name: 'renderings',
-  message: 'Please, select the rendering type(s) you would like to have (at least one)\n',
-  choices: [{
-    name: 'Client Side Rendering',
-    value: 'CSR',
-    checked: true
-  }, {
-    name: 'Server Side Rendering',
-    value: 'SSR'
-  }],
-  validate: input =>
-    input.length !== 0
-    || 'You must select at least one rendering type. Please, make your choice.'
 }, {
   type: 'confirm',
   name: 'BACKEND',
