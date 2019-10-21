@@ -157,7 +157,7 @@ function processFile (
   }
 
   FILES[fileToProcess] = {
-    source: fs.readFileSync(fileToProcess, 'utf8'),
+    source: fs.readFileSync(fileToProcess, FILE_EXT.includes(fileExt) ? 'utf8' : undefined),
     parse: FILE_EXT.includes(fileExt),
     parsed: false,
     dest: srcDir !== dstDir ? fileTmpEnsExt.replace(srcDir, dstDir) : fileTmpEnsExt
@@ -244,7 +244,7 @@ function mkdirp (folder) {
     .split(path.sep)
     .reduce((fullPath, curFolder) => {
       const curFullPath = path.join(fullPath, curFolder);
-      if (!fs.existsSync(curFullPath)){
+      if (!fs.existsSync(curFullPath)) {
         fs.mkdirSync(curFullPath);
       }
 
@@ -256,9 +256,10 @@ function writeToDest (FILES) {
   Object.keys(FILES).forEach( origName => {
     const file = FILES[origName];
     const folder = path.dirname(file.dest);
+    const fileExt = path.extname(file.dest).replace(/^\./, '');
 
     mkdirp(folder);
-    fs.writeFileSync(file.dest, file.source, 'utf8');
+    fs.writeFileSync(file.dest, file.source, FILE_EXT.includes(fileExt) ? 'utf8' : undefined);
   });
 }
 
