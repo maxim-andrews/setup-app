@@ -22,9 +22,6 @@ if (KRA.REDUX && KRA.CSR && KRA.SSR) {
 } else if (KRA.REDUX && KRA.CSR) {
   import initStore from './Store/initStore';
   import configureStore from './Store/ConfigureStore.csrOnly'; // kra-mod-replace .csrOnly
-} else if (KRA.REDUX && KRA.SSR) {
-  import initStore from './Store/initStore';
-  import configureStore from './Store/ConfigureStore.ssr'; // kra-mod-replace .ssr
 }
 /* eslint-enable import/first */
 // kra-mod-end
