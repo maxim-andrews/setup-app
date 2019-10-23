@@ -1,6 +1,6 @@
 {
   "name": "koa-reset-service-worker-middleware",
-  "version": "2.0.0-alpha.16",
+  "version": "2.0.0-alpha.18",
   "description": "Reset any previous service worker registered",
   "keywords": [
     "koa",
