@@ -18,7 +18,7 @@ header nav {
         margin: 0 10px;
       }
 
-      a {
+      & a {
         & {
           color: #fff;
           font-size: 25px;

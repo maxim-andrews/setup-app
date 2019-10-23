@@ -5,7 +5,7 @@ const serve = require('koa-static');
 const morgan = require('koa-morgan');
 const compress = require('koa-compress');
 // kra-mod-start
-if (KRA.CSR && !KRA.SSR) {
+if (KRA.CSR && KRA.SSR !== true) {
   const rewrite = require('koa-rewrite');
 }
 // kra-mod-end
@@ -38,7 +38,7 @@ app.use(compress());
 app.use(range);
 
 // kra-mod-start
-if (KRA.CSR && !KRA.SSR) {
+if (KRA.CSR && KRA.SSR !== true) {
   const { regexp: regexpstr, modifier } = csrCfg.devRewrite;
   app.use(rewrite(new RegExp(regexpstr, modifier || ''), `/${ setupApp.defaultIndex || 'index.html' }`));
 }

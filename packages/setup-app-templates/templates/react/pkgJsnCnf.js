@@ -42,7 +42,7 @@ exports = module.exports = [
     test: ({ CSR }) => CSR
   }, {
     cfg: { dependencies: [ 'koa-rewrite' ], setupApp: { csr: [ 'devRewrite' ] } },
-    test: ({ CSR, SSR }) => CSR && !SSR
+    test: ({ CSR, SSR }) => CSR && SSR !== true
   }, {
     cfg: { setupApp: { ssr: { methods: [ 'main' ] } } },
     test: ({ SSR }) => SSR
