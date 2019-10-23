@@ -27,7 +27,7 @@ const tpls = fs.readdirSync(templatesPath, 'utf8').reduce( (tpls, folder) => {
   return tpls;
 }, {});
 
-(async () => {
+exports = module.exports = async () => {
   let tpl;
 
   const tplsNames = Object.keys(tpls);
@@ -139,4 +139,4 @@ const tpls = fs.readdirSync(templatesPath, 'utf8').reduce( (tpls, folder) => {
   console.log();
   console.log(`${ c.green('Happy coding!') }`);
   console.log();
-})();
+};
