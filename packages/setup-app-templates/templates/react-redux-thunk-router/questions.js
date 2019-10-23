@@ -38,7 +38,7 @@ exports = module.exports = [{
   name: 'prestyles',
   message: 'Please, select CSS preprocessors you would like to use (optional)\n',
   choices: [{
-    name: 'PostCSS Preset Env',
+    name: 'PostCSS Preset Env (stage 3 + nesting)',
     value: 'POSTCSS'
   }, {
     name: 'SASS',
