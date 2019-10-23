@@ -67,7 +67,7 @@
     "file-loader": "^4.2.0",
     "front-serve-plugin": "^2.0.0-alpha.17",
     "fs-extra": "^8.1.0",
-    "html-webpack-plugin": "4.0.0-alpha.2",
+    "html-webpack-plugin": "^4.0.0-beta.8",
     "jest": "^24.9.0",
     "jest-pnp-resolver": "^1.2.1",
     "koa-proxy": "^0.9.0",

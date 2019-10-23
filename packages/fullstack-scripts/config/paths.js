@@ -17,7 +17,7 @@ const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
 
 const appPkgJsn = require(resolveApp('package.json'));
 const setupApp = appPkgJsn.setupApp || {};
-const CSR = setupApp.csr === false;
+const CSR = typeof setupApp.csr === 'object' && setupApp.csr !== null;
 const clientCfg = (typeof setupApp.csr === 'object' && setupApp.csr !== null
   && setupApp.csr) || {};
 const envPublicUrl = process.env.PUBLIC_URL;
