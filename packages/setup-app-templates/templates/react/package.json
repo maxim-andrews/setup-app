@@ -1,24 +1,37 @@
 {
   "private": true,
-  "description": "This project was created by `setup-app`",
   "scripts": {
     "start": "fullstack-scripts start",
     "build": "fullstack-scripts build",
     "test": "fullstack-scripts test --env=jsdom"
   },
   "devDependencies": {
-    "fullstack-scripts": "^2.0.0-alpha.6",
+    "connected-react-router": "^6.5.2",
+    "fullstack-scripts": "2.0.0-alpha.18",
+    "history": "^4.10.1",
+    "less": "^3.10.3",
+    "less-loader": "^5.0.0",
+    "node-sass": "^4.12.0",
+    "postcss-preset-env": "^6.7.0",
     "prop-types": "^15.7.2",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-redux": "^7.1.1",
+    "react-router": "^5.1.2",
+    "react-router-dom": "^5.1.2",
+    "redux": "^4.0.4",
+    "redux-thunk": "^2.3.0",
+    "sass-loader": "^8.0.0"
   },
   "dependencies": {
-    "koa": "^2.7.0",
+    "koa": "^2.10.0",
     "koa-compress": "^3.0.0",
     "koa-morgan": "^1.0.1",
     "koa-range": "^0.3.0",
+    "koa-rewrite": "^3.0.1",
+    "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
-    "setup-app-ssr": "^2.0.0-alpha.6"
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
+    "setup-app-ssr": "2.0.0-alpha.18"
   },
   "eslintConfig": {
     "extends": "setup-app"
@@ -55,117 +68,24 @@
       }
     ]
   },
-  "defaultIndex": "index.html",
-  "frontEndRendering": {
-    "buildPath": "build/client"
-  },
-  "serverSideRendering": {
-    "methods": {
-      "main": "src/index.ssr.js"
-    },
-    "ssrMiddleware": "server/ssrMiddleware.js",
-    "buildPath": "build/server"
-  },
-  "appBackend": "server/routes.js",
-  "setup-app": {
-    "label": "React Only",
-    "styles": [
-      {
-        "label": "CSS Only",
-        "patterns": "*\\/css\\/([^\\/]+\\.css)"
-      },
-      {
-        "label": "Post CSS Only",
-        "pattern": "*\\/postcss\\/([^\\/]+\\.css)",
-        "modules": [
-          "postcss-preset-env"
-        ]
-      },
-      {
-        "label": "SASS Only",
-        "pattern": "*\\/sass\\/([^\\/]+\\.scss)",
-        "modules": [
-          "node-sass",
-          "sass-loader"
-        ]
-      },
-      {
-        "label": "LESS Only",
-        "pattern": "*\\/less\\/([^\\/]+\\.less)",
-        "modules": [
-          "less",
-          "less-loader"
-        ]
-      },
-      {
-        "label": "Post CSS & SASS",
-        "pattern": "*\\/postcss-sass\\/([^\\/]+\\.s?css)",
-        "modules": [
-          "postcss-preset-env",
-          "node-sass",
-          "sass-loader"
-        ]
-      },
-      {
-        "label": "Post CSS & LESS",
-        "pattern": "*\\/postcss-less\\/([^\\/]+\\.(le|c)ss)",
-        "modules": [
-          "postcss-preset-env",
-          "less",
-          "less-loader"
-        ]
-      },
-      {
-        "label": "Post CSS & SASS & LESS",
-        "pattern": "*\\/postcss-sass-less\\/([^\\/]+\\.(le|s?c)ss)",
-        "modules": [
-          "postcss-preset-env",
-          "node-sass",
-          "sass-loader",
-          "less",
-          "less-loader"
-        ]
-      },
-      {
-        "label": "SASS & LESS",
-        "pattern": "*\\/sass-less\\/([^\\/]+\\.(le|s?c)ss)",
-        "modules": [
-          "node-sass",
-          "sass-loader",
-          "less",
-          "less-loader"
-        ]
+  "setupApp": {
+    "defaultIndex": "index.html",
+    "csr": {
+      "buildPath": "build/client",
+      "devRewrite": {
+        "regexp": "^\\/(spin|blink)$"
       }
-    ],
-    "server": [
-      {
-        "block": {
-          "start": "server-side-rendering-start",
-          "end": "server-side-rendering-end"
-        },
-        "files": [
-          "server/routes.js",
-          "server/ssrMiddleware.js"
-        ],
-        "pkgJsn": {
-          "dependencies": [
-            "setup-app-ssr"
-          ],
-          "defaultIndex": "index.html",
-          "frontEndRendering": {
-            "buildPath": "build/client"
-          },
-          "serverSideRendering": {
-            "methods": {
-              "main": "src/index.ssr.js"
-            },
-            "ssrMiddleware": "server/ssrMiddleware.js",
-            "buildPath": "build/server"
-          },
-          "appBackend": "server/routes.js"
-        }
+    },
+    "ssr": {
+      "methods": {
+        "main": "src/index.ssr.js",
+        "initStore": "src/Store/initStore.js",
+        "configureStore": "src/Store/ConfigureStore.js"
       },
-      {}
-    ]
+      "ssrMiddleware": "server/ssrMiddleware.js",
+      "buildPath": "build/server"
+    },
+    "backendAfter": "server/routes.js",
+    "watchBackendFiles": "src/**/*.backend.js"
   }
 }
