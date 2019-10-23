@@ -535,7 +535,9 @@ class WebpackKoaServer extends EventEmitter {
       this.backendBefore(this.koa);
     }
 
-    this.koa.use(this.devMiddleware.bind(this));
+    if (typeof this.pkgJsn.setupApp.ssr === 'undefined') {
+      this.koa.use(this.devMiddleware.bind(this));
+    }
 
     this.applyPluginMiddleware();
 

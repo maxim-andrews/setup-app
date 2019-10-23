@@ -16,6 +16,8 @@ const defaultOptions = {
 
 exports = module.exports = configOpts => {
   const options = Object.assign(defaultOptions, configOpts);
+  const SSR_ONLY = typeof setupApp.csr === 'boolean' && setupApp.csr === false;
+  const defaultIndex = setupApp.defaultIndex || 'index.html';
 
   // wrapper method to avoid user interactions with internals like SSRObject
   // and waitUntilReady
@@ -33,8 +35,8 @@ exports = module.exports = configOpts => {
 
       const { methods, maps } = ssrObject;
 
-      if (typeof setupApp.csr === 'boolean' && setupApp.csr === false) {
-        ctx.state.serverSideOnly = true;
+      if (SSR_ONLY) {
+        ctx.state.serverSideOnly = SSR_ONLY;
       }
 
       const { initStore, configureStore } = options;
@@ -51,7 +53,7 @@ exports = module.exports = configOpts => {
 
       await next();
 
-      if (!ctx.body && ssrObject.html) {
+      if ((!ctx.body || [ '/', '/' + defaultIndex ].includes(ctx.path)) && ssrObject.html) {
         const ctxMtds = options.contentMethods;
         ctx.body = ssrObject.html;
 
@@ -65,10 +67,29 @@ exports = module.exports = configOpts => {
 
 async function processMethod (methods, maps, ctx, ctxMtds, method) {
   try {
+    const routerCtx = {};
     const methodOutput = ReactDOMServer.renderToString( methods[method]({
       path: ctx.path,
-      store: ctx.state.store
+      store: ctx.state.store,
+      routerCtx
     }) );
+
+    // redirecting
+    if (routerCtx.url) {
+      if (routerCtx.status) {
+        ctx.status = routerCtx.status;
+      }
+
+      ctx.redirect(routerCtx.url);
+
+      if (routerCtx.statusText) {
+        ctx.body = routerCtx.statusText;
+      }
+    }
+
+    if (ctx.response.get('location')) {
+      return;
+    }
 
     const methodType = typeof ctxMtds[method];
 

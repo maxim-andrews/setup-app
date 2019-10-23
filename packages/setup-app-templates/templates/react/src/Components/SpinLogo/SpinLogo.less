@@ -1,0 +1,45 @@
+.logo-holder {
+  display: inline-block;
+  height: 100px;
+
+  .logo {
+    display: block;
+    height: 80px;
+  }
+
+  .btn {
+    text-decoration: none;
+    text-rendering: auto;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0px;
+    text-shadow: none;
+    display: inline-block;
+    text-align: center;
+    align-items: flex-start;
+    cursor: default;
+    color: #000;
+    background-color: #fff;
+    font: 400 11px system-ui;
+    margin: 0;
+    padding: 1px 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  &.spin-logo {
+    .logo {
+      animation: logo-spin infinite 5s linear;
+    }
+
+    .btn {
+      display: none;
+    }
+  }
+}
+
+@keyframes logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

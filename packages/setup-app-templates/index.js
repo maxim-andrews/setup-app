@@ -18,7 +18,12 @@ const tpls = fs.readdirSync(templatesPath, 'utf8').reduce( (tpls, folder) => {
   try {
     const tpl = require(path.join(templatesPath, folder, 'tplCfg.js'));
     tpls[tpl.name] = tpl;
-  } catch (e) { /* console.log(e); */ }
+  } catch (e) {
+    if (!e.message.includes('Cannot find module')) {
+      console.log(e);
+    }
+  }
+
   return tpls;
 }, {});
 

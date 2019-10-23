@@ -99,20 +99,19 @@ class StylesAutoConfig {
     }, []);
   }
 
-  setupPostCSS (nested = false) {
+  setupPostCSS () {
     const plugins = [ require('postcss-flexbugs-fixes') ];
 
     if (this.moduleInstalled('postcss-preset-env')) {
-      plugins.push(require('postcss-preset-env')(Object.assign(
+      const presetEnvCfg = Object.assign(
         {
           stage: 3,
-          autoprefixer: {
-            flexbox: 'no-2009'
-          }
+          autoprefixer: { flexbox: 'no-2009' }
         },
-        nested ? { features: { 'nesting-rules': true } } : {},
+        { features: { 'nesting-rules': true } },
         StylesAutoConfig.getBrowsersList(this.pkg)
-      )));
+      );
+      plugins.push(require('postcss-preset-env')(presetEnvCfg));
     } else if (this.moduleInstalled('autoprefixer')) {
       plugins.push(require('autoprefixer')(Object.assign(
         { flexbox: 'no-2009' },
@@ -144,17 +143,17 @@ class StylesAutoConfig {
     };
   }
 
-  loaderConfig (loaderName, extensions, ssr, postcss) {
+  loaderConfig (loaderName, extensions, ssr) {
     const useLoaders = [
       process.env.NODE_ENV !== 'production' && !ssr
         ? require.resolve('style-loader')
         : require('mini-css-extract-plugin').loader
     ];
 
-    useLoaders.push(StylesAutoConfig.cssLoaderConfig(postcss ? 1 : 2));
-    useLoaders.push(this.setupPostCSS(postcss));
+    useLoaders.push(StylesAutoConfig.cssLoaderConfig(loaderName === 'css' ? 1 : 2));
+    useLoaders.push(this.setupPostCSS());
 
-    if (!postcss) {
+    if (loaderName !== 'css') {
       useLoaders.push(cfu.relsoveModule(`${ loaderName }-loader`));
     }
 
@@ -173,7 +172,7 @@ class StylesAutoConfig {
     const loaders = this.installedLoaders() || [];
 
     return [
-      this.loaderConfig('css', 'css', ssr, true)
+      this.loaderConfig('css', 'css', ssr)
     ].concat(
       loaders.map(
         loader => this.loaderConfig(loader, LOADERS[loader], ssr)
