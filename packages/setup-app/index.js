@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 /**
  * Copyright (c) 2018, Maxim Andrews, maximandrews.com
  *
