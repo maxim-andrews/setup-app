@@ -15,7 +15,7 @@
     "front-serve-plugin",
     "webpack-koa-server"
   ],
-  "author": "Maxim Andrews <maximandrewz@users.noreply.github.com>",
+  "author": "Maxim Andrews <maximandrews@users.noreply.github.com>",
   "license": "MIT",
   "main": "index.js",
   "directories": {
@@ -24,9 +24,7 @@
   "files": [
     "index.js"
   ],
-  "bin": {
-    "setup-app": "./index.js"
-  },
+  "bin": "./index.js",
   "scripts": {
     "test": "jest"
   },

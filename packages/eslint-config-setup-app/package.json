@@ -21,7 +21,7 @@
     "webpack-koa-server",
     "hot-client-plugin"
   ],
-  "author": "Maxim Andrews <maximandrewz@users.noreply.github.com> (http://maximandrews.com)",
+  "author": "Maxim Andrews <maximandrews@users.noreply.github.com>",
   "license": "MIT",
   "files": [
     "index.js"

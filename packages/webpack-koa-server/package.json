@@ -27,7 +27,7 @@
     "ssr-serve-plugin",
     "front-serve-plugin"
   ],
-  "author": "Maxim Andrews <maximandrewz@users.noreply.github.com> (http://maximandrews.com)",
+  "author": "Maxim Andrews <maximandrews@users.noreply.github.com>",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.6.2",

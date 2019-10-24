@@ -10,7 +10,7 @@
     "url": "https://github.com/maxim-andrews/setup-app-suite/issues"
   },
   "homepage": "https://github.com/maxim-andrews/setup-app-suite/tree/master/packages/fullstack-scripts#readme",
-  "author": "Maxim Andrews <maximandrewz@users.noreply.github.com> (http://maximandrews.com)",
+  "author": "Maxim Andrews <maximandrews@users.noreply.github.com>",
   "license": "MIT",
   "engines": {
     "node": ">=8"
@@ -83,13 +83,13 @@
     "react-dev-utils": "^9.1.0",
     "ssr-serve-plugin": "^2.0.0-alpha.19",
     "style-loader": "^1.0.0",
-    "sw-precache-webpack-plugin": "^0.11.5",
     "terser-webpack-plugin": "^2.2.1",
     "url-loader": "^2.2.0",
     "webpack": "^4.41.2",
     "webpack-koa-server": "^2.0.0-alpha.19",
     "webpack-manifest-plugin": "^2.2.0",
-    "whatwg-fetch": "^3.0.0"
+    "whatwg-fetch": "^3.0.0",
+    "workbox-webpack-plugin": "^4.3.1"
   },
   "optionalDependencies": {
     "fsevents": "^1.2.4"
