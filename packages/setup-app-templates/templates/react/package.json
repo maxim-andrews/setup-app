@@ -67,7 +67,7 @@
       {
         "regexp": "manifest\\.json$"
       }
-    ],
+    ]
   },
   "setupApp": {
     "defaultIndex": "index.html",
