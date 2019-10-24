@@ -27,7 +27,7 @@
     "front-serve-plugin",
     "webpack-koa-server"
   ],
-  "author": "Maxim Andrews <maximandrewz@users.noreply.github.com> (http://maximandrews.com)",
+  "author": "Maxim Andrews <maximandrews@users.noreply.github.com>",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.6.4",
