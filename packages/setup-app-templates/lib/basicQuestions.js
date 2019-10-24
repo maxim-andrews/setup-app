@@ -37,16 +37,23 @@ exports = module.exports = () => {
   const cwdName = path.basename(CWD);
 
   const npmInitUser = execSync(
-    'npm config get init.author.name',
+    'npm config get init-author-name',
     { encoding: 'utf8' }
   ).trim();
 
   const npmInitEmail = execSync(
-    'npm config get init.author.email',
+    'npm config get init-author-email',
     { encoding: 'utf8' }
   ).trim();
 
-  const author = npmInitUser !== 'undefined' ? `${ npmInitUser } <${ npmInitEmail }>` : undefined;
+  const npmInitUrl = execSync(
+    'npm config get init-author-url',
+    { encoding: 'utf8' }
+  ).trim();
+
+  const author = npmInitUser !== 'undefined'
+    ? `${ npmInitUser }${ npmInitEmail ? ` <${ npmInitEmail }>` : ''}${ npmInitUrl ? ` (${ npmInitUrl })` : ''}`
+    : undefined;
 
   return [{
     type: 'confirm',
@@ -120,6 +127,6 @@ exports = module.exports = () => {
     type: 'input',
     name: 'author',
     message: 'Please, provide the name of the project author:\n',
-    default: author || 'Cool Guy <cool.guy@github.com>'
+    default: author || 'Your Name <your.email@yourdomain.com>'
   }];
 };
