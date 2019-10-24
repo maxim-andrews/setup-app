@@ -17,7 +17,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const safePostCssParser = require('postcss-safe-parser');
 const ManifestPlugin = require('webpack-manifest-plugin');
-const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
+const { GenerateSW } = require('workbox-webpack-plugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 
@@ -375,28 +375,13 @@ module.exports = ({ csr, ssr }) => {
       }),
       // Generate a service worker script that will precache, and keep up to date,
       // the HTML & assets that are part of the Webpack build.
-      new SWPrecacheWebpackPlugin(Object.assign({
-        // By default, a cache-busting query parameter is appended to requests
-        // used to populate the caches, to ensure the responses are fresh.
-        // If a URL is already hashed by Webpack, then there is no concern
-        // about it being stale, and the cache-busting can be skipped.
-        dontCacheBustUrlsMatching: /\.\w{8}\./,
-        filename: 'service-worker.js',
-        logger(message) {
-          if (message.indexOf('Total precache size is') === 0) {
-            // This message occurs for every build and is a bit too noisy.
-            return;
-          }
-          if (message.indexOf('Skipping static resource') === 0) {
-            // This message obscures real errors so we ignore it.
-            // https://github.com/facebookincubator/create-react-app/issues/2612
-            return;
-          }
-          console.log(message);
+      new GenerateSW(Object.assign(
+        {
+          swDest: 'service-worker.js',
+          clientsClaim: true,
+          dontCacheBustUrlsMatching: /\.\w{8}\./
         },
-        minify: true
-      },
-      pkgJsn.serviceWorkerPreCache ? cfu.json2RegExp(pkgJsn.serviceWorkerPreCache) : {}
+        pkgJsn.workboxSW ? cfu.json2RegExp(pkgJsn.workboxSW) : {}
       )),
       // Moment.js is an extremely popular library that bundles large locale files
       // by default due to how Webpack interprets its code. This is a practical

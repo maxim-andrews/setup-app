@@ -49,24 +49,25 @@
       "not ie < 9"
     ]
   },
-  "serviceWorkerPreCache": {
+  "workboxSW": {
+    "importWorkboxFrom": "cdn",
     "navigateFallback": "/index.html",
-    "navigateFallbackWhitelist": [
+    "navigateFallbackBlacklist" : [
       {
-        "regexp": "^(?!\\/__).*"
+        "regexp": "^/_"
+      },
+      {
+        "regexp": "/[^/?]+\\.[^/]+$"
       }
     ],
-    "staticFileGlobsIgnorePatterns": [
+    "exclude": [
       {
         "regexp": "\\.map$"
       },
       {
         "regexp": "manifest\\.json$"
-      },
-      {
-        "regexp": "asset-manifest\\.json$"
       }
-    ]
+    ],
   },
   "setupApp": {
     "defaultIndex": "index.html",
