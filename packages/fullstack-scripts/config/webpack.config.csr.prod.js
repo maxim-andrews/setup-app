@@ -379,7 +379,7 @@ module.exports = ({ csr, ssr }) => {
         {
           swDest: 'service-worker.js',
           clientsClaim: true,
-          dontCacheBustUrlsMatching: /\.\w{8}\./
+          dontCacheBustURLsMatching: /\.\w{8}\./
         },
         pkgJsn.workboxSW ? cfu.json2RegExp(pkgJsn.workboxSW) : {}
       )),
