@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2018-present, Maxim Andrews, maximandrews.com
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 'use strict';
 
 const fs = require('fs');
@@ -7,12 +14,13 @@ const path = require('path');
 const spawn = require('cross-spawn');
 const inquirer = require('inquirer');
 
-const generate = require('./lib/generate');
-const { writeToDest } = require('./lib/helpers');
-const bQuestions = require('./lib/basicQuestions')();
-
+const libfolder = path.join(__dirname, 'lib');
 const templatesPath = path.join(__dirname, 'templates');
 const CWD = process.cwd();
+
+const generate = require(path.join(libfolder, 'generate'));
+const { writeToDest } = require(path.join(libfolder, 'helpers'));
+const bQuestions = require(path.join(libfolder, 'basicQuestions'))();
 
 const tpls = fs.readdirSync(templatesPath, 'utf8').reduce( (tpls, folder) => {
   try {
