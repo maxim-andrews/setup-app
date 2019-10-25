@@ -10,7 +10,7 @@
     "url": "https://github.com/maxim-andrews/setup-app-suite/issues"
   },
   "homepage": "https://github.com/maxim-andrews/setup-app-suite/tree/master/packages/fullstack-scripts#readme",
-  "author": "Maxim Andrews <maximandrews@users.noreply.github.com>",
+  "author": "Maxim Andrews <maximandrews@users.noreply.github.com> (http://maximandrews.com)",
   "license": "MIT",
   "engines": {
     "node": ">=8"

@@ -10,7 +10,7 @@
     "reset",
     "middleware"
   ],
-  "author": "Maxim Andrews <maximandrews@users.noreply.github.com>",
+  "author": "Maxim Andrews <maximandrews@users.noreply.github.com> (http://maximandrews.com)",
   "homepage": "https://github.com/maxim-andrews/setup-app-suite#readme",
   "license": "MIT",
   "main": "lib/index.js",
