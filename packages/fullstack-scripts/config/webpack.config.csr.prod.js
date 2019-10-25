@@ -378,8 +378,7 @@ module.exports = ({ csr, ssr }) => {
       new GenerateSW(Object.assign(
         {
           swDest: 'service-worker.js',
-          clientsClaim: true,
-          dontCacheBustURLsMatching: /\.\w{8}\./
+          clientsClaim: true
         },
         pkgJsn.workboxSW ? cfu.json2RegExp(pkgJsn.workboxSW) : {}
       )),
