@@ -17,7 +17,7 @@
     "all-files",
     "list-all"
   ],
-  "author": "Maxim Andrews <maximandrews@users.noreply.github.com>",
+  "author": "Maxim Andrews <maximandrews@users.noreply.github.com> (http://maximandrews.com)",
   "license": "MIT",
   "main": "lib/list-all.js",
   "directories": {

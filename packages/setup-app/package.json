@@ -15,7 +15,7 @@
     "front-serve-plugin",
     "webpack-koa-server"
   ],
-  "author": "Maxim Andrews <maximandrews@users.noreply.github.com>",
+  "author": "Maxim Andrews <maximandrews@users.noreply.github.com> (http://maximandrews.com)",
   "license": "MIT",
   "main": "index.js",
   "directories": {
