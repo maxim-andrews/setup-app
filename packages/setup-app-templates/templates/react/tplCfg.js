@@ -18,7 +18,7 @@ function entryFiles (KRAVARS) {
   files.push( './public/favicon.ico' );
   files.push( './public/index.html' );
   files.push( './public/manifest.json' );
-  files.push( './.gitignore' );
+  files.push( [ './gitignore', '/gitignore', '/.gitignore' ] );
   files.push( './README.md' );
 
   if (KRAVARS.SSR) {
