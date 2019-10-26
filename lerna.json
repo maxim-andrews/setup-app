@@ -6,8 +6,5 @@
       "dist-tag": "next"
     }
   },
-  "packages": [
-    "packages/*",
-    "packages/setup-app-templates/templates/react"
-  ]
+  "packages": [ "packages/*" ]
 }
