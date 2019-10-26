@@ -52,7 +52,7 @@
   "workboxSW": {
     "importWorkboxFrom": "cdn",
     "navigateFallback": "/index.html",
-    "navigateFallbackBlacklist" : [
+    "navigateFallbackBlacklist": [
       {
         "regexp": "^/_"
       },
