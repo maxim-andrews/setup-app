@@ -7,7 +7,7 @@
   },
   "devDependencies": {
     "connected-react-router": "^6.5.2",
-    "fullstack-scripts": "2.0.0-alpha.25",
+    "fullstack-scripts": "2.0.0-alpha.24",
     "history": "^4.10.1",
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
