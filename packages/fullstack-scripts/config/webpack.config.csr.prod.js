@@ -7,6 +7,7 @@
 'use strict';
 
 const path = require('path');
+const { createHash } = require('crypto');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
@@ -79,6 +80,16 @@ module.exports = ({ csr, ssr }) => {
         path
           .relative(paths.appSrc, info.absoluteResourcePath)
           .replace(/\\/g, '/'),
+      // Prevents conflicts when multiple Webpack runtimes (from different apps)
+      // are used on the same page.
+      jsonpFunction: `wbpkJsonp-${
+        createHash('sha256')
+          .update(pkgJsn.name)
+          .digest('hex')
+          .substring(0, 10) }`,
+      // this defaults to 'window', but by setting it to 'this' then
+      // module chunks which are built will work in web workers as well.
+      globalObject: 'this',
     },
     // Minify the code.
     optimization: {
@@ -149,7 +160,9 @@ module.exports = ({ csr, ssr }) => {
       },
       // Keep the runtime chunk seperated to enable long term caching
       // https://twitter.com/wSokra/status/969679223278505985
-      runtimeChunk: true,
+      runtimeChunk: {
+        name: entrypoint => `runtime-${entrypoint.name}`,
+      },
     },
     resolve: {
       alias: {
@@ -372,6 +385,20 @@ module.exports = ({ csr, ssr }) => {
       new ManifestPlugin({
         fileName: 'asset-manifest.json',
         publicPath,
+        generate: (seed, files, entrypoints) => {
+          const manifestFiles = files.reduce((manifest, file) => {
+            manifest[file.name] = file.path;
+            return manifest;
+          }, seed);
+          const entrypointFiles = entrypoints.main.filter(
+            fileName => !fileName.endsWith('.map')
+          );
+
+          return {
+            files: manifestFiles,
+            entrypoints: entrypointFiles,
+          };
+        },
       }),
       // Generate a service worker script that will precache, and keep up to date,
       // the HTML & assets that are part of the Webpack build.
