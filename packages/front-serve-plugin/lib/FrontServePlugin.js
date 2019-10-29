@@ -288,7 +288,7 @@ class FrontServePlugin {
     });
 
     const injectJs = jsFilesOnly.reduce((tags, file) => {
-      const tag = `<script type="text/javascript" src="${file}"></script>`;
+      const tag = `<script type="text/javascript" src="${path.join(this.publicPath, file)}"></script>`;
 
       if (!templateHtml.includes(tag)) {
         tags.push(tag);
