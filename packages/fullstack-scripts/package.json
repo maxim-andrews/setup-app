@@ -1,6 +1,6 @@
 {
   "name": "fullstack-scripts",
-  "version": "2.0.0-alpha.25",
+  "version": "2.0.0-alpha.27",
   "description": "Configuration and scripts for Create FullStack App",
   "repository": {
     "type": "git",
@@ -65,7 +65,7 @@
     "eslint-plugin-react": "^7.16.0",
     "eslint-plugin-react-hooks": "^2.2.0",
     "file-loader": "^4.2.0",
-    "front-serve-plugin": "^2.0.0-alpha.25",
+    "front-serve-plugin": "^2.0.0-alpha.27",
     "fs-extra": "^8.1.0",
     "html-webpack-plugin": "^4.0.0-beta.8",
     "jest": "^24.9.0",
