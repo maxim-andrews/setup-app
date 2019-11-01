@@ -213,8 +213,8 @@ class FrontServePlugin {
       return next();
     }
 
-    ctx.type = this.mime.getType(filename);
-    ctx.body = this.fileSystem.readFileSync(filename);
+    ctx.type = this.mime.getType(filename); // eslint-disable-line require-atomic-updates
+    ctx.body = this.fileSystem.readFileSync(filename); // eslint-disable-line require-atomic-updates
   }
 
   extractFilename (url) {
