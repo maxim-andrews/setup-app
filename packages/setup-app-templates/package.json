@@ -53,5 +53,11 @@
     "inquirer": "^7.0.0",
     "validate-npm-package-license": "^3.0.4",
     "validate-npm-package-name": "^3.0.0"
+  },
+  "eslintConfig": {
+    "extends": "setup-app"
+  },
+  "engines": {
+    "node": ">= 8"
   }
 }

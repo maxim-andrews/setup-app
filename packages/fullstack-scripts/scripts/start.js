@@ -124,9 +124,14 @@ if (process.env.HOST) {
 
 // "Compiler" is a low-level interface to Webpack.
 // It lets us listen to some events and provide our own custom messages.
-let compiler;
 try {
-  compiler = webpack(configs);
+  const compiler = webpack(configs);
+
+  process.nextTick(() => {
+    compiler.watch({
+      ignored: /node_modules/
+    }, () => {});
+  });
 } catch (err) {
   console.log(chalk.red('Failed to compile.'));
   console.log();
@@ -134,9 +139,3 @@ try {
   console.log();
   process.exit(1);
 }
-
-process.nextTick(() => {
-  compiler.watch({
-    ignored: /node_modules/
-  }, () => {});
-});

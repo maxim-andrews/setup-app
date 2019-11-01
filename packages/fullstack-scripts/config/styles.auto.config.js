@@ -16,7 +16,6 @@ const LOADERS = {
   sass: [ 'scss', 'sass' ],
   less: [ 'less' ]
 };
-const EXT = [ 'css' ];
 const CWD = process.cwd();
 
 const BROWSERSLIST = {
@@ -161,8 +160,7 @@ class StylesAutoConfig {
       test: Array.isArray(extensions)
         ? ( extensions.length > 1
           ? new RegExp(`\\.(${ extensions.join('|') })$`)
-          : new RegExp(`\\.${ extensions.join('') }$`)
-          )
+          : new RegExp(`\\.${ extensions.join('') }$`) )
         : new RegExp(`\\.${ extensions }$`),
       use: useLoaders
     };

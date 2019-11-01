@@ -7,7 +7,6 @@
 
 'use strict';
 
-const fs = require('fs');
 const vm = require('vm');
 const mime = require('mime');
 const path = require('path');
@@ -286,8 +285,8 @@ class SSRServePlugin {
       return next();
     }
 
-    ctx.type = this.mime.getType(filename);
-    ctx.body = this.fileSystem.readFileSync(filename);
+    ctx.type = this.mime.getType(filename);  // eslint-disable-line require-atomic-updates
+    ctx.body = this.fileSystem.readFileSync(filename);  // eslint-disable-line require-atomic-updates
   }
 
   extractFilename (url) {
@@ -330,13 +329,13 @@ class SSRServePlugin {
     });
   }
 
-  processCompiledFiles () {
+  async processCompiledFiles () {
     const files = this.lastStats ? Object.keys(this.lastStats.compilation.assets) : false;
 
     if (files) {
-      this.processCSSFiles(files);
+      await this.processCSSFiles(files);
       this.processJavaScriptMaps(files);
-      this.processJavaScripts(files);
+      await this.processJavaScripts(files);
     }
 
     this.emitter.emit('methodsReady');
@@ -378,56 +377,52 @@ class SSRServePlugin {
       }, {});
   }
 
-  processJavaScripts (files) {
+  async processJavaScripts (files) {
     const CWD = process.cwd();
     const newRequire = moduleName => {
       try {
         return require(moduleName);
-      } catch (e) {}
+      } catch (e) { /* */ }
 
       return require(path.join(CWD, 'node_modules', moduleName));
     };
 
-    this.ssrObj.methods = files.filter(file => /\.js$/.test(file))
-      .reduce((methods, file) => {
-        const methodName = file.replace(/\.js$/i, '').replace(/^.*\//, '');
-        const content = this.fileSystem.readFileSync(path.join('/', file), 'utf8');
-        const sandbox = { module: {}, require: newRequire };
-        let script;
+    const jsFiles = files.filter(file => /\.js$/.test(file));
+    const methods = [];
+    for (let i = 0; i < jsFiles.length; i++) {
+      const file = jsFiles[i];
+      const methodName = file.replace(/\.js$/i, '').replace(/^.*\//, '');
+      const content = this.fileSystem.readFileSync(path.join('/', file), 'utf8');
+      const sandbox = { module: {}, require: newRequire };
 
-        try {
-          script = new vm.Script(content);
-          vm.createContext(sandbox);
-          script.runInContext(sandbox, { filename: file, displayErrors: true, breakOnSigint: true });
-        } catch (e) {
-          const stackArray = e.stack.split('\n');
-          const sourceConsumer = new SourceMapConsumer(this.ssrObj.maps[methodName]);
+      try {
+        const script = new vm.Script(content);
+        vm.createContext(sandbox);
+        script.runInContext(sandbox, { filename: file, displayErrors: true, breakOnSigint: true });
+      } catch (e) {
+        const stackArray = e.stack.replace(e.message, '').split('\n');
+        const sourceConsumer = await new SourceMapConsumer(this.ssrObj.maps[methodName]);
 
-          const restStack = stackArray.slice(1).map((traceLine, i) => {
-            const matched = traceLine.match(/\s+\(?([\w<>.]+:(\d+):(\d+))\)?$/);
-            let outputLine = traceLine;
+        const restStack = stackArray.slice(1).map((traceLine, i) => {
+          if (!traceLine.includes('anonymous')) {
+            return i === 0
+              ? traceLine.replace(/(\s*at)[^(]+\(([^)]+)\)/i, '$1 $2')
+              : traceLine;
+          }
+          const lineColumn = traceLine.split(':').slice(1).map(int => parseInt(int, 10));
+          const original = sourceConsumer.originalPositionFor({ line: lineColumn[0], column: lineColumn[1] });
+          return traceLine.replace(/\([^)]+\)$/, `(${original.source}:${original.line}:${original.column})`);
+        });
+        console.error('\x1b[31m\x1b[1m%s\x1b[0m', `Pre SSR ${ e.constructor.name }:\n${ e.message }`);
+        console.error('\x1b[31m%s\x1b[0m', restStack.join('\n'));
+        // process.exit(0);
+      }
 
-            if (matched) {
-              const line = parseInt(matched[2], 10);
-              const column = parseInt(matched[3], 10);
-              const original = sourceConsumer.originalPositionFor({ line, column });
-              if ( original.source !== null && original.line !== null && original.column !== null) {
-                outputLine = traceLine.replace(matched[1], `${original.source}:${original.line}:${original.column}`);
-              }
-            }
+      const method = sandbox.module.exports;
+      methods[methodName] = (method && method.default) || method;
+    }
 
-            return outputLine;
-          });
-          console.error(`Pre SSR ${ e.constructor.name }: ${ e.message }`);
-          console.error(restStack.join('\n'));
-          process.exit(0);
-        }
-
-        const method = sandbox.module.exports;
-        methods[methodName] = (method && method.default) || method;
-
-        return methods;
-      }, {});
+    this.ssrObj.methods = methods;
   }
 
   updateSsrHtml (templateHtml) {

@@ -2,9 +2,9 @@
 const path = require('path');
 
 const listAll = (dirPath = '/', fs) => {
-    const allContent = fs.readdirSync(dirPath, {
-      encoding: 'utf8'
-    });
+  const allContent = fs.readdirSync(dirPath, {
+    encoding: 'utf8'
+  });
 
   return allContent.reduce((files, file) => {
     const fullName = path.join(dirPath, file);
@@ -16,6 +16,6 @@ const listAll = (dirPath = '/', fs) => {
     }
     return files;
   }, []);
-}
+};
 
 module.exports = listAll;
