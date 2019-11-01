@@ -55,6 +55,7 @@ exports = module.exports = configOpts => {
 
       if ((!ctx.body || [ '/', '/' + defaultIndex ].includes(ctx.path)) && ssrObject.html) {
         const ctxMtds = options.contentMethods;
+        /* eslint-disable-next-line */
         ctx.body = ssrObject.html;
 
         await Promise.all(Object.keys(ctxMtds).map(
@@ -66,6 +67,10 @@ exports = module.exports = configOpts => {
 };
 
 async function processMethod (methods, maps, ctx, ctxMtds, method) {
+  if (typeof methods[method] !== 'function') {
+    return;
+  }
+
   try {
     const routerCtx = {};
     const methodOutput = ReactDOMServer.renderToString( methods[method]({
@@ -128,6 +133,6 @@ async function showError (e, map) {
     const original = sourceConsumer.originalPositionFor({ line: lineColumn[0], column: lineColumn[1] });
     return traceLine.replace(/\([^)]+\)$/, `(${original.source}:${original.line}:${original.column})`);
   });
-  console.error('\x1b[31m\x1b[1m%s\x1b[0m', `SSR ${ e.constructor.name }:\n${ e.message }`);
+  console.error('\x1b[31m\x1b[1m%s\x1b[0m', `SSR ${ e.constructor.name }: ${ e.message }`);
   console.error('\x1b[31m%s\x1b[0m', restStack.join('\n'));
 }
