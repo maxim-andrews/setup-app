@@ -71,7 +71,7 @@ const paths = {
 };
 
 if (CSR) {
-  paths.appIndexJs = resolveApp('src/index.js')
+  paths.appIndexJs = resolveApp('src/index.js');
 }
 
 if (setupApp.ssr) {
