@@ -72,23 +72,23 @@ async function processMethod (methods, maps, ctx, ctxMtds, method) {
   }
 
   try {
-    const routerCtx = {};
+    const context = {};
     const methodOutput = ReactDOMServer.renderToString( methods[method]({
-      path: ctx.path,
+      url: ctx.url,
       store: ctx.state.store,
-      routerCtx
+      context
     }) );
 
     // redirecting
-    if (routerCtx.url) {
-      if (routerCtx.status) {
-        ctx.status = routerCtx.status;
+    if (context.url) {
+      if (context.status) {
+        ctx.status = context.status;
       }
 
-      ctx.redirect(routerCtx.url);
+      ctx.redirect(context.url);
 
-      if (routerCtx.statusText) {
-        ctx.body = routerCtx.statusText;
+      if (context.statusText) {
+        ctx.body = context.statusText;
       }
     }
 
