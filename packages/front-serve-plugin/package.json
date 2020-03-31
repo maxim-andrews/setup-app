@@ -54,7 +54,7 @@
   },
   "peerDependencies": {
     "debug": "^4.x",
-    "react-dev-utils": "^9.x",
+    "react-dev-utils": "^10.x",
     "webpack": "^4.x",
     "webpack-koa-server": "^2.x"
   },
