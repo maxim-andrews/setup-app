@@ -41,24 +41,24 @@
     "@babel/preset-env": "^7.6.2",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.3",
-    "babel-jest": "^24.9.0",
+    "babel-jest": "^25.2.4",
     "eslint": "^6.4.0",
     "eslint-config-setup-app": "^2.0.0-alpha.29",
     "eslint-plugin-flowtype": "^4.3.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.14.3",
-    "eslint-plugin-react-hooks": "^2.1.1",
-    "jest": "^24.9.0",
+    "eslint-plugin-react-hooks": "^3.0.0",
+    "jest": "^25.2.4",
     "webpack": "^4.41.0"
   },
   "dependencies": {
     "chokidar": "^3.2.2",
     "debug": "^4.1.1",
     "ip6addr": "^0.2.3",
-    "react-dev-utils": "^9.0.4",
+    "react-dev-utils": "^10.2.1",
     "react-error-overlay": "^6.0.2",
-    "ws": "^7.2.0"
+    "ws": "^7.2.3"
   },
   "peerDependencies": {
     "webpack": "^4.x"
