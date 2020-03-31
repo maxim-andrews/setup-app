@@ -16,18 +16,18 @@
     "node": ">=8"
   },
   "devDependencies": {
-    "babel-eslint": "^10.0.3",
-    "eslint": "^6.5.1",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.8.0",
     "eslint-config-setup-app": "^2.0.0-alpha.29",
-    "eslint-plugin-flowtype": "^4.3.0",
-    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-flowtype": "^4.7.0",
+    "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-react": "^7.16.0",
-    "eslint-plugin-react-hooks": "^2.2.0",
-    "jest": "^24.9.0",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "^3.0.0",
+    "jest": "^25.2.4",
     "jest-pnp-resolver": "^1.2.1",
-    "react": "^16.11.0",
-    "react-dom": "^16.11.0"
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   },
   "dependencies": {
     "source-map": "^0.7.3"
