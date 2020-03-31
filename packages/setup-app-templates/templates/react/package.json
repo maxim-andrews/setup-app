@@ -50,9 +50,8 @@
     ]
   },
   "workboxSW": {
-    "importWorkboxFrom": "cdn",
     "navigateFallback": "/index.html",
-    "navigateFallbackBlacklist": [
+    "navigateFallbackDenylist": [
       {
         "regexp": "^/_"
       },
