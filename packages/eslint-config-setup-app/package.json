@@ -22,6 +22,9 @@
     "hot-client-plugin"
   ],
   "author": "Maxim Andrews <maximandrews@users.noreply.github.com> (http://maximandrews.com)",
+  "publishConfig": {
+    "tag": "next"
+  },
   "license": "MIT",
   "files": [
     "index.js"

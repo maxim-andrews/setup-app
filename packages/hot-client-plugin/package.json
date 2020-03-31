@@ -35,6 +35,9 @@
     "plugin"
   ],
   "author": "Maxim Andrews <maximandrews@users.noreply.github.com> (http://maximandrews.com)",
+  "publishConfig": {
+    "tag": "next"
+  },
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.6.2",

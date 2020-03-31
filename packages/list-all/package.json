@@ -18,6 +18,9 @@
     "list-all"
   ],
   "author": "Maxim Andrews <maximandrews@users.noreply.github.com> (http://maximandrews.com)",
+  "publishConfig": {
+    "tag": "next"
+  },
   "license": "MIT",
   "main": "lib/list-all.js",
   "directories": {

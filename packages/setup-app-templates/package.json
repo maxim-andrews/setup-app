@@ -16,6 +16,9 @@
     "sass"
   ],
   "author": "Maxim Andrews <maximandrews@users.noreply.github.com> (http://maximandrews.com)",
+  "publishConfig": {
+    "tag": "next"
+  },
   "homepage": "https://github.com/maxim-andrews/setup-app-suite/tree/master/packages/setup-app-templates#readme",
   "license": "MIT",
   "main": "index.js",
