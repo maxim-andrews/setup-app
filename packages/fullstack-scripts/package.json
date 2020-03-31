@@ -66,7 +66,7 @@
     "eslint-plugin-react-hooks": "^3.0.0",
     "file-loader": "^6.0.0",
     "front-serve-plugin": "^2.0.0-alpha.29",
-    "fs-extra": "^9.0.0",
+    "fs-extra": "^8.1.0",
     "html-webpack-plugin": "^4.0.0-beta.8",
     "jest": "^25.2.4",
     "jest-pnp-resolver": "^1.2.1",
