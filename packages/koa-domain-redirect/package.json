@@ -1,6 +1,6 @@
 {
   "name": "koa-domain-redirect",
-  "version": "2.0.0-alpha.29",
+  "version": "2.0.0-alpha.30",
   "description": "Redirects from any domain to target or to default domain",
   "repository": {
     "type": "git",
@@ -38,7 +38,7 @@
   "devDependencies": {
     "babel-eslint": "^10.1.0",
     "eslint": "^6.8.0",
-    "eslint-config-setup-app": "^2.0.0-alpha.29",
+    "eslint-config-setup-app": "^2.0.0-alpha.30",
     "eslint-plugin-flowtype": "^4.7.0",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
