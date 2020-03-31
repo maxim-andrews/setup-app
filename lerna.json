@@ -1,11 +1,6 @@
 {
   "version": "2.0.0-alpha.29",
   "npmClient": "npm",
-  "command": {
-    "publish": {
-      "dist-tag": "next"
-    }
-  },
   "packages": [
     "packages/*"
   ]

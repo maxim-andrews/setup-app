@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "author": "Maxim Andrews <maximandrews@users.noreply.github.com> (http://maximandrews.com)",
-  "devDependencies": {
-    "lerna": "^3.16.4"
+  "publishConfig": {
+    "tag": "next"
   }
 }

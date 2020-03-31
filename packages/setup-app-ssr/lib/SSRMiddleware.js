@@ -53,7 +53,7 @@ exports = module.exports = configOpts => {
 
       await next();
 
-      if ((!ctx.body || [ '/', '/' + defaultIndex ].includes(ctx.path)) && ssrObject.html) {
+      if (ctx.accepts('html') && (!ctx.body || [ '/', '/' + defaultIndex ].includes(ctx.path)) && ssrObject.html) {
         const ctxMtds = options.contentMethods;
         /* eslint-disable-next-line */
         ctx.body = ssrObject.html;

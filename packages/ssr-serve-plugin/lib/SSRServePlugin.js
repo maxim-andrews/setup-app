@@ -214,6 +214,8 @@ class SSRServePlugin {
       stats.toJson({ all: false, warnings: true, errors: true })
     );
 
+    this.lastMessages = messages;
+
     this.server.emit('compilation-done', this.pluginId, messages);
 
     if (!messages.errors.length && !messages.warnings.length) {
