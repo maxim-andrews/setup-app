@@ -44,7 +44,7 @@ exports = module.exports = [
     cfg: { dependencies: [ 'koa-rewrite' ], setupApp: { csr: [ 'devRewrite' ] } },
     test: ({ CSR, SSR }) => CSR && SSR !== true
   }, {
-    cfg: { setupApp: { ssr: { methods: [ 'main' ] } } },
+    cfg: { setupApp: { ssr: [ { methods: [ 'main' ] }, 'buildPath' ] } },
     test: ({ SSR }) => SSR
   }, {
     cfg: { setupApp: { ssr: [ { methods: [ 'initStore', 'configureStore' ] }, 'ssrMiddleware', 'buildPath' ] } },
