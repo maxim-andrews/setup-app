@@ -59,7 +59,7 @@
     "chokidar": "^3.2.2",
     "debug": "^4.1.1",
     "ip6addr": "^0.2.3",
-    "react-dev-utils": "^10.2.1",
+    "react-dev-utils": "^11.0.4",
     "react-error-overlay": "^6.0.2",
     "ws": "^7.2.3"
   },
