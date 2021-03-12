@@ -47,7 +47,7 @@
     "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-react-hooks": "^3.0.0",
     "jest": "^25.2.4",
-    "react-dev-utils": "^10.2.1",
+    "react-dev-utils": "^11.0.4",
     "webpack": "^4.42.1",
     "webpack-koa-server": "^2.0.0-alpha.31"
   },
